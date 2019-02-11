@@ -1,0 +1,5 @@
+# If there is only one streams in your application, you can define the applicationId here. Otherwise, override it.
+applicationId: placeholder
+bootstrapServers: localhost:9092
+processingGuarantee: exactly_once
+replicationFactor: 3
