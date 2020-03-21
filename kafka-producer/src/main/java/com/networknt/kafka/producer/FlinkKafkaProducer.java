@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -151,8 +152,8 @@ public class FlinkKafkaProducer<K, V> implements Producer<K, V> {
     }
 
     @Override
-    public void close(long timeout, TimeUnit unit) {
-        kafkaProducer.close(timeout, unit);
+    public void close(Duration timeout) {
+        kafkaProducer.close(timeout);
     }
 
     // -------------------------------- New methods or methods with changed behaviour --------------------------------

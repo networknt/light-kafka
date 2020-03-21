@@ -1,6 +1,6 @@
 package com.networknt.kafka.streams;
 
-public interface ChainStreams {
+public interface LightStreams {
     /**
      * Start the streams processing. The ip and port is for remote queries if the data is not
      * on the current instance.

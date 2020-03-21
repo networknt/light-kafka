@@ -1,7 +1,5 @@
 package com.networknt.kafka.producer;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * A Kafka setting configuration file. It get from defined resource yml file in
  * resources/config folder or externalized config folder. This config is for both
@@ -26,7 +24,8 @@ public class KafkaProducerConfig {
     private String bootstrapServers;
     private String keyDeSerializer;
     private String valueDeSerializer;
-
+    private String topic;
+    private String transactionId;
     private int transactionTimeoutMs;
     private int transactionalIdExpirationMs;
 
@@ -137,12 +136,28 @@ public class KafkaProducerConfig {
         this.valueDeSerializer = valueDeSerializer;
     }
 
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
     public int getTransactionTimeoutMs() {
         return transactionTimeoutMs;
     }
 
     public void setTransactionTimeoutMs(int transactionTimeoutMs) {
         this.transactionTimeoutMs = transactionTimeoutMs;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     public int getTransactionalIdExpirationMs() {

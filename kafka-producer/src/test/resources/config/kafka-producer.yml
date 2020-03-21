@@ -12,7 +12,8 @@ sessionTimeout: 30000
 autoOffsetreset: earliest
 enableAutoCommit: false
 bootstrapServers: kafka:9092
-# every server will have a unique transactionId and it is retrieved from environment of server.yml
+topic: portal-event
+# every server instance will have a unique transactionId
+transactionId: T1000
 transactionTimeoutMs: 900000
 transactionalIdExpirationMs: 2073600000
-

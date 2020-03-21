@@ -12,7 +12,7 @@ java {
 
 allprojects {
     group = "com.networknt"
-    version = "1.0.0"
+    version = "2.0.12-SNAPSHOT"
     repositories {
         mavenLocal() // mavenLocal must be added first.
         jcenter()
