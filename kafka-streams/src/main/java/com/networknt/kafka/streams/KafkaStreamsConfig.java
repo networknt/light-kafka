@@ -7,6 +7,7 @@ public class KafkaStreamsConfig {
     String bootstrapServers;
     String processingGuarantee;
     int replicationFactor;
+    boolean cleanUp;
 
     public KafkaStreamsConfig() {
     }
@@ -41,5 +42,13 @@ public class KafkaStreamsConfig {
 
     public void setReplicationFactor(int replicationFactor) {
         this.replicationFactor = replicationFactor;
+    }
+
+    public boolean isCleanUp() {
+        return cleanUp;
+    }
+
+    public void setCleanUp(boolean cleanUp) {
+        this.cleanUp = cleanUp;
     }
 }
