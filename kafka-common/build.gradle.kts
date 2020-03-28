@@ -28,6 +28,9 @@ dependencies {
     val jacksonVersion: String by project
     compile("com.fasterxml.jackson.core", "jackson-databind", jacksonVersion)
 
+    val avroConverterVersion: String by project
+    compile("tech.allegro.schema.json2avro", "converter", avroConverterVersion)
+
     val junitVersion: String by project
     testImplementation("org.junit.jupiter", "junit-jupiter-api", junitVersion)
     testImplementation("org.junit.jupiter", "junit-jupiter-params", junitVersion)
