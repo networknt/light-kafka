@@ -1,16 +1,18 @@
 package com.networknt.kafka.common;
 
+import org.apache.avro.specific.SpecificRecord;
+
 public class EventNotification {
     long nonce;
     boolean success;
     String error;
-    String eventJson;
+    SpecificRecord event;
 
-    public EventNotification(long nonce, boolean success, String error, String eventJson) {
+    public EventNotification(long nonce, boolean success, String error, SpecificRecord event) {
         this.nonce = nonce;
         this.success = success;
         this.error = error;
-        this.eventJson = eventJson;
+        this.event = event;
     }
 
     public long getNonce() {
@@ -37,11 +39,20 @@ public class EventNotification {
         this.error = error;
     }
 
-    public String getEventJson() {
-        return eventJson;
+    public SpecificRecord getEvent() {
+        return event;
     }
 
-    public void setEventJson(String eventJson) {
-        this.eventJson = eventJson;
+    public void setEvent(SpecificRecord event) {
+        this.event = event;
+    }
+
+    @Override
+    public String toString() {
+        return "{\"nonce\":" + nonce
+                + ",\"success\":" + success + ","
+                + ((error == null) ? "" : ("\"error\":\"" + error + "\","))
+                + "\"event\":" + AvroConverter.toJson(event, false)
+                + "}";
     }
 }
