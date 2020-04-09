@@ -78,7 +78,7 @@ public class TransactionalProducer implements Runnable, LightProducer {
                 List<ProducerRecord<byte[], byte[]>> buffer = new ArrayList<>();
                 while(!stopped.get()) {
                     int added = drain(txQueue, buffer, 5000, 1000, TimeUnit.MILLISECONDS);
-                    if(logger.isDebugEnabled()) logger.debug("drained transactions = " + added);
+                    if(logger.isTraceEnabled() && added > 0) logger.trace("drained transactions = " + added);
                     for(int j = 0; j < added; j++) {
                         ProducerRecord<byte[], byte[]> record = buffer.get(j);
                         invoke(currentTransaction, topic, record);
