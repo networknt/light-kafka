@@ -4,15 +4,20 @@ import org.apache.avro.specific.SpecificRecord;
 
 public class EventNotification {
     long nonce;
+    String app;
+    String name;
     boolean success;
     String error;
     SpecificRecord event;
 
-    public EventNotification(long nonce, boolean success, String error, SpecificRecord event) {
+    public EventNotification(long nonce, String app, String name, boolean success, String error, SpecificRecord event) {
         this.nonce = nonce;
+        this.app = app;
+        this.name = name;
         this.success = success;
         this.error = error;
         this.event = event;
+
     }
 
     public long getNonce() {
@@ -21,6 +26,22 @@ public class EventNotification {
 
     public void setNonce(long nonce) {
         this.nonce = nonce;
+    }
+
+    public String getApp() {
+        return app;
+    }
+
+    public void setApp(String app) {
+        this.app = app;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public boolean isSuccess() {
@@ -39,6 +60,7 @@ public class EventNotification {
         this.error = error;
     }
 
+
     public SpecificRecord getEvent() {
         return event;
     }
@@ -50,6 +72,8 @@ public class EventNotification {
     @Override
     public String toString() {
         return "{\"nonce\":" + nonce
+                + ",\"app\":\"" + app + "\""
+                + ",\"name\":\"" + name + "\""
                 + ",\"success\":" + success + ","
                 + ((error == null) ? "" : ("\"error\":\"" + error + "\","))
                 + "\"event\":" + AvroConverter.toJson(event, false)
