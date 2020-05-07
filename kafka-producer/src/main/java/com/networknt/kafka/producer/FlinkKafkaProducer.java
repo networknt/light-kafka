@@ -17,6 +17,7 @@
  */
 package com.networknt.kafka.producer;
 
+import org.apache.kafka.clients.consumer.ConsumerGroupMetadata;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.clients.producer.internals.TransactionalRequestResult;
@@ -124,6 +125,11 @@ public class FlinkKafkaProducer<K, V> implements Producer<K, V> {
     @Override
     public void sendOffsetsToTransaction(Map<TopicPartition, OffsetAndMetadata> offsets, String consumerGroupId) throws ProducerFencedException {
         kafkaProducer.sendOffsetsToTransaction(offsets, consumerGroupId);
+    }
+
+    @Override
+    public void sendOffsetsToTransaction(Map<TopicPartition, OffsetAndMetadata> offsets, ConsumerGroupMetadata groupMetadata) throws ProducerFencedException {
+        kafkaProducer.sendOffsetsToTransaction(offsets, groupMetadata);
     }
 
     @Override
