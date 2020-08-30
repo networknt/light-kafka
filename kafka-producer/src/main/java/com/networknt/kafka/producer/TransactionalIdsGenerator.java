@@ -56,6 +56,8 @@ public class TransactionalIdsGenerator {
      * [nextFreeTransactionalId, nextFreeTransactionalId + parallelism * kafkaProducersPoolSize)
      * loop below picks in a deterministic way a subrange of those available transactional ids based on index of
      * this subtask.
+     * @param  nextFreeTransactionalId next free transactional id
+     * @return Set
      */
     public Set<String> generateIdsToUse(long nextFreeTransactionalId) {
         Set<String> transactionalIds = new HashSet<>();
@@ -70,6 +72,7 @@ public class TransactionalIdsGenerator {
      *  If we have to abort previous transactional id in case of restart after a failure BEFORE first checkpoint
      *  completed, we don't know what was the parallelism used in previous attempt. In that case we must guess the ids
      *  range to abort based on current configured pool size, current parallelism and safeScaleDownFactor.
+     * @return Set
      */
     public Set<String> generateIdsToAbort() {
         Set<String> idsToAbort = new HashSet<>();

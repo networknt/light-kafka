@@ -21,6 +21,10 @@ public class AvroDeserializer extends AbstractAvroDeserializer {
 
     /**
      * Pass a reader schema to get an Avro projection
+     * @param s String
+     * @param bytes byte array
+     * @param readerSchema Schema
+     * @return Object
      */
     public Object deserialize(String s, byte[] bytes, Schema readerSchema) {
         return deserialize(bytes, readerSchema);

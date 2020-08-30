@@ -116,6 +116,7 @@ public class TransactionalProducer implements Runnable, LightProducer {
      * timeout.
      *
      * @param q the blocking queue to be drained
+     * @param <E> element
      * @param buffer where to add the transferred elements
      * @param numElements the number of elements to be waited for
      * @param timeout how long to wait before giving up, in units of {@code unit}

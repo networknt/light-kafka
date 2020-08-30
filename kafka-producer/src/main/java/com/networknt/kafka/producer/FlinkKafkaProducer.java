@@ -176,6 +176,8 @@ public class FlinkKafkaProducer<K, V> implements Producer<K, V> {
      * Instead of obtaining producerId and epoch from the transaction coordinator, re-use previously obtained ones,
      * so that we can resume transaction after a restart. Implementation of this method is based on
      * {@link org.apache.kafka.clients.producer.KafkaProducer#initTransactions}.
+     * @param producerId producer id
+     * @param epoch epoch
      */
     public void resumeTransaction(long producerId, short epoch) {
         //Preconditions.checkState(producerId >= 0 && epoch >= 0, "Incorrect values for producerId {} and epoch {}", producerId, epoch);

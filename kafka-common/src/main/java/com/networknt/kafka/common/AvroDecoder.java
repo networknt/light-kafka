@@ -29,6 +29,9 @@ public class AvroDecoder extends AbstractAvroDeserializer {
 
   /**
    * Pass a reader schema to get an Avro projection
+   * @param bytes byte array
+   * @param readerSchema Schema
+   * @return Object
    */
   public Object fromBytes(byte[] bytes, Schema readerSchema) {
     return deserialize(bytes, readerSchema);
