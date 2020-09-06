@@ -14,8 +14,8 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class EventId extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 3106901871117223166L;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventId\",\"namespace\":\"com.networknt.kafka.common\",\"fields\":[{\"name\":\"id\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"a unique identifier\"},{\"name\":\"nonce\",\"type\":\"long\",\"doc\":\"the number of the transactions for the user\"}]}");
+  private static final long serialVersionUID = 8281982261514519569L;
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventId\",\"namespace\":\"com.networknt.kafka.common\",\"fields\":[{\"name\":\"id\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"a unique identifier\"},{\"name\":\"nonce\",\"type\":\"long\",\"doc\":\"the number of the transactions for the user\"},{\"name\":\"derived\",\"type\":\"boolean\",\"doc\":\"indicate if the event is derived from event processor\",\"default\":false}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static SpecificData MODEL$ = new SpecificData();
@@ -75,6 +75,8 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
    private java.lang.String id;
   /** the number of the transactions for the user */
    private long nonce;
+  /** indicate if the event is derived from event processor */
+   private boolean derived;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -87,10 +89,12 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
    * All-args constructor.
    * @param id a unique identifier
    * @param nonce the number of the transactions for the user
+   * @param derived indicate if the event is derived from event processor
    */
-  public EventId(java.lang.String id, java.lang.Long nonce) {
+  public EventId(java.lang.String id, java.lang.Long nonce, java.lang.Boolean derived) {
     this.id = id;
     this.nonce = nonce;
+    this.derived = derived;
   }
 
   public org.apache.avro.specific.SpecificData getSpecificData() { return MODEL$; }
@@ -100,6 +104,7 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
     switch (field$) {
     case 0: return id;
     case 1: return nonce;
+    case 2: return derived;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -110,6 +115,7 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
     switch (field$) {
     case 0: id = value$ != null ? value$.toString() : null; break;
     case 1: nonce = (java.lang.Long)value$; break;
+    case 2: derived = (java.lang.Boolean)value$; break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -148,6 +154,24 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
    */
   public void setNonce(long value) {
     this.nonce = value;
+  }
+
+  /**
+   * Gets the value of the 'derived' field.
+   * @return indicate if the event is derived from event processor
+   */
+  public boolean getDerived() {
+    return derived;
+  }
+
+
+  /**
+   * Sets the value of the 'derived' field.
+   * indicate if the event is derived from event processor
+   * @param value the value to set.
+   */
+  public void setDerived(boolean value) {
+    this.derived = value;
   }
 
   /**
@@ -195,6 +219,8 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
     private java.lang.String id;
     /** the number of the transactions for the user */
     private long nonce;
+    /** indicate if the event is derived from event processor */
+    private boolean derived;
 
     /** Creates a new Builder */
     private Builder() {
@@ -215,6 +241,10 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
         this.nonce = data().deepCopy(fields()[1].schema(), other.nonce);
         fieldSetFlags()[1] = other.fieldSetFlags()[1];
       }
+      if (isValidValue(fields()[2], other.derived)) {
+        this.derived = data().deepCopy(fields()[2].schema(), other.derived);
+        fieldSetFlags()[2] = other.fieldSetFlags()[2];
+      }
     }
 
     /**
@@ -230,6 +260,10 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       if (isValidValue(fields()[1], other.nonce)) {
         this.nonce = data().deepCopy(fields()[1].schema(), other.nonce);
         fieldSetFlags()[1] = true;
+      }
+      if (isValidValue(fields()[2], other.derived)) {
+        this.derived = data().deepCopy(fields()[2].schema(), other.derived);
+        fieldSetFlags()[2] = true;
       }
     }
 
@@ -320,6 +354,49 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       return this;
     }
 
+    /**
+      * Gets the value of the 'derived' field.
+      * indicate if the event is derived from event processor
+      * @return The value.
+      */
+    public boolean getDerived() {
+      return derived;
+    }
+
+
+    /**
+      * Sets the value of the 'derived' field.
+      * indicate if the event is derived from event processor
+      * @param value The value of 'derived'.
+      * @return This builder.
+      */
+    public com.networknt.kafka.common.EventId.Builder setDerived(boolean value) {
+      validate(fields()[2], value);
+      this.derived = value;
+      fieldSetFlags()[2] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'derived' field has been set.
+      * indicate if the event is derived from event processor
+      * @return True if the 'derived' field has been set, false otherwise.
+      */
+    public boolean hasDerived() {
+      return fieldSetFlags()[2];
+    }
+
+
+    /**
+      * Clears the value of the 'derived' field.
+      * indicate if the event is derived from event processor
+      * @return This builder.
+      */
+    public com.networknt.kafka.common.EventId.Builder clearDerived() {
+      fieldSetFlags()[2] = false;
+      return this;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public EventId build() {
@@ -327,6 +404,7 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
         EventId record = new EventId();
         record.id = fieldSetFlags()[0] ? this.id : (java.lang.String) defaultValue(fields()[0]);
         record.nonce = fieldSetFlags()[1] ? this.nonce : (java.lang.Long) defaultValue(fields()[1]);
+        record.derived = fieldSetFlags()[2] ? this.derived : (java.lang.Boolean) defaultValue(fields()[2]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;
@@ -363,6 +441,8 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
 
     out.writeLong(this.nonce);
 
+    out.writeBoolean(this.derived);
+
   }
 
   @Override public void customDecode(org.apache.avro.io.ResolvingDecoder in)
@@ -374,8 +454,10 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
 
       this.nonce = in.readLong();
 
+      this.derived = in.readBoolean();
+
     } else {
-      for (int i = 0; i < 2; i++) {
+      for (int i = 0; i < 3; i++) {
         switch (fieldOrder[i].pos()) {
         case 0:
           this.id = in.readString();
@@ -383,6 +465,10 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
 
         case 1:
           this.nonce = in.readLong();
+          break;
+
+        case 2:
+          this.derived = in.readBoolean();
           break;
 
         default:
