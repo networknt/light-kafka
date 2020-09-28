@@ -4,6 +4,8 @@ plugins {
 }
 
 dependencies {
+    compile(project(":kafka-common"))
+
     val slf4jVersion: String by project
     compile("org.slf4j", "slf4j-api", slf4jVersion)
 

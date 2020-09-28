@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.networknt.kafka.producer;
+package com.networknt.kafka.common;
 
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,9 @@
 package com.networknt.kafka.producer;
 
 import com.networknt.config.Config;
+import com.networknt.kafka.common.TransactionalKafkaException;
+import com.networknt.kafka.common.FlinkKafkaProducer;
+
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;

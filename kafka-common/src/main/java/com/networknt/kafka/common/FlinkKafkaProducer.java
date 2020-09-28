@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.networknt.kafka.producer;
+package com.networknt.kafka.common;
 
 import org.apache.kafka.clients.consumer.ConsumerGroupMetadata;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
@@ -35,19 +35,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Wrapper around KafkaProducer that allows to resume transactions in case of node failure, which allows to implement
  * two phase commit algorithm for exactly-once semantic FlinkKafkaProducer.
  *
- * <p>For happy path usage is exactly the same as {@link org.apache.kafka.clients.producer.KafkaProducer}. User is
+ * <p>For happy path usage is exactly the same as {@link KafkaProducer}. User is
  * expected to call:
  *
  * <ul>
  *     <li>{@link FlinkKafkaProducer#initTransactions()}</li>
  *     <li>{@link FlinkKafkaProducer#beginTransaction()}</li>
- *     <li>{@link FlinkKafkaProducer#send(org.apache.kafka.clients.producer.ProducerRecord)}</li>
+ *     <li>{@link FlinkKafkaProducer#send(ProducerRecord)}</li>
  *     <li>{@link FlinkKafkaProducer#flush()}</li>
  *     <li>{@link FlinkKafkaProducer#commitTransaction()}</li>
  * </ul>
@@ -60,7 +59,7 @@ import java.util.concurrent.TimeUnit;
  * <ul>
  *     <li>{@link FlinkKafkaProducer#initTransactions()}</li>
  *     <li>{@link FlinkKafkaProducer#beginTransaction()}</li>
- *     <li>{@link FlinkKafkaProducer#send(org.apache.kafka.clients.producer.ProducerRecord)}</li>
+ *     <li>{@link FlinkKafkaProducer#send(ProducerRecord)}</li>
  *     <li>{@link FlinkKafkaProducer#flush()}</li>
  *     <li>{@link FlinkKafkaProducer#getProducerId()}</li>
  *     <li>{@link FlinkKafkaProducer#getEpoch()}</li>
@@ -73,7 +72,7 @@ import java.util.concurrent.TimeUnit;
  * as a way to obtain the producerId and epoch counters. It has to be done, because otherwise
  * {@link FlinkKafkaProducer#initTransactions()} would automatically abort all on going transactions.
  *
- * <p>Second way this implementation differs from the reference {@link org.apache.kafka.clients.producer.KafkaProducer}
+ * <p>Second way this implementation differs from the reference {@link KafkaProducer}
  * is that this one actually flushes new partitions on {@link FlinkKafkaProducer#flush()} instead of on
  * {@link FlinkKafkaProducer#commitTransaction()}.
  *
@@ -84,7 +83,7 @@ import java.util.concurrent.TimeUnit;
  * <p>Those changes are compatible with Kafka's 0.11.0 REST API although it clearly was not the intention of the Kafka's
  * API authors to make them possible.
  *
- * <p>Internally this implementation uses {@link org.apache.kafka.clients.producer.KafkaProducer} and implements
+ * <p>Internally this implementation uses {@link KafkaProducer} and implements
  * required changes via Java Reflection API. It might not be the prettiest solution. An alternative would be to
  * re-implement whole Kafka's 0.11 REST API client on our own.
  */
@@ -175,7 +174,7 @@ public class FlinkKafkaProducer<K, V> implements Producer<K, V> {
     /**
      * Instead of obtaining producerId and epoch from the transaction coordinator, re-use previously obtained ones,
      * so that we can resume transaction after a restart. Implementation of this method is based on
-     * {@link org.apache.kafka.clients.producer.KafkaProducer#initTransactions}.
+     * {@link KafkaProducer#initTransactions}.
      * @param producerId producer id
      * @param epoch epoch
      */
@@ -224,7 +223,7 @@ public class FlinkKafkaProducer<K, V> implements Producer<K, V> {
     }
 
     /**
-     * Besides committing {@link org.apache.kafka.clients.producer.KafkaProducer#commitTransaction} is also adding new
+     * Besides committing {@link KafkaProducer#commitTransaction} is also adding new
      * partitions to the transaction. flushNewPartitions method is moving this logic to pre-commit/flush, to make
      * resumeTransaction simpler. Otherwise resumeTransaction would require to restore state of the not yet added/"in-flight"
      * partitions.
