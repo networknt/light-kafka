@@ -1,4 +1,4 @@
-package com.networknt.kafka.streams;
+package com.networknt.kafka.common;
 
 public class KafkaStreamsConfig {
     public static final String CONFIG_NAME = "kafka-streams";

@@ -1,4 +1,4 @@
-package com.networknt.kafka.consumer;
+package com.networknt.kafka.common;
 
 public class KafkaConsumerConfig {
     public static final String CONFIG_NAME = "kafka-consumer";

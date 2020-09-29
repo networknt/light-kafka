@@ -1,4 +1,4 @@
-package com.networknt.kafka.streams;
+package com.networknt.kafka.common;
 
 import com.networknt.config.Config;
 import org.junit.jupiter.api.Test;

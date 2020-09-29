@@ -1,4 +1,4 @@
-package com.networknt.kafka.producer;
+package com.networknt.kafka.common;
 
 /**
  * A Kafka setting configuration file. It get from defined resource yml file in

@@ -1,6 +1,7 @@
 package com.networknt.kafka.producer;
 
 import com.networknt.config.Config;
+import com.networknt.kafka.common.KafkaProducerConfig;
 import com.networknt.kafka.common.TransactionalKafkaException;
 import com.networknt.kafka.common.FlinkKafkaProducer;
 
