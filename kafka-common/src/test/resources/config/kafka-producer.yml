@@ -17,3 +17,8 @@ topic: portal-event
 transactionId: T1000
 transactionTimeoutMs: 900000
 transactionalIdExpirationMs: 2073600000
+
+# if open tracing is enable. traceability, correlation and metrics should not be in the chain if opentracing is used.
+injectOpenTracing: ${client.injectOpenTracing:false}
+# inject serviceId as callerId into the http header for metrics to collect the caller. The serviceId is from server.yml
+injectCallerId: ${client.injectCallerId:false}

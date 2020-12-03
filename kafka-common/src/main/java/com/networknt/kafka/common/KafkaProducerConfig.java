@@ -28,6 +28,8 @@ public class KafkaProducerConfig {
     private String transactionId;
     private int transactionTimeoutMs;
     private int transactionalIdExpirationMs;
+    private boolean injectOpenTracing;
+    private boolean injectCallerId;
 
     public KafkaProducerConfig() {
     }
@@ -166,5 +168,21 @@ public class KafkaProducerConfig {
 
     public void setTransactionalIdExpirationMs(int transactionalIdExpirationMs) {
         this.transactionalIdExpirationMs = transactionalIdExpirationMs;
+    }
+
+    public boolean isInjectOpenTracing() {
+        return injectOpenTracing;
+    }
+
+    public void setInjectOpenTracing(boolean injectOpenTracing) {
+        this.injectOpenTracing = injectOpenTracing;
+    }
+
+    public boolean isInjectCallerId() {
+        return injectCallerId;
+    }
+
+    public void setInjectCallerId(boolean injectCallerId) {
+        this.injectCallerId = injectCallerId;
     }
 }
