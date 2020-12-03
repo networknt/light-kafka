@@ -1,10 +1,18 @@
 package com.networknt.kafka.producer;
 
+import com.networknt.client.ClientRequestCarrier;
 import com.networknt.config.Config;
+import com.networknt.httpstring.AttachmentConstants;
+import com.networknt.httpstring.HttpStringConstants;
 import com.networknt.kafka.common.KafkaProducerConfig;
 import com.networknt.kafka.common.TransactionalKafkaException;
 import com.networknt.kafka.common.FlinkKafkaProducer;
 
+import com.networknt.utility.Constants;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
+import io.opentracing.tag.Tags;
+import io.undertow.server.HttpServerExchange;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -13,9 +21,12 @@ import org.apache.kafka.common.errors.AuthorizationException;
 import org.apache.kafka.common.errors.InvalidTxnStateException;
 import org.apache.kafka.common.errors.OutOfOrderSequenceException;
 import org.apache.kafka.common.errors.ProducerFencedException;
+import org.apache.kafka.common.header.Headers;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.util.*;
 import java.util.concurrent.*;
@@ -25,6 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class TransactionalProducer implements Runnable, LightProducer {
     static private final Logger logger = LoggerFactory.getLogger(TransactionalProducer.class);
     static private Properties producerProps;
+    static String callerId = "unknown";
     static final KafkaProducerConfig config = (KafkaProducerConfig) Config.getInstance().getJsonObjectConfig(KafkaProducerConfig.CONFIG_NAME, KafkaProducerConfig.class);
     static {
         producerProps = new Properties();
@@ -39,6 +51,12 @@ public class TransactionalProducer implements Runnable, LightProducer {
         producerProps.put("transactional.id", config.getTransactionId()); // each kafka producer instance should have a unique transactionId
         producerProps.put("transaction.timeout.ms", config.getTransactionTimeoutMs());
         producerProps.put("transactional.id.expiration.ms", config.getTransactionTimeoutMs());
+        if(config.isInjectCallerId()) {
+            Map<String, Object> serverConfig = Config.getInstance().getJsonMapConfigNoCache("server");
+            if(serverConfig != null) {
+                callerId = (String)serverConfig.get("serviceId");
+            }
+        }
     }
     static final String topic = config.getTopic();
 
@@ -284,6 +302,31 @@ public class TransactionalProducer implements Runnable, LightProducer {
         FlinkKafkaProducer<byte[], byte[]> producer = new FlinkKafkaProducer<>(producerProps);
         logger.info("Starting FlinkKafkaProducer");
         return producer;
+    }
+
+    @Override
+    public void propagateHeaders(ProducerRecord record, HttpServerExchange exchange) {
+        Headers headers = record.headers();
+        String token = exchange.getRequestHeaders().getFirst(Constants.AUTHORIZATION_STRING);
+        headers.add(Constants.AUTHORIZATION_STRING, token.getBytes(StandardCharsets.UTF_8));
+        if(config.isInjectOpenTracing()) {
+            Tracer tracer = exchange.getAttachment(AttachmentConstants.EXCHANGE_TRACER);
+            if(tracer != null && tracer.activeSpan() != null) {
+                Tags.SPAN_KIND.set(tracer.activeSpan(), Tags.SPAN_KIND_PRODUCER);
+                Tags.MESSAGE_BUS_DESTINATION.set(tracer.activeSpan(), record.topic());
+                tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, new KafkaHeadersCarrier(record));
+            }
+        } else {
+            String cid = exchange.getRequestHeaders().getFirst(HttpStringConstants.CORRELATION_ID);
+            headers.add(Constants.CORRELATION_ID_STRING, cid.getBytes(StandardCharsets.UTF_8));
+            String tid = exchange.getRequestHeaders().getFirst(HttpStringConstants.TRACEABILITY_ID);
+            if(tid != null) {
+                headers.add(Constants.TRACEABILITY_ID_STRING, tid.getBytes(StandardCharsets.UTF_8));
+            }
+        }
+        if(config.isInjectCallerId()) {
+            headers.add(Constants.CALLER_ID_STRING, callerId.getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     public static int addressToPartition(String address) {
