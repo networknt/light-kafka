@@ -2,6 +2,7 @@ bootstrapServers: localhost:9092
 isolationLevel: read_committed
 enableAutoCommit: false
 autoCommitIntervalMs: 1000
+autoOffsetReset: earliest
 keyDeserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
 valueDeserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
-# every consumer must have a groupId and it is retrieved from environment of server.yml
+groupId: group1

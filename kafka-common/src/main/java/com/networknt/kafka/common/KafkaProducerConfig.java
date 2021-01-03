@@ -30,6 +30,8 @@ public class KafkaProducerConfig {
     private int transactionalIdExpirationMs;
     private boolean injectOpenTracing;
     private boolean injectCallerId;
+    private boolean enableIdempotence;
+    private int maxInFlightRequestsPerConnection;
 
     public KafkaProducerConfig() {
     }
@@ -184,5 +186,21 @@ public class KafkaProducerConfig {
 
     public void setInjectCallerId(boolean injectCallerId) {
         this.injectCallerId = injectCallerId;
+    }
+
+    public boolean isEnableIdempotence() {
+        return enableIdempotence;
+    }
+
+    public void setEnableIdempotence(boolean enableIdempotence) {
+        this.enableIdempotence = enableIdempotence;
+    }
+
+    public int getMaxInFlightRequestsPerConnection() {
+        return maxInFlightRequestsPerConnection;
+    }
+
+    public void setMaxInFlightRequestsPerConnection(int maxInFlightRequestsPerConnection) {
+        this.maxInFlightRequestsPerConnection = maxInFlightRequestsPerConnection;
     }
 }

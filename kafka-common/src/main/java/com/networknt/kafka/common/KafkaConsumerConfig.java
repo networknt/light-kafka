@@ -7,8 +7,10 @@ public class KafkaConsumerConfig {
     private String isolationLevel;
     private boolean enableAutoCommit;
     private int autoCommitIntervalMs;
+    private String autoOffsetReset;
     private String keyDeserializer;
     private String valueDeserializer;
+    private String groupId;
 
     public KafkaConsumerConfig() {
     }
@@ -59,5 +61,21 @@ public class KafkaConsumerConfig {
 
     public void setAutoCommitIntervalMs(int autoCommitIntervalMs) {
         this.autoCommitIntervalMs = autoCommitIntervalMs;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getAutoOffsetReset() {
+        return autoOffsetReset;
+    }
+
+    public void setAutoOffsetReset(String autoOffsetReset) {
+        this.autoOffsetReset = autoOffsetReset;
     }
 }
