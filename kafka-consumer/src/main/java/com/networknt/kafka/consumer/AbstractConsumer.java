@@ -15,7 +15,7 @@ public abstract class AbstractConsumer implements LightConsumer {
 
     /** indicate the thread should be stopped */
     private final AtomicBoolean stopped = new AtomicBoolean(false);
-    protected KafkaConsumer<byte[], byte[]> consumer;
+    public KafkaConsumer<byte[], byte[]> consumer;
 
     static private Properties consumerProps;
     static final KafkaConsumerConfig config = (KafkaConsumerConfig) Config.getInstance().getJsonObjectConfig(KafkaConsumerConfig.CONFIG_NAME, KafkaConsumerConfig.class);
