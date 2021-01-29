@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.0.23](https://github.com/networknt/light-kafka/tree/2.0.23) (2021-01-29)
+
+
+**Merged pull requests:**
+
+
+- fixes \#20 make the consumer public so that it can be accessed from an… [\#21](https://github.com/networknt/light-kafka/pull/21) ([stevehu](https://github.com/stevehu))
+- fixes \#18 add more producer and consumer implementations [\#19](https://github.com/networknt/light-kafka/pull/19) ([stevehu](https://github.com/stevehu))
 ## [2.0.22](https://github.com/networknt/light-kafka/tree/2.0.22) (2020-12-22)
 
 
