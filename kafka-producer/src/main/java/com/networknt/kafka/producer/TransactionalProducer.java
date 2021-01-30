@@ -51,6 +51,7 @@ public class TransactionalProducer implements Runnable, LightProducer {
         producerProps.put("transactional.id", config.getTransactionId()); // each kafka producer instance should have a unique transactionId
         producerProps.put("transaction.timeout.ms", config.getTransactionTimeoutMs());
         producerProps.put("transactional.id.expiration.ms", config.getTransactionTimeoutMs());
+        producerProps.put("enable.idempotence", config.isEnableIdempotence()); //ensuring idempotency with transaction.id to deduplicate any message this producer sends.
         if(config.isInjectCallerId()) {
             Map<String, Object> serverConfig = Config.getInstance().getJsonMapConfigNoCache("server");
             if(serverConfig != null) {
