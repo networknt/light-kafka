@@ -17,6 +17,7 @@ import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.KafkaException;
+import org.apache.kafka.common.config.ConfigException;
 import org.apache.kafka.common.errors.AuthorizationException;
 import org.apache.kafka.common.errors.InvalidTxnStateException;
 import org.apache.kafka.common.errors.OutOfOrderSequenceException;
@@ -129,6 +130,9 @@ public class TransactionalProducer implements Runnable, LightProducer {
                 // For all other exceptions, just abort the transaction and try again.
                 logger.error("KafkaException", e);
                 abort(currentTransaction);
+                if(e instanceof ConfigException) {
+                    throw new RuntimeException("Kafka is down!");
+                }
             }
         }
     }
