@@ -39,6 +39,6 @@ public abstract class AbstractConsumer implements LightConsumer {
     @Override
     public void close() {
         stopped.getAndSet(true);
-        consumer.close();
+        if(consumer != null) consumer.close();
     }
 }
