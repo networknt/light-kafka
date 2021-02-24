@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.0.24](https://github.com/networknt/light-kafka/tree/2.0.24) (2021-02-24)
+
+
+**Merged pull requests:**
+
+
+- Bump version.jackson from 2.10.4 to 2.12.1 [\#27](https://github.com/networknt/light-kafka/pull/27) ([dependabot](https://github.com/apps/dependabot))
+- fixes \#25 throw RuntimeException when Kafka is down [\#26](https://github.com/networknt/light-kafka/pull/26) ([stevehu](https://github.com/stevehu))
+- Enable idempotence for producer https://github.com/networknt/light-ka… [\#23](https://github.com/networknt/light-kafka/pull/23) ([stevehu](https://github.com/stevehu))
 ## [2.0.23](https://github.com/networknt/light-kafka/tree/2.0.23) (2021-01-29)
 
 
