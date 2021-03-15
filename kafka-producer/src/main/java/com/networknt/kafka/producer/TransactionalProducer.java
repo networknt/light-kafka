@@ -34,7 +34,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class TransactionalProducer implements Runnable, LightProducer {
+public class TransactionalProducer implements Runnable, QueuedLightProducer {
     static private final Logger logger = LoggerFactory.getLogger(TransactionalProducer.class);
     static private Properties producerProps;
     static String callerId = "unknown";
@@ -251,7 +251,7 @@ public class TransactionalProducer implements Runnable, LightProducer {
     }
 
 
-    public void close() throws TransactionalKafkaException {
+    public void close() {
         final KafkaTransactionState currentTransaction = currentTransaction();
         if (currentTransaction != null) {
             // to avoid exceptions on aborting transactions with some pending records
@@ -267,7 +267,7 @@ public class TransactionalProducer implements Runnable, LightProducer {
      * Flush pending records.
      * @param transaction
      */
-    private void flush(KafkaTransactionState transaction) throws TransactionalKafkaException {
+    private void flush(KafkaTransactionState transaction) {
         if (transaction.producer != null) {
             transaction.producer.flush();
         }
