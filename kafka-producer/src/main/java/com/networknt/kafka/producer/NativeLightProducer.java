@@ -1,6 +1,9 @@
 package com.networknt.kafka.producer;
 
+import com.networknt.kafka.common.KafkaProducerConfig;
+import io.undertow.server.HttpServerExchange;
 import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.common.header.Headers;
 
 public interface NativeLightProducer extends LightProducer {
     /**

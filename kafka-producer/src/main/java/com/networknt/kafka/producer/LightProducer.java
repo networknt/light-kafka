@@ -5,6 +5,7 @@ import io.undertow.server.HttpServerExchange;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -21,13 +22,6 @@ public interface LightProducer {
      *
      */
     void open();
-
-    /**
-     * For each producer, it is responsible for populate the header of the ProducerRecord.
-     * @param record the ProducerRecord
-     * @param exchange the Undertow exchange that carries HTTP headers
-     */
-    void propagateHeaders(ProducerRecord record, HttpServerExchange exchange);
 
     /**
      * This method is called by a shutdown hook to close the producer if it is not null.

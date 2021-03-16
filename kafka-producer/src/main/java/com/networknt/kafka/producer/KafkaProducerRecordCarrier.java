@@ -1,7 +1,6 @@
 package com.networknt.kafka.producer;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.header.Headers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,12 +8,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
 
-public class KafkaHeadersCarrier implements io.opentracing.propagation.TextMap {
-    private final static Logger logger = LoggerFactory.getLogger(KafkaHeadersCarrier.class);
-    private final Headers headers;
+public class KafkaProducerRecordCarrier implements io.opentracing.propagation.TextMap {
+    private final static Logger logger = LoggerFactory.getLogger(KafkaProducerRecordCarrier.class);
+    private final ProducerRecord record;
 
-    public KafkaHeadersCarrier(Headers headers) {
-        this.headers = headers;
+    public KafkaProducerRecordCarrier(ProducerRecord record) {
+        this.record = record;
     }
 
     @Override
@@ -25,6 +24,6 @@ public class KafkaHeadersCarrier implements io.opentracing.propagation.TextMap {
     @Override
     public void put(String key, String value) {
         if(logger.isDebugEnabled()) logger.debug("key = " + key + " value = " + value);
-        headers.add(key, value.getBytes(StandardCharsets.UTF_8));
+        record.headers().add(key, value.getBytes(StandardCharsets.UTF_8));
     }
 }

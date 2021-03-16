@@ -1,5 +1,8 @@
 package com.networknt.kafka.producer;
 
+import io.undertow.server.HttpServerExchange;
+import org.apache.kafka.clients.producer.ProducerRecord;
+
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -24,4 +27,12 @@ public interface QueuedLightProducer extends LightProducer {
      * @return the queue that contains the cached messages
      */
     BlockingQueue getTxQueue();
+
+    /**
+     * For each producer, it is responsible for populate the header of the ProducerRecord.
+     * @param record the ProducerRecord
+     * @param exchange the Undertow exchange that carries HTTP headers
+     */
+    void propagateHeaders(ProducerRecord record, HttpServerExchange exchange);
+
 }

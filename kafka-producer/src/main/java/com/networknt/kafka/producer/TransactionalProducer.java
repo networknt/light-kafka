@@ -319,7 +319,7 @@ public class TransactionalProducer implements Runnable, QueuedLightProducer {
             if(tracer != null && tracer.activeSpan() != null) {
                 Tags.SPAN_KIND.set(tracer.activeSpan(), Tags.SPAN_KIND_PRODUCER);
                 Tags.MESSAGE_BUS_DESTINATION.set(tracer.activeSpan(), record.topic());
-                tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, new KafkaHeadersCarrier(record));
+                tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, new KafkaProducerRecordCarrier(record));
             }
         } else {
             String cid = exchange.getRequestHeaders().getFirst(HttpStringConstants.CORRELATION_ID);
