@@ -64,6 +64,10 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
+            <artifactId>kafka-entity</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
             <artifactId>kafka-common</artifactId>
         </dependency>
         <dependency>

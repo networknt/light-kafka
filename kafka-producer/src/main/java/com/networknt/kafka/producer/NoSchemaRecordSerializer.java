@@ -23,6 +23,7 @@ import io.confluent.kafka.serializers.KafkaJsonSerializer;
 import io.confluent.kafka.serializers.KafkaJsonSerializerConfig;
 import java.util.Map;
 import java.util.Optional;
+import com.networknt.kafka.entity.EmbeddedFormat;
 
 final class NoSchemaRecordSerializer {
 

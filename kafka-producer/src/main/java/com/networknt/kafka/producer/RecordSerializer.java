@@ -18,6 +18,7 @@ package com.networknt.kafka.producer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.protobuf.ByteString;
 import java.util.Optional;
+import com.networknt.kafka.entity.EmbeddedFormat;
 
 /**
  * A facade covering serializers of all supported {@link EmbeddedFormat formats}.

@@ -2,17 +2,10 @@ package com.networknt.kafka.producer;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.collect.ImmutableList;
-import io.confluent.kafka.schemaregistry.ParsedSchema;
-import io.confluent.kafka.serializers.subject.RecordNameStrategy;
-import io.confluent.kafka.serializers.subject.TopicNameStrategy;
-import io.confluent.kafka.serializers.subject.TopicRecordNameStrategy;
-import io.confluent.kafka.serializers.subject.strategy.SubjectNameStrategy;
+import com.networknt.kafka.entity.EmbeddedFormat;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.Null;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 

@@ -15,6 +15,7 @@
 package com.networknt.kafka.producer;
 
 import io.confluent.kafka.serializers.subject.strategy.SubjectNameStrategy;
+import com.networknt.kafka.entity.EmbeddedFormat;
 
 import java.util.Optional;
 

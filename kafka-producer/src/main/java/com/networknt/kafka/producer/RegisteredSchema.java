@@ -1,6 +1,7 @@
 package com.networknt.kafka.producer;
 
 import io.confluent.kafka.schemaregistry.ParsedSchema;
+import com.networknt.kafka.entity.EmbeddedFormat;
 
 import java.util.Objects;
 

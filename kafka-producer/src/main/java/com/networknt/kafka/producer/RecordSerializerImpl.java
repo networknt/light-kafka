@@ -4,6 +4,7 @@ package com.networknt.kafka.producer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.protobuf.ByteString;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
+import com.networknt.kafka.entity.EmbeddedFormat;
 
 import java.util.HashMap;
 import java.util.Optional;

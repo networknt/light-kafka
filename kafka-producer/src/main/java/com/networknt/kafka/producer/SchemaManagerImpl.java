@@ -7,6 +7,7 @@ import io.confluent.kafka.schemaregistry.client.rest.entities.Schema;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.subject.strategy.SubjectNameStrategy;
 import org.apache.kafka.common.errors.SerializationException;
+import com.networknt.kafka.entity.EmbeddedFormat;
 
 import java.io.IOException;
 import java.util.Optional;

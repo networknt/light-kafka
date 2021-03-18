@@ -115,6 +115,7 @@
 
 
     <modules>
+        <module>kafka-entity</module>
         <module>kafka-common</module>
         <module>kafka-consumer</module>
         <module>kafka-producer</module>
@@ -124,6 +125,11 @@
     <dependencyManagement>
         <dependencies>
             <!-- Modules in this project -->
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>kafka-entity</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>kafka-common</artifactId>

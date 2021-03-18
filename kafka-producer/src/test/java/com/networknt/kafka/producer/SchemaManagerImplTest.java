@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.apache.kafka.common.errors.SerializationException;
 import org.junit.jupiter.api.*;
+import com.networknt.kafka.entity.EmbeddedFormat;
 
 public class SchemaManagerImplTest {
     private static final String TOPIC_NAME = "topic-1";

@@ -31,7 +31,7 @@ import io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer;
 import org.apache.avro.AvroTypeException;
 import org.apache.kafka.common.errors.SerializationException;
 import org.everit.json.schema.ValidationException;
-
+import com.networknt.kafka.entity.EmbeddedFormat;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
