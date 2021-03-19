@@ -55,6 +55,7 @@ public class KafkaConsumerManager {
   private static final String CONSUMER_CONFIG_EXCEPTION = "ERR12201";
   private static final String CONSUMER_ALREADY_EXISTS = "ERR12202";
   private static final String INVALID_EMBEDDED_FORMAT = "ERR12203";
+  private static final String CONSUMER_FORMAT_MISMATCH = "ERR12204";
 
   private final KafkaConsumerConfig config = (KafkaConsumerConfig) Config.getInstance().getJsonObjectConfig(KafkaConsumerConfig.CONFIG_NAME, KafkaConsumerConfig.class);
   private final Clock clock = Clock.systemUTC();
@@ -282,13 +283,14 @@ public class KafkaConsumerManager {
     final KafkaConsumerState state;
     try {
       state = getConsumerInstance(group, instance);
-    } catch (RuntimeException e) {
+    } catch (FrameworkException e) {
       callback.onCompletion(null, e);
       return;
     }
 
     if (!consumerStateType.isInstance(state)) {
-      callback.onCompletion(null, new RuntimeException("Consumer Format Mismatch"));
+      Status status = new Status(CONSUMER_FORMAT_MISMATCH);
+      callback.onCompletion(null, new FrameworkException(status));
       return;
     }
 
@@ -384,7 +386,7 @@ public class KafkaConsumerManager {
         } else {
           log.trace("Finished executing consumer read task ({})", taskState.task);
         }
-      } catch (Exception e) {
+      } catch (FrameworkException e) {
         log.error("Failed to read records from consumer {} while executing read task ({}). {}",
                   taskState.consumerState.getId().toString(), taskState.task, e);
         taskState.callback.onCompletion(null, e);

@@ -16,10 +16,11 @@
 package com.networknt.kafka.consumer;
 
 
+import com.networknt.exception.FrameworkException;
 import com.networknt.kafka.entity.ConsumerRecord;
 
 import java.util.List;
 
 public interface ConsumerReadCallback<K, V> {
-  void onCompletion(List<ConsumerRecord<K, V>> records, Exception e);
+  void onCompletion(List<ConsumerRecord<K, V>> records, FrameworkException e);
 }

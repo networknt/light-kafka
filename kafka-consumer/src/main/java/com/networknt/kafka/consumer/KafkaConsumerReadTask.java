@@ -15,11 +15,15 @@
 
 package com.networknt.kafka.consumer;
 
+import com.networknt.exception.FrameworkException;
 import com.networknt.kafka.common.KafkaConsumerConfig;
 import com.networknt.kafka.entity.ConsumerRecord;
+import com.networknt.status.Status;
+import jdk.jshell.Snippet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -40,6 +44,7 @@ import java.util.Vector;
 class KafkaConsumerReadTask<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT> {
 
   private static final Logger log = LoggerFactory.getLogger(KafkaConsumerReadTask.class);
+  private static final String UNEXPECTED_CONSUMER_READ_EXCEPTION = "ERR12205";
 
   private final KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT> parent;
   private final Duration requestTimeout;
@@ -129,7 +134,8 @@ class KafkaConsumerReadTask<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT> {
         finish();
       }
     } catch (Exception e) {
-      finish(e);
+      Status status = new Status(UNEXPECTED_CONSUMER_READ_EXCEPTION, this);
+      finish(new FrameworkException(status));
       log.error("Unexpected exception in consumer read task id={} ", this, e);
     }
   }
@@ -186,7 +192,7 @@ class KafkaConsumerReadTask<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT> {
     finish(null);
   }
 
-  private void finish(Exception e) {
+  private void finish(FrameworkException e) {
     log.trace("Finishing KafkaConsumerReadTask id={}", this, e);
     try {
       callback.onCompletion((e == null) ? messages : null, e);
