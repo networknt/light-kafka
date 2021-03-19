@@ -18,6 +18,8 @@ package com.networknt.kafka.producer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Message;
+import com.networknt.exception.FrameworkException;
+import com.networknt.status.Status;
 import io.confluent.kafka.schemaregistry.avro.AvroSchema;
 import io.confluent.kafka.schemaregistry.avro.AvroSchemaUtils;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
@@ -32,6 +34,9 @@ import org.apache.avro.AvroTypeException;
 import org.apache.kafka.common.errors.SerializationException;
 import org.everit.json.schema.ValidationException;
 import com.networknt.kafka.entity.EmbeddedFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -39,9 +44,12 @@ import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 
 public class SchemaRecordSerializer {
+    private Logger logger = LoggerFactory.getLogger(SchemaRecordSerializer.class);
+
     private final AvroSerializer avroSerializer;
     private final JsonSchemaSerializer jsonschemaSerializer;
     private final ProtobufSerializer protobufSerializer;
+    private final String SERIALIZE_SCHEMA_EXCEPTION = "ERR12206";
 
     public SchemaRecordSerializer(
             SchemaRegistryClient schemaRegistryClient,
@@ -91,7 +99,9 @@ public class SchemaRecordSerializer {
         try {
             record = AvroSchemaUtils.toObject(data, avroSchema);
         } catch (AvroTypeException | IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            logger.error("Exception for data: " + data.toString() + " with schemaId: " + schema.getSchemaId());
+            Status status = new Status(SERIALIZE_SCHEMA_EXCEPTION, "avro", e.getMessage());
+            throw new FrameworkException(status);
         }
         return ByteString.copyFrom(avroSerializer.serialize(subject, avroSchema, record));
     }
@@ -102,7 +112,9 @@ public class SchemaRecordSerializer {
         try {
             record = JsonSchemaUtils.toObject(data, jsonSchema);
         } catch (IOException | ValidationException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            logger.error("Exception for data: " + data.toString() + " with schemaId: " + schema.getSchemaId());
+            Status status = new Status(SERIALIZE_SCHEMA_EXCEPTION, "jsonschema", e.getMessage());
+            throw new FrameworkException(status);
         }
         return ByteString.copyFrom(jsonschemaSerializer.serialize(subject, jsonSchema, record));
     }
@@ -114,7 +126,9 @@ public class SchemaRecordSerializer {
         try {
             record = (Message) ProtobufSchemaUtils.toObject(data, protobufSchema);
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            logger.error("Exception for data: " + data.toString() + " with schemaId: " + schema.getSchemaId());
+            Status status = new Status(SERIALIZE_SCHEMA_EXCEPTION, "protobuf", e.getMessage());
+            throw new FrameworkException(status);
         }
         return ByteString.copyFrom(
                 protobufSerializer.serialize(subject, topicName, protobufSchema, record, isKey));
