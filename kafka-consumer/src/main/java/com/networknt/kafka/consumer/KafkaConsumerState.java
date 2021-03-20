@@ -86,15 +86,15 @@ public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, Cli
    * Commit the given list of offsets
    */
   public synchronized List<TopicPartitionOffset> commitOffsets(
-      String async,
+      boolean async,
       ConsumerOffsetCommitRequest offsetCommitRequest
   ) {
     // If no offsets are given, then commit all the records read so far
     if (offsetCommitRequest == null) {
-      if (async == null) {
-        consumer.commitSync();
-      } else {
+      if (async) {
         consumer.commitAsync();
+      } else {
+        consumer.commitSync();
       }
     } else {
       Map<TopicPartition, OffsetAndMetadata> offsetMap =

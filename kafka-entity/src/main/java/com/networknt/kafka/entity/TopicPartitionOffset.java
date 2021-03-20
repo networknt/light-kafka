@@ -13,9 +13,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.networknt.kafka.consumer;
-
-import java.util.Objects;
+package com.networknt.kafka.entity;
 
 public class TopicPartitionOffset {
   String topic;
@@ -23,7 +21,7 @@ public class TopicPartitionOffset {
   long consumed;
   long committed;
 
-  public TopicPartitionOffset() {
+  TopicPartitionOffset() {
   }
 
   public TopicPartitionOffset(String topic, int partition, long consumed, long committed) {
@@ -63,19 +61,6 @@ public class TopicPartitionOffset {
 
   public void setCommitted(long committed) {
     this.committed = committed;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    TopicPartitionOffset that = (TopicPartitionOffset) o;
-    return partition == that.partition && consumed == that.consumed && committed == that.committed && Objects.equals(topic, that.topic);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(topic, partition, consumed, committed);
   }
 
   public static TopicPartitionOffset create(

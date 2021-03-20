@@ -23,6 +23,7 @@ import com.networknt.kafka.common.converter.JsonSchemaConverter;
 import com.networknt.kafka.common.converter.ProtobufConverter;
 import com.networknt.kafka.entity.*;
 import com.networknt.status.Status;
+import io.undertow.server.HttpServerExchange;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
@@ -56,6 +57,7 @@ public class KafkaConsumerManager {
   private static final String CONSUMER_ALREADY_EXISTS = "ERR12202";
   private static final String INVALID_EMBEDDED_FORMAT = "ERR12203";
   private static final String CONSUMER_FORMAT_MISMATCH = "ERR12204";
+  private static final String FAILED_TO_COMMIT_OFFSETS = "ERR12207";
 
   private final KafkaConsumerConfig config = (KafkaConsumerConfig) Config.getInstance().getJsonObjectConfig(KafkaConsumerConfig.CONFIG_NAME, KafkaConsumerConfig.class);
   private final Clock clock = Clock.systemUTC();
@@ -412,18 +414,17 @@ public class KafkaConsumerManager {
   }
 
   public interface CommitCallback {
-
-    public void onCompletion(List<TopicPartitionOffset> offsets, Exception e);
+    void onCompletion(List<TopicPartitionOffset> offsets, FrameworkException e);
   }
 
   public Future commitOffsets(
-      String group, String instance, final String async,
-      final ConsumerOffsetCommitRequest offsetCommitRequest, final CommitCallback callback
+          String group, String instance, final boolean async,
+          final ConsumerOffsetCommitRequest offsetCommitRequest, final CommitCallback callback
   ) {
     final KafkaConsumerState state;
     try {
       state = getConsumerInstance(group, instance);
-    } catch (RuntimeException e) {
+    } catch (FrameworkException e) {
       callback.onCompletion(null, e);
       return null;
     }
@@ -435,8 +436,9 @@ public class KafkaConsumerManager {
           List<TopicPartitionOffset> offsets = state.commitOffsets(async, offsetCommitRequest);
           callback.onCompletion(offsets, null);
         } catch (Exception e) {
-          log.error("Failed to commit offsets for consumer " + state.getId().toString(), e);
-          callback.onCompletion(null, e);
+          //log.error("Failed to commit offsets for consumer " + state.getId().toString(), e);
+          Status status = new Status(FAILED_TO_COMMIT_OFFSETS, state.getId().toString(), e.toString());
+          callback.onCompletion(null, new FrameworkException(status, e));
         } finally {
           state.updateExpiration();
         }
