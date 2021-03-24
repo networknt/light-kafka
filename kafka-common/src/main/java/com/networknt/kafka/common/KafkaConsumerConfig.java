@@ -25,6 +25,7 @@ public class KafkaConsumerConfig {
     private int fetchMinBytes;
     private int iteratorBackoffMs;
     private String schemaRegistryUrl;
+    private String topic;
 
     public KafkaConsumerConfig() {
     }
@@ -163,6 +164,14 @@ public class KafkaConsumerConfig {
 
     public void setSchemaRegistryUrl(String schemaRegistryUrl) {
         this.schemaRegistryUrl = schemaRegistryUrl;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 
     public Properties getConsumerProperties() {

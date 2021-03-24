@@ -7,7 +7,12 @@ autoCommitIntervalMs: 1000
 autoOffsetReset: earliest
 keyDeserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
 valueDeserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+
+# the topic that is going to be consumed. For callback consumer only in the kafka-sidecar.
+topic: test1
+# The default consumer group. For callback consumer only in the kafka-sidecar.
 groupId: group1
+
 # default max consumer threads to 50.
 maxConsumerThreads: 50
 # a unique id for the server instance, if running in a Kubernetes cluster, use the container id environment variable
