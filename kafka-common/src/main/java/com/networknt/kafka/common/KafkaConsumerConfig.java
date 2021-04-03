@@ -26,6 +26,7 @@ public class KafkaConsumerConfig {
     private int iteratorBackoffMs;
     private String schemaRegistryUrl;
     private String topic;
+    private int waitPeriod;
 
     public KafkaConsumerConfig() {
     }
@@ -172,6 +173,14 @@ public class KafkaConsumerConfig {
 
     public void setTopic(String topic) {
         this.topic = topic;
+    }
+
+    public int getWaitPeriod() {
+        return waitPeriod;
+    }
+
+    public void setWaitPeriod(int waitPeriod) {
+        this.waitPeriod = waitPeriod;
     }
 
     public Properties getConsumerProperties() {

@@ -1,5 +1,7 @@
 package com.networknt.kafka.producer;
 
+import com.networknt.exception.FrameworkException;
+import com.networknt.status.Status;
 import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.client.SchemaMetadata;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
@@ -17,6 +19,14 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 
 public class SchemaManagerImpl implements SchemaManager {
+    private static final String FORMAT_WITH_SCHEMA_ID = "ERR12209";
+    private static final String VERSION_WITH_SCHEMA_ID = "ERR12210";
+    private static final String SCHEMA_WITH_SCHEMA_ID = "ERR12211";
+    private static final String FORMAT_WITH_SCHEMA_VERSION = "ERR12212";
+    private static final String SCHEMA_WITH_SCHEMA_VERSION = "ERR12213";
+    private static final String RAW_SCHEMA_WITHOUT_FORMAT = "ERR12214";
+    private static final String FORMAT_WITH_SUBJECT = "ERR12215";
+
     private final SchemaRegistryClient schemaRegistryClient;
     private final SubjectNameStrategy defaultSubjectNameStrategy;
 
@@ -39,9 +49,18 @@ public class SchemaManagerImpl implements SchemaManager {
             boolean isKey) {
         // (subject|subjectNameStrategy)?, schemaId
         if (schemaId.isPresent()) {
-            checkArgument(!format.isPresent());
-            checkArgument(!schemaVersion.isPresent());
-            checkArgument(!rawSchema.isPresent());
+            if(format.isPresent()) {
+                Status status = new Status(FORMAT_WITH_SCHEMA_ID, isKey ? "key" : "value");
+                throw new FrameworkException(status);
+            }
+            if(schemaVersion.isPresent()) {
+                Status status = new Status(VERSION_WITH_SCHEMA_ID, isKey ? "key" : "value");
+                throw new FrameworkException(status);
+            }
+            if(rawSchema.isPresent()) {
+                Status status = new Status(SCHEMA_WITH_SCHEMA_ID, isKey ? "key" : "value");
+                throw new FrameworkException(status);
+            }
             return getSchemaFromSchemaId(
                     topicName,
                     subject,
@@ -52,8 +71,14 @@ public class SchemaManagerImpl implements SchemaManager {
 
         // (subject|subjectNameStrategy)?, schemaVersion
         if (schemaVersion.isPresent()) {
-            checkArgument(!format.isPresent());
-            checkArgument(!rawSchema.isPresent());
+            if(format.isPresent()) {
+                Status status = new Status(FORMAT_WITH_SCHEMA_VERSION, isKey ? "key" : "value");
+                throw new FrameworkException(status);
+            }
+            if(rawSchema.isPresent()) {
+                Status status = new Status(SCHEMA_WITH_SCHEMA_VERSION, isKey ? "key" : "value");
+                throw new FrameworkException(status);
+            }
             return getSchemaFromSchemaVersion(
                     topicName,
                     subject,
@@ -64,7 +89,10 @@ public class SchemaManagerImpl implements SchemaManager {
 
         // format, (subject|subjectNameStrategy)?, rawSchema
         if (rawSchema.isPresent()) {
-            checkArgument(format.isPresent());
+            if(!format.isPresent()) {
+                Status status = new Status(RAW_SCHEMA_WITHOUT_FORMAT, isKey ? "key" : "value");
+                throw new FrameworkException(status);
+            }
             return getSchemaFromRawSchema(
                     topicName,
                     format.get(),
@@ -75,7 +103,10 @@ public class SchemaManagerImpl implements SchemaManager {
         }
 
         // (subject|subjectNameStrategy)?
-        checkArgument(!format.isPresent());
+        if(format.isPresent()) {
+            Status status = new Status(FORMAT_WITH_SUBJECT, isKey ? "key" : "value");
+            throw new FrameworkException(status);
+        }
         return findLatestSchema(topicName, subject, subjectNameStrategy, isKey);
     }
 
