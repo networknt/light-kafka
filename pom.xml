@@ -99,8 +99,8 @@
         <version.light-4j>2.0.26-SNAPSHOT</version.light-4j>
         <version.jackson>2.12.1</version.jackson>
         <version.slf4j>1.7.25</version.slf4j>
-        <version.kafka>2.5.0</version.kafka>
-        <version.confluent>5.3.3</version.confluent>
+        <version.kafka>2.7.0</version.kafka>
+        <version.confluent>6.1.0</version.confluent>
         <version.logback>1.2.3</version.logback>
         <version.junit>5.6.0</version.junit>
         <version.undertow>2.2.4.Final</version.undertow>
@@ -115,6 +115,7 @@
 
 
     <modules>
+        <module>kafka-entity</module>
         <module>kafka-common</module>
         <module>kafka-consumer</module>
         <module>kafka-producer</module>
@@ -124,6 +125,11 @@
     <dependencyManagement>
         <dependencies>
             <!-- Modules in this project -->
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>kafka-entity</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>kafka-common</artifactId>
@@ -224,6 +230,11 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka_2.13</artifactId>
+                <version>${version.kafka}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-clients</artifactId>
                 <version>${version.kafka}</version>
             </dependency>
@@ -239,7 +250,22 @@
             </dependency>
             <dependency>
                 <groupId>io.confluent</groupId>
-                <artifactId>kafka-schema-registry-client</artifactId>
+                <artifactId>kafka-avro-serializer</artifactId>
+                <version>${version.confluent}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-json-serializer</artifactId>
+                <version>${version.confluent}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-json-schema-serializer</artifactId>
+                <version>${version.confluent}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-protobuf-serializer</artifactId>
                 <version>${version.confluent}</version>
             </dependency>
 

@@ -64,6 +64,10 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
+            <artifactId>kafka-entity</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
             <artifactId>kafka-common</artifactId>
         </dependency>
         <dependency>
@@ -92,7 +96,19 @@
         </dependency>
         <dependency>
             <groupId>io.confluent</groupId>
-            <artifactId>kafka-schema-registry-client</artifactId>
+            <artifactId>kafka-avro-serializer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-json-serializer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-json-schema-serializer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-protobuf-serializer</artifactId>
         </dependency>
 
         <dependency>

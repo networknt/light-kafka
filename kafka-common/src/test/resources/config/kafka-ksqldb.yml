@@ -1,0 +1,13 @@
+# ksqlDB host
+ksqldbHost: localhost
+# ksqlDB port
+ksqldbPort: 8088
+# query for the ksqldb. It can be a table or stream.
+query: SELECT * from TEST EMIT CHANGES;
+# backend API URL
+backendUrl: https://localhost:8444
+# backend API path
+backendPath: /kafka/ksqldb
+# stream query properties
+properties:
+  auto.offset.reset: earliest

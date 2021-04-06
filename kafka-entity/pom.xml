@@ -25,50 +25,18 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>kafka-producer</artifactId>
+    <artifactId>kafka-entity</artifactId>
     <packaging>jar</packaging>
-    <description>A module to push events to a Kafka topic.</description>
+    <description>The kafka-sidecar entities that will be shared by the kafka-sidecar client.</description>
 
     <dependencies>
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>config</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>utility</artifactId>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>http-string</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>status</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>handler</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>audit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>kafka-entity</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>kafka-common</artifactId>
+            <artifactId>config</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -77,18 +45,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.undertow</groupId>
-            <artifactId>undertow-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_2.13</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.avro</groupId>
