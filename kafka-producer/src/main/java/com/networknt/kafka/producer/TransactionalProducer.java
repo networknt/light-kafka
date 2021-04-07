@@ -36,23 +36,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class TransactionalProducer implements Runnable, QueuedLightProducer {
     static private final Logger logger = LoggerFactory.getLogger(TransactionalProducer.class);
-    static private Properties producerProps;
     static String callerId = "unknown";
     static final KafkaProducerConfig config = (KafkaProducerConfig) Config.getInstance().getJsonObjectConfig(KafkaProducerConfig.CONFIG_NAME, KafkaProducerConfig.class);
     static {
-        producerProps = new Properties();
-        producerProps.put("bootstrap.servers", config.getBootstrapServers());
-        producerProps.put("acks", config.getAcks());
-        producerProps.put("retries", config.getRetries());
-        producerProps.put("batch.size", config.getBatchSize());
-        producerProps.put("linger.ms", config.getLingerMs());
-        producerProps.put("buffer.memory", config.getBufferMemory());
-        producerProps.put("key.serializer", config.getKeySerializer());
-        producerProps.put("value.serializer", config.getValueSerializer());
-        producerProps.put("transactional.id", config.getTransactionId()); // each kafka producer instance should have a unique transactionId
-        producerProps.put("transaction.timeout.ms", config.getTransactionTimeoutMs());
-        producerProps.put("transactional.id.expiration.ms", config.getTransactionTimeoutMs());
-        producerProps.put("enable.idempotence", config.isEnableIdempotence()); //ensuring idempotency with transaction.id to deduplicate any message this producer sends.
         if(config.isInjectCallerId()) {
             Map<String, Object> serverConfig = Config.getInstance().getJsonMapConfigNoCache("server");
             if(serverConfig != null) {
@@ -293,18 +279,18 @@ public class TransactionalProducer implements Runnable, QueuedLightProducer {
      * obtain new producerId and epoch counters).
      */
     private FlinkKafkaProducer<byte[], byte[]> createTransactionalProducer() throws TransactionalKafkaException {
-        FlinkKafkaProducer<byte[], byte[]> producer = initTransactionalProducer(config.getTransactionId());
+        FlinkKafkaProducer<byte[], byte[]> producer = initTransactionalProducer((String)config.getProperties().get("transactional.id"));
         producer.initTransactions();
         return producer;
     }
 
     private FlinkKafkaProducer<byte[], byte[]> initTransactionalProducer(String transactionalId) {
-        producerProps.put("transactional.id", transactionalId);
+        config.getProperties().put("transactional.id", transactionalId);
         return initProducer();
     }
 
     private FlinkKafkaProducer<byte[], byte[]> initProducer() {
-        FlinkKafkaProducer<byte[], byte[]> producer = new FlinkKafkaProducer<>(producerProps);
+        FlinkKafkaProducer<byte[], byte[]> producer = new FlinkKafkaProducer<>(config.getProperties());
         logger.info("Starting FlinkKafkaProducer");
         return producer;
     }

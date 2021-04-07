@@ -33,25 +33,13 @@ import java.util.Properties;
  */
 public class SidecarProducer implements NativeLightProducer {
     static private final Logger logger = LoggerFactory.getLogger(SidecarProducer.class);
-    static private Properties producerProps;
     public static final KafkaProducerConfig config = (KafkaProducerConfig) Config.getInstance().getJsonObjectConfig(KafkaProducerConfig.CONFIG_NAME, KafkaProducerConfig.class);
-    static {
-        producerProps = new Properties();
-        producerProps.put("bootstrap.servers", config.getBootstrapServers());
-        producerProps.put("acks", config.getAcks());
-        producerProps.put("retries", config.getRetries());
-        producerProps.put("batch.size", config.getBatchSize());
-        producerProps.put("linger.ms", config.getLingerMs());
-        producerProps.put("buffer.memory", config.getBufferMemory());
-        producerProps.put("key.serializer", config.getKeySerializer());
-        producerProps.put("value.serializer", config.getValueSerializer());
-    }
 
     public Producer<byte[], byte[]> producer;
 
     @Override
     public void open() {
-        producer = new KafkaProducer<>(producerProps, new ByteArraySerializer(), new ByteArraySerializer());
+        producer = new KafkaProducer<>(config.getProperties(), new ByteArraySerializer(), new ByteArraySerializer());
     }
 
     @Override

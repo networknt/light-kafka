@@ -1,21 +1,10 @@
 package com.networknt.kafka.common;
 
-import java.util.Properties;
-
-import static org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.MAX_POLL_RECORDS_CONFIG;
+import java.util.Map;
 
 public class KafkaConsumerConfig {
     public static final String CONFIG_NAME = "kafka-consumer";
 
-    private String bootstrapServers;
-    private String maxPollRecords;
-    private String isolationLevel;
-    private boolean enableAutoCommit;
-    private int autoCommitIntervalMs;
-    private String autoOffsetReset;
-    private String keyDeserializer;
-    private String valueDeserializer;
     private String groupId;
     private int maxConsumerThreads;
     private String serverId;
@@ -28,63 +17,9 @@ public class KafkaConsumerConfig {
     private String topic;
     private int waitPeriod;
 
+    private Map<String, Object> properties;
+
     public KafkaConsumerConfig() {
-    }
-
-    public String getBootstrapServers() {
-        return bootstrapServers;
-    }
-
-    public void setBootstrapServers(String bootstrapServers) {
-        this.bootstrapServers = bootstrapServers;
-    }
-
-    public String getMaxPollRecords() {
-        return maxPollRecords;
-    }
-
-    public void setMaxPollRecords(String maxPollRecords) {
-        this.maxPollRecords = maxPollRecords;
-    }
-
-    public String getIsolationLevel() {
-        return isolationLevel;
-    }
-
-    public void setIsolationLevel(String isolationLevel) {
-        this.isolationLevel = isolationLevel;
-    }
-
-    public boolean isEnableAutoCommit() {
-        return enableAutoCommit;
-    }
-
-    public void setEnableAutoCommit(boolean enableAutoCommit) {
-        this.enableAutoCommit = enableAutoCommit;
-    }
-
-    public String getKeyDeserializer() {
-        return keyDeserializer;
-    }
-
-    public void setKeyDeserializer(String keyDeserializer) {
-        this.keyDeserializer = keyDeserializer;
-    }
-
-    public String getValueDeserializer() {
-        return valueDeserializer;
-    }
-
-    public void setValueDeserializer(String valueDeserializer) {
-        this.valueDeserializer = valueDeserializer;
-    }
-
-    public int getAutoCommitIntervalMs() {
-        return autoCommitIntervalMs;
-    }
-
-    public void setAutoCommitIntervalMs(int autoCommitIntervalMs) {
-        this.autoCommitIntervalMs = autoCommitIntervalMs;
     }
 
     public String getGroupId() {
@@ -93,14 +28,6 @@ public class KafkaConsumerConfig {
 
     public void setGroupId(String groupId) {
         this.groupId = groupId;
-    }
-
-    public String getAutoOffsetReset() {
-        return autoOffsetReset;
-    }
-
-    public void setAutoOffsetReset(String autoOffsetReset) {
-        this.autoOffsetReset = autoOffsetReset;
     }
 
     public int getMaxConsumerThreads() {
@@ -183,13 +110,12 @@ public class KafkaConsumerConfig {
         this.waitPeriod = waitPeriod;
     }
 
-    public Properties getConsumerProperties() {
-        Properties consumerProps = new Properties();
-        consumerProps.setProperty(BOOTSTRAP_SERVERS_CONFIG, getBootstrapServers());
-        consumerProps.setProperty(MAX_POLL_RECORDS_CONFIG, getMaxPollRecords());
-        consumerProps.setProperty("schema.registry.url", getSchemaRegistryUrl());
-        // TODO add other properties
-        return consumerProps;
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
     }
 
 }
