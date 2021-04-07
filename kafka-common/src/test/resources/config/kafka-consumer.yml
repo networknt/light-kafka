@@ -1,18 +1,15 @@
-bootstrapServers: localhost:9092
-# ensures poll is frequently needed and called
-maxPollRecords: 30
-isolationLevel: read_committed
-enableAutoCommit: false
-autoCommitIntervalMs: 1000
-autoOffsetReset: earliest
-keyDeserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
-valueDeserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+# Generic Kafka Consumer Configuration
+properties:
+  bootstrap.servers: localhost:9092
+  key.deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+  value.deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+  enable.auto.commit: false
+  auto.offset.reset: earliest
+  group.id: group1
 
 # Callback Consumer Specific Configuration
 # the topic that is going to be consumed. For callback consumer only in the kafka-sidecar. example: test1,test2
 topic: test1
-# The default consumer group. For callback consumer only in the kafka-sidecar.
-groupId: group1
 # Waiting period in millisecond to poll another batch
 waitPeriod: 1000
 

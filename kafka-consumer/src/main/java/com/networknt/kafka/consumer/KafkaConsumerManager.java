@@ -170,7 +170,8 @@ public class KafkaConsumerManager {
       // ID), and others we want to ensure get overridden (e.g. consumer.timeout.ms, which we
       // intentionally name differently in our own configs).
       //Properties props = (Properties) config.getOriginalProperties().clone();
-      Properties props = config.getConsumerProperties();
+      Properties props = new Properties();
+      props.putAll(config.getProperties());
       props.setProperty("group.id", group);
       // This ID we pass here has to be unique, only pass a value along if the deprecated ID field
       // was passed in. This generally shouldn't be used, but is maintained for compatibility.

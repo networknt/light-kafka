@@ -94,8 +94,8 @@ public class FlinkKafkaProducer<K, V> implements Producer<K, V> {
 
     private final String transactionalId;
 
-    public FlinkKafkaProducer(Properties properties) {
-        transactionalId = properties.getProperty(ProducerConfig.TRANSACTIONAL_ID_CONFIG);
+    public FlinkKafkaProducer(Map<String, Object> properties) {
+        transactionalId = (String)properties.get(ProducerConfig.TRANSACTIONAL_ID_CONFIG);
         kafkaProducer = new KafkaProducer<>(properties);
     }
 
