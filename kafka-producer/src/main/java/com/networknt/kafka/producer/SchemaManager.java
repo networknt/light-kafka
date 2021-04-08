@@ -55,6 +55,15 @@ public interface SchemaManager {
      * ID or schema version will result in {@link
      * org.apache.kafka.common.errors.SerializationException}, as it will any other Schema Registry
      * related error. Invalid combination of options will result in {@link IllegalArgumentException}.
+     * @return RegisteredSchema
+     * @param topicName the topic name
+     * @param format the format
+     * @param subject the subject
+     * @param subjectNameStrategy subject name strategy
+     * @param schemaId schema id
+     * @param schemaVersion schema version
+     * @param rawSchema raw schema
+     * @param isKey indicator if it is the key
      */
     RegisteredSchema getSchema(
             String topicName,
