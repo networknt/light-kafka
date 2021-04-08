@@ -31,6 +31,9 @@ public final class CompletableFutures {
      *
      * <p>If any of the {@code futures} fail, the resulting {@code CompletableFuture} will complete
      * exceptionally with that future's failure.
+     * @param futures a list of futures
+     * @param <T> paramter
+     * @return completableFuture of list
      */
     public static <T> CompletableFuture<List<T>> allAsList(List<CompletableFuture<T>> futures) {
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
@@ -41,6 +44,9 @@ public final class CompletableFutures {
     /**
      * Returns a {@link CompletableFuture} that is completed exceptionally with the given {@code
      * exception}.
+     * @param exception Throwable
+     * @param <T> parameter
+     * @return completableFuture
      */
     public static <T> CompletableFuture<T> failedFuture(Throwable exception) {
         CompletableFuture<T> future = new CompletableFuture<>();
@@ -56,6 +62,12 @@ public final class CompletableFutures {
      * same value. If {@code future} completes exceptionally with an {@code exceptionClass}, the
      * returned future completes with the result of the {@code handler}. Otherwise, the returned
      * future will complete exceptionally with the same exception as {@code future}.
+     * @param future the completable future
+     * @param exceptionClass exception class
+     * @param handler the function handler
+     * @param <T> parameter
+     * @param <E> parameter
+     * @return T
      */
     public static <T, E extends Throwable> CompletableFuture<T> catchingCompose(
             CompletableFuture<T> future,

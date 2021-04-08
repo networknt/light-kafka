@@ -29,6 +29,12 @@ public interface RecordSerializer {
      * Serializes the given {@code data} into a {@link byte[]}.
      *
      * <p>Returns {@link Optional#empty()} if {@code data} {@link JsonNode#isNull() is null}.
+     * @return Optional ByteString
+     * @param format the format
+     * @param topicName the topic name
+     * @param schema the optional schema
+     * @param data the json node
+     * @param isKey the key indicator
      */
     Optional<ByteString> serialize(
             EmbeddedFormat format,
