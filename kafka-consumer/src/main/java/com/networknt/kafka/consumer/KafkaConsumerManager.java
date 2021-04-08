@@ -172,7 +172,9 @@ public class KafkaConsumerManager {
       //Properties props = (Properties) config.getOriginalProperties().clone();
       Properties props = new Properties();
       props.putAll(config.getProperties());
-      props.setProperty("group.id", group);
+      if(props.getProperty("group.id") == null && group != null) {
+        props.setProperty("group.id", group);
+      }
       // This ID we pass here has to be unique, only pass a value along if the deprecated ID field
       // was passed in. This generally shouldn't be used, but is maintained for compatibility.
       if (instanceConfig.getId() != null) {
