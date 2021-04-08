@@ -10,6 +10,10 @@ properties:
 # Callback Consumer Specific Configuration
 # the topic that is going to be consumed. For callback consumer only in the kafka-sidecar. example: test1,test2
 topic: test1
+# the format of the key optional
+keyFormat: jsonschema
+# the format of the value optional
+valueFormat: jsonschema
 # Waiting period in millisecond to poll another batch
 waitPeriod: 1000
 

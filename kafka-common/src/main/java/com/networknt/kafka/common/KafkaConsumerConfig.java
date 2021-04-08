@@ -16,6 +16,8 @@ public class KafkaConsumerConfig {
     private String schemaRegistryUrl;
     private String topic;
     private int waitPeriod;
+    private String keyFormat;
+    private String valueFormat;
 
     private Map<String, Object> properties;
 
@@ -118,4 +120,19 @@ public class KafkaConsumerConfig {
         this.properties = properties;
     }
 
+    public String getKeyFormat() {
+        return keyFormat;
+    }
+
+    public void setKeyFormat(String keyFormat) {
+        this.keyFormat = keyFormat;
+    }
+
+    public String getValueFormat() {
+        return valueFormat;
+    }
+
+    public void setValueFormat(String valueFormat) {
+        this.valueFormat = valueFormat;
+    }
 }
