@@ -9,26 +9,26 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class ProduceRequest {
-    @JsonProperty("key_format")
+    @JsonProperty("keyFormat")
     Optional<EmbeddedFormat> keyFormat;
-    @JsonProperty("key_schema")
+    @JsonProperty("keySchema")
     Optional<String> keySchema;
-    @JsonProperty("key_schema_id")
+    @JsonProperty("keySchemaId")
     Optional<Integer> keySchemaId;
-    @JsonProperty("key_schema_version")
+    @JsonProperty("keySchemaVersion")
     Optional<Integer> keySchemaVersion;
-    @JsonProperty("key_schema_subject")
+    @JsonProperty("keySchemaSubject")
     Optional<String> keySchemaSubject;
 
-    @JsonProperty("value_format")
+    @JsonProperty("valueFormat")
     Optional<EmbeddedFormat> valueFormat;
-    @JsonProperty("value_schema")
+    @JsonProperty("valueSchema")
     Optional<String> valueSchema;
-    @JsonProperty("value_schema_id")
+    @JsonProperty("valueSchemaId")
     Optional<Integer> valueSchemaId;
-    @JsonProperty("value_schema_version")
+    @JsonProperty("valueSchemaVersion")
     Optional<Integer> valueSchemaVersion;
-    @JsonProperty("value_schema_subject")
+    @JsonProperty("valueSchemaSubject")
     Optional<String> valueSchemaSubject;
 
     @JsonProperty("records")
@@ -91,16 +91,16 @@ public class ProduceRequest {
     @JsonCreator
     static ProduceRequest fromJson(
             @JsonProperty("records") List<ProduceRecord> records,
-            @JsonProperty("key_format") EmbeddedFormat keyFormat,
-            @JsonProperty("key_schema_id") Integer keySchemaId,
-            @JsonProperty("key_schema") String keySchema,
-            @JsonProperty("key_schema_version") Integer keySchemaVersion,
-            @JsonProperty("key_schema_subject") String keySchemaSubject,
-            @JsonProperty("value_format") EmbeddedFormat valueFormat,
-            @JsonProperty("value_schema_id") Integer valueSchemaId,
-            @JsonProperty("value_schema") String valueSchema,
-            @JsonProperty("value_schema_version") Integer valueSchemaVersion,
-            @JsonProperty("value_schema_subject") String valueSchemaSubject
+            @JsonProperty("keyFormat") EmbeddedFormat keyFormat,
+            @JsonProperty("keySchemaId") Integer keySchemaId,
+            @JsonProperty("keySchema") String keySchema,
+            @JsonProperty("keySchemaVersion") Integer keySchemaVersion,
+            @JsonProperty("keySchemaSubject") String keySchemaSubject,
+            @JsonProperty("valueFormat") EmbeddedFormat valueFormat,
+            @JsonProperty("valueSchemaId") Integer valueSchemaId,
+            @JsonProperty("valueSchema") String valueSchema,
+            @JsonProperty("valueSchemaVersion") Integer valueSchemaVersion,
+            @JsonProperty("valueSchemaSubject") String valueSchemaSubject
             ) {
         return create(
                 keyFormat,
