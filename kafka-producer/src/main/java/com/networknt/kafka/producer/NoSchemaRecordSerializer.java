@@ -25,15 +25,15 @@ import java.util.Map;
 import java.util.Optional;
 import com.networknt.kafka.entity.EmbeddedFormat;
 
-final class NoSchemaRecordSerializer {
+public class NoSchemaRecordSerializer {
 
     private final JsonSerializer jsonSerializer;
 
-    NoSchemaRecordSerializer(Map<String, Object> jsonSerializerConfigs) {
+    public NoSchemaRecordSerializer(Map<String, Object> jsonSerializerConfigs) {
         jsonSerializer = new JsonSerializer(jsonSerializerConfigs);
     }
 
-    Optional<ByteString> serialize(EmbeddedFormat format, JsonNode data) {
+    public Optional<ByteString> serialize(EmbeddedFormat format, JsonNode data) {
         checkArgument(!format.requiresSchema());
 
         if (data.isNull()) {
