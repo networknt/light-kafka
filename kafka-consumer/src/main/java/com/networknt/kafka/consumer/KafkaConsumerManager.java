@@ -473,6 +473,9 @@ public class KafkaConsumerManager {
 
   /**
    * Returns the beginning offset of the {@code topic} {@code partition}.
+   * @param topic the topic
+   * @param partition the partition
+   * @return the beginning offset
    */
   public long getBeginningOffset(String topic, int partition) {
     log.debug("Beginning offset for topic {} and partition {}.", topic, partition);
@@ -482,6 +485,9 @@ public class KafkaConsumerManager {
 
   /**
    * Returns the end offset of the {@code topic} {@code partition}.
+   * @param topic the topic
+   * @param partition the partition
+   * @return the offset
    */
   public long getEndOffset(String topic, int partition) {
     log.debug("End offset for topic {} and partition {}.", topic, partition);
@@ -492,6 +498,10 @@ public class KafkaConsumerManager {
   /**
    * Returns the earliest offset whose timestamp is greater than or equal to the given {@code
    * timestamp} in the {@code topic} {@code partition}, or empty if such offset does not exist.
+   * @param topic the topic
+   * @param partition the partition
+   * @param timestamp the timestamp
+   * @return offset for timestamp
    */
   public Optional<Long> getOffsetForTime(
       String topic, int partition, Instant timestamp) {

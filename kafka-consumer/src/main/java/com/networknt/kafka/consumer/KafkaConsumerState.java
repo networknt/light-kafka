@@ -77,6 +77,8 @@ public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, Cli
    * client's requested types. While doing so, computes the approximate size of the message in
    * bytes, which is used to track the approximate total payload size for consumer read responses to
    * determine when to trigger the response.
+   * @param msg the message
+   * @return consumer record and size
    */
   public abstract ConsumerRecordAndSize<ClientKeyT, ClientValueT> createConsumerRecord(
       ConsumerRecord<KafkaKeyT, KafkaValueT> msg
@@ -84,6 +86,9 @@ public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, Cli
 
   /**
    * Commit the given list of offsets
+   * @param async the async flag
+   * @param offsetCommitRequest the offset commit request
+   * @return a list of TopicPartitionOffset
    */
   public synchronized List<TopicPartitionOffset> commitOffsets(
       boolean async,
@@ -123,6 +128,7 @@ public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, Cli
 
   /**
    * Seek to the first offset for each of the given partitions.
+   * @param seekToRequest the seek to request
    */
   public synchronized void seekToBeginning(ConsumerSeekToRequest seekToRequest) {
     if (seekToRequest != null) {
@@ -137,6 +143,7 @@ public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, Cli
 
   /**
    * Seek to the last offset for each of the given partitions.
+   * @param seekToRequest the seek to request
    */
   public synchronized void seekToEnd(ConsumerSeekToRequest seekToRequest) {
     if (seekToRequest != null) {
@@ -151,6 +158,7 @@ public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, Cli
 
   /**
    * Overrides the fetch offsets that the consumer will use on the next poll(timeout).
+   * @param request the consumer seek request
    */
   public synchronized void seek(ConsumerSeekRequest request) {
     if (request == null) {
@@ -190,6 +198,7 @@ public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, Cli
 
   /**
    * Manually assign a list of partitions to this consumer.
+   * @param assignmentRequest the assignment request
    */
   public synchronized void assign(ConsumerAssignmentRequest assignmentRequest) {
     if (assignmentRequest != null) {
@@ -216,6 +225,7 @@ public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, Cli
 
   /**
    * Subscribe to the given list of topics to get dynamically assigned partitions.
+   * @param subscription the subscription
    */
   public synchronized void subscribe(ConsumerSubscriptionRecord subscription) {
     if (subscription == null) {
@@ -235,6 +245,7 @@ public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, Cli
 
   /**
    * Unsubscribe from topics currently subscribed with subscribe(Collection).
+   *
    */
   public synchronized void unsubscribe() {
     if (consumer != null) {
@@ -244,6 +255,7 @@ public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, Cli
 
   /**
    * Get the current list of topics subscribed.
+   * @return a set of String
    */
   public synchronized Set<String> subscription() {
     Set<String> currSubscription = null;
@@ -255,6 +267,7 @@ public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, Cli
 
   /**
    * Get the set of partitions currently assigned to this consumer.
+   * @return a set of TopicPartition
    */
   public synchronized Set<TopicPartition> assignment() {
     Set<TopicPartition> currAssignment = null;
@@ -268,6 +281,8 @@ public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, Cli
   /**
    * Get the last committed offset for the given partition (whether the commit happened by
    * this process or another).
+   * @param request the request
+   * @return ConsumerCommittedResponse
    */
   public synchronized ConsumerCommittedResponse committed(ConsumerCommittedRequest request) {
     Vector<TopicPartitionOffsetMetadata> offsets = new Vector<>();
