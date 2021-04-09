@@ -20,3 +20,7 @@ topic: portal-event
 injectOpenTracing: ${client.injectOpenTracing:false}
 # inject serviceId as callerId into the http header for metrics to collect the caller. The serviceId is from server.yml
 injectCallerId: ${client.injectCallerId:false}
+# schema registry url
+schemaRegistryUrl: http://localhost:8081
+# schema registry identity cache size
+schemaRegistryCache: 100
