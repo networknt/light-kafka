@@ -17,6 +17,8 @@ public class KafkaProducerConfig {
     private String topic;
     private boolean injectOpenTracing;
     private boolean injectCallerId;
+    private String schemaRegistryUrl;
+    private int schemaRegistryCache;
 
     public KafkaProducerConfig() {
     }
@@ -51,5 +53,21 @@ public class KafkaProducerConfig {
 
     public void setInjectCallerId(boolean injectCallerId) {
         this.injectCallerId = injectCallerId;
+    }
+
+    public String getSchemaRegistryUrl() {
+        return schemaRegistryUrl;
+    }
+
+    public void setSchemaRegistryUrl(String schemaRegistryUrl) {
+        this.schemaRegistryUrl = schemaRegistryUrl;
+    }
+
+    public int getSchemaRegistryCache() {
+        return schemaRegistryCache;
+    }
+
+    public void setSchemaRegistryCache(int schemaRegistryCache) {
+        this.schemaRegistryCache = schemaRegistryCache;
     }
 }
