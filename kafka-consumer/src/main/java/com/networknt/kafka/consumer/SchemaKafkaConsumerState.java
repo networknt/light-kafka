@@ -51,6 +51,7 @@ public final class SchemaKafkaConsumerState
             record.topic(),
             keyNode.getJson(),
             valueNode.getJson(),
+            record.headers() != null ? convertHeaders(record.headers()) : null,
             record.partition(),
             record.offset()),
         keyNode.getSize() + valueNode.getSize());

@@ -49,6 +49,7 @@ public class BinaryKafkaConsumerState
             record.topic(),
             record.key() != null ? ByteString.copyFrom(record.key()) : null,
             record.value() != null ? ByteString.copyFrom(record.value()) : null,
+            record.headers() != null ? convertHeaders(record.headers()) : null,
             record.partition(),
             record.offset()),
         approxSize);

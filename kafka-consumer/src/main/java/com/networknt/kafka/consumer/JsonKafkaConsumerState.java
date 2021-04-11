@@ -58,7 +58,9 @@ public class JsonKafkaConsumerState extends KafkaConsumerState<byte[], byte[], O
 
     return new ConsumerRecordAndSize<>(
         com.networknt.kafka.entity.ConsumerRecord.create(
-            record.topic(), key, value, record.partition(), record.offset()), approxSize);
+            record.topic(), key, value,
+            record.headers() != null ? convertHeaders(record.headers()) : null,
+            record.partition(), record.offset()), approxSize);
   }
 
   private Object deserialize(byte[] data) {

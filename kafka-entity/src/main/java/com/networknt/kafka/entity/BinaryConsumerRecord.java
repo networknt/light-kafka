@@ -18,75 +18,64 @@ package com.networknt.kafka.entity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.protobuf.ByteString;
+import com.networknt.config.JsonMapper;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 
 public final class BinaryConsumerRecord {
 
-  @NotNull
-  @Nullable
   private final String topic;
 
-  @Nullable
   private final byte[] key;
 
-  @Nullable
   private final byte[] value;
 
-  @PositiveOrZero
-  @Nullable
+  private final Map<String, String> headers;
+
   private final Integer partition;
 
-  @PositiveOrZero
-  @Nullable
   private final Long offset;
 
   @JsonCreator
   private BinaryConsumerRecord(
-      @JsonProperty("topic") @Nullable String topic,
-      @JsonProperty("key") @Nullable byte[] key,
-      @JsonProperty("value") @Nullable byte[] value,
-      @JsonProperty("partition") @Nullable Integer partition,
-      @JsonProperty("offset") @Nullable Long offset) {
+      @JsonProperty("topic") String topic,
+      @JsonProperty("key") byte[] key,
+      @JsonProperty("value") byte[] value,
+      @JsonProperty("headers") Map<String, String> headers,
+      @JsonProperty("partition") Integer partition,
+      @JsonProperty("offset") Long offset) {
     this.topic = topic;
     this.key = key;
     this.value = value;
+    this.headers = headers;
     this.partition = partition;
     this.offset = offset;
   }
 
   @JsonProperty
-  @Nullable
   public String getTopic() {
     return topic;
   }
 
   @JsonProperty
-  @Nullable
   public String getKey() {
     return key != null ? new String(Base64.getEncoder().encode(key)) : null;
   }
 
   @JsonProperty
-  @Nullable
   public String getValue() {
     return value != null ? new String(Base64.getEncoder().encode(value)) : null;
   }
 
   @JsonProperty
-  @Nullable
+  public Map<String, String> getHeaders() { return headers; }
+
+  @JsonProperty
   public Integer getPartition() {
     return partition;
   }
 
   @JsonProperty
-  @Nullable
   public Long getOffset() {
     return offset;
   }
@@ -103,6 +92,7 @@ public final class BinaryConsumerRecord {
         Objects.requireNonNull(record.getTopic()),
         record.getKey() != null ? record.getKey().toByteArray() : null,
         record.getValue() != null ? record.getValue().toByteArray() : null,
+        record.getHeaders(),
         record.getPartition(),
         record.getOffset());
   }
@@ -121,6 +111,7 @@ public final class BinaryConsumerRecord {
         topic,
         key != null ? ByteString.copyFrom(key) : null,
         value != null ? ByteString.copyFrom(value) : null,
+        headers,
         partition,
         offset);
   }
@@ -137,13 +128,14 @@ public final class BinaryConsumerRecord {
     return Objects.equals(topic, that.topic)
         && Arrays.equals(key, that.key)
         && Arrays.equals(value, that.value)
+        && Objects.equals(headers, that.headers)
         && Objects.equals(partition, that.partition)
         && Objects.equals(offset, that.offset);
   }
 
   @Override
   public int hashCode() {
-    int result = Objects.hash(topic, partition, offset);
+    int result = Objects.hash(topic, headers, partition, offset);
     result = 31 * result + Arrays.hashCode(key);
     result = 31 * result + Arrays.hashCode(value);
     return result;
@@ -155,6 +147,7 @@ public final class BinaryConsumerRecord {
         .add("topic='" + topic + "'")
         .add("key=" + Arrays.toString(key))
         .add("value=" + Arrays.toString(value))
+        .add("headers" + JsonMapper.toJson(headers))
         .add("partition=" + partition)
         .add("offset=" + offset)
         .toString();
