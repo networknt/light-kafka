@@ -20,8 +20,11 @@ import com.networknt.kafka.entity.*;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.Headers;
 
 import javax.ws.rs.InternalServerErrorException;
+import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -421,6 +424,16 @@ public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, Cli
 
     public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
     }
+  }
+
+  protected Map<String, String> convertHeaders(Headers headers) {
+    Map<String, String> headerMap = new HashMap<>();
+    Iterator<Header> headerIterator = headers.iterator();
+    while(headerIterator.hasNext()) {
+      Header header = headerIterator.next();
+      headerMap.put(header.key(), new String(header.value(), StandardCharsets.UTF_8));
+    }
+    return headerMap;
   }
 }
 

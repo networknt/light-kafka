@@ -15,7 +15,8 @@
 
 package com.networknt.kafka.entity;
 
-import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Map;
 
 public class ConsumerRecord<K, V> {
   String topic;
@@ -23,14 +24,16 @@ public class ConsumerRecord<K, V> {
   V value;
   int partition;
   long offset;
+  Map<String, String> headers;
 
   ConsumerRecord() {
   }
 
-  public ConsumerRecord(String topic, K key, V value, int partition, long offset) {
+  public ConsumerRecord(String topic, K key, V value, Map<String, String> headers, int partition, long offset) {
     this.topic = topic;
     this.key = key;
     this.value = value;
+    this.headers = headers;
     this.partition = partition;
     this.offset = offset;
   }
@@ -39,15 +42,15 @@ public class ConsumerRecord<K, V> {
     return topic;
   }
 
-  @Nullable
   public K getKey() {
     return key;
   }
 
-  @Nullable
   public V getValue() {
     return value;
   }
+
+  public Map<String, String> getHeaders() { return headers; }
 
   public int getPartition() {
     return partition;
@@ -58,7 +61,7 @@ public class ConsumerRecord<K, V> {
   }
 
   public static <K, V> ConsumerRecord<K, V> create(
-      String topic, @Nullable K key, @Nullable V value, int partition, long offset) {
-    return new ConsumerRecord<>(topic, key, value, partition, offset);
+      String topic, K key, V value, Map<String, String> headers, int partition, long offset) {
+    return new ConsumerRecord<>(topic, key, value, headers, partition, offset);
   }
 }

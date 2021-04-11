@@ -17,73 +17,66 @@ package com.networknt.kafka.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.networknt.config.JsonMapper;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
+import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public final class JsonConsumerRecord {
 
-  @NotNull
-  @Nullable
   private final String topic;
 
-  @Nullable
   private final Object key;
 
-  @Nullable
   private final Object value;
 
-  @PositiveOrZero
-  @Nullable
+  private final Map<String, String> headers;
+
   private final Integer partition;
 
-  @PositiveOrZero
-  @Nullable
   private final Long offset;
 
   @JsonCreator
   private JsonConsumerRecord(
-      @JsonProperty("topic") @Nullable String topic,
-      @JsonProperty("key") @Nullable Object key,
-      @JsonProperty("value") @Nullable Object value,
-      @JsonProperty("partition") @Nullable Integer partition,
-      @JsonProperty("offset") @Nullable Long offset) {
+      @JsonProperty("topic") String topic,
+      @JsonProperty("key") Object key,
+      @JsonProperty("value") Object value,
+      @JsonProperty("headers") Map<String, String> headers,
+      @JsonProperty("partition") Integer partition,
+      @JsonProperty("offset") Long offset) {
     this.topic = topic;
     this.key = key;
     this.value = value;
+    this.headers = headers;
     this.partition = partition;
     this.offset = offset;
   }
 
   @JsonProperty
-  @Nullable
   public String getTopic() {
     return topic;
   }
 
   @JsonProperty
-  @Nullable
   public Object getKey() {
     return key;
   }
 
   @JsonProperty
-  @Nullable
   public Object getValue() {
     return value;
   }
 
   @JsonProperty
-  @Nullable
+  public Map<String, String> getHeaders() { return headers; }
+
+  @JsonProperty
   public Integer getPartition() {
     return partition;
   }
 
   @JsonProperty
-  @Nullable
   public Long getOffset() {
     return offset;
   }
@@ -99,6 +92,7 @@ public final class JsonConsumerRecord {
         Objects.requireNonNull(record.getTopic()),
         record.getKey(),
         record.getValue(),
+        record.getHeaders(),
         record.getPartition(),
         record.getOffset());
   }
@@ -113,7 +107,7 @@ public final class JsonConsumerRecord {
     if (offset == null || offset < 0) {
       throw new IllegalStateException();
     }
-    return ConsumerRecord.create(topic, key, value, partition, offset);
+    return ConsumerRecord.create(topic, key, value, headers, partition, offset);
   }
 
   @Override
@@ -128,13 +122,14 @@ public final class JsonConsumerRecord {
     return Objects.equals(topic, that.topic)
         && Objects.equals(key, that.key)
         && Objects.equals(value, that.value)
+        && Objects.equals(headers, that.headers)
         && Objects.equals(partition, that.partition)
         && Objects.equals(offset, that.offset);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(topic, key, value, partition, offset);
+    return Objects.hash(topic, key, value, headers, partition, offset);
   }
 
   @Override
@@ -143,6 +138,7 @@ public final class JsonConsumerRecord {
         .add("topic='" + topic + "'")
         .add("key=" + key)
         .add("value=" + value)
+        .add("headers=" + JsonMapper.toJson(headers))
         .add("partition=" + partition)
         .add("offset=" + offset)
         .toString();
