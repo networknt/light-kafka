@@ -13,7 +13,6 @@ public class KafkaConsumerConfig {
     private int instanceTimeoutMs;
     private int fetchMinBytes;
     private int iteratorBackoffMs;
-    private String schemaRegistryUrl;
     private String topic;
     private int waitPeriod;
     private String keyFormat;
@@ -86,14 +85,6 @@ public class KafkaConsumerConfig {
 
     public void setIteratorBackoffMs(int iteratorBackoffMs) {
         this.iteratorBackoffMs = iteratorBackoffMs;
-    }
-
-    public String getSchemaRegistryUrl() {
-        return schemaRegistryUrl;
-    }
-
-    public void setSchemaRegistryUrl(String schemaRegistryUrl) {
-        this.schemaRegistryUrl = schemaRegistryUrl;
     }
 
     public String getTopic() {

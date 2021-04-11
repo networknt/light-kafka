@@ -61,14 +61,14 @@ public class ConsumerSeekRequest {
     return new ConsumerSeekRequest(offsets, timestamps);
   }
 
-  public class PartitionOffset {
+  public static class PartitionOffset {
 
     String topic;
     int partition;
     long offset;
     String metadata;
 
-    PartitionOffset() {
+    public PartitionOffset() {
     }
 
     public PartitionOffset(String topic, int partition, long offset, String metadata) {

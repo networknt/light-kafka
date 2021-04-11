@@ -32,5 +32,3 @@ fetchMinBytes: 10000000
 instanceTimeoutMs: 300000
 # Amount of time to backoff when an iterator runs out of date.
 iteratorBackoffMs: 50
-# schema registry url
-schemaRegistryUrl: http://localhost:8081
