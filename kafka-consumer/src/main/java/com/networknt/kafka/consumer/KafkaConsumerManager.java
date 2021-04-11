@@ -420,6 +420,11 @@ public class KafkaConsumerManager {
     void onCompletion(List<TopicPartitionOffset> offsets, FrameworkException e);
   }
 
+  public List<TopicPartitionOffset> commitCurrentOffsets(String group, String instance) throws FrameworkException {
+    final KafkaConsumerState state = getConsumerInstance(group, instance);
+    return state.commitOffsets(false, null);
+  }
+
   public Future commitOffsets(
           String group, String instance, final boolean async,
           final ConsumerOffsetCommitRequest offsetCommitRequest, final CommitCallback callback
