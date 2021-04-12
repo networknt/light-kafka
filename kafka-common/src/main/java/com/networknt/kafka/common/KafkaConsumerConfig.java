@@ -17,6 +17,8 @@ public class KafkaConsumerConfig {
     private int waitPeriod;
     private String keyFormat;
     private String valueFormat;
+    private String backendApiHost;
+    private String backendApiPath;
 
     private Map<String, Object> properties;
 
@@ -125,5 +127,21 @@ public class KafkaConsumerConfig {
 
     public void setValueFormat(String valueFormat) {
         this.valueFormat = valueFormat;
+    }
+
+    public String getBackendApiHost() {
+        return backendApiHost;
+    }
+
+    public void setBackendApiHost(String backendApiHost) {
+        this.backendApiHost = backendApiHost;
+    }
+
+    public String getBackendApiPath() {
+        return backendApiPath;
+    }
+
+    public void setBackendApiPath(String backendApiPath) {
+        this.backendApiPath = backendApiPath;
     }
 }
