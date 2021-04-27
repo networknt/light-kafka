@@ -1,5 +1,21 @@
 # Change Log
 
+## [2.0.26](https://github.com/networknt/light-kafka/tree/2.0.26) (2021-04-27)
+
+
+**Merged pull requests:**
+
+
+- fixes \#46 add backendApiHost and backendApiPath to kafka-consumer.yml [\#47](https://github.com/networknt/light-kafka/pull/47) ([stevehu](https://github.com/stevehu))
+- fixes \#44 add kafka ConsumerRecord header to the response [\#45](https://github.com/networknt/light-kafka/pull/45) ([stevehu](https://github.com/stevehu))
+- fixes \#42 add sync method to commit all current offsets [\#43](https://github.com/networknt/light-kafka/pull/43) ([stevehu](https://github.com/stevehu))
+- fixes \#40 make the producer schema registry url configurable in the k… [\#41](https://github.com/networknt/light-kafka/pull/41) ([stevehu](https://github.com/stevehu))
+- fixes \#38 update json property for ProduceRequest and allow NoSchemaR… [\#39](https://github.com/networknt/light-kafka/pull/39) ([stevehu](https://github.com/stevehu))
+- fixes \#36 resolve the javadoc issues [\#37](https://github.com/networknt/light-kafka/pull/37) ([stevehu](https://github.com/stevehu))
+- fixes \#34 only overwrite the group.id if it does not exsit in the kaf… [\#35](https://github.com/networknt/light-kafka/pull/35) ([stevehu](https://github.com/stevehu))
+- fixes \#32 support keyFormat and valueFormat for reactive consumer opt… [\#33](https://github.com/networknt/light-kafka/pull/33) ([stevehu](https://github.com/stevehu))
+- fixes \#30 update the producer and consumer config to support all Kafk… [\#31](https://github.com/networknt/light-kafka/pull/31) ([stevehu](https://github.com/stevehu))
+- Kafka mesh [\#29](https://github.com/networknt/light-kafka/pull/29) ([stevehu](https://github.com/stevehu))
 ## [2.0.25](https://github.com/networknt/light-kafka/tree/2.0.25) (2021-03-28)
 
 
