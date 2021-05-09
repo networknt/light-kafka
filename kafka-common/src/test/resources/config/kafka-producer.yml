@@ -3,24 +3,36 @@
 properties:
   key.serializer: org.apache.kafka.common.serialization.ByteArraySerializer
   value.serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+  # This value is a string, if using 1 or 0, you must use '1' or '0' as the value
   acks: ${kafka-producer.acks:all}
-  bootstrap.servers: localhost:9092
-  buffer.memory: 33554432
+  bootstrap.servers: ${kafka-producer.bootstrap.servers:localhost:9092}
+  buffer.memory: ${kafka-producer.buffer.memory:33554432}
   retries: ${kafka-producer.retries:3}
-  batch.size: 16384
-  linger.ms: 1
-  transactional.id: T1000
-  transaction.timeout.ms: 900000
+  batch.size: ${kafka-producer.batch.size:16384}
+  linger.ms: ${kafka-producer.linger.ms:1}
   max.in.flight.requests.per.connection: ${kafka-producer.max.in.flight.requests.per.connection:5}
   enable.idempotence: ${kafka-producer.enable.idempotence:true}
+  # security configuration for enterprise deployment
+  # security.protocol: ${kafka-producer.security.protocol:SASL_SSL}
+  # sasl.mechanism: ${kafka-producer.sasl.mechanism:PLAIN}
+  # sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-producer.username:username}\" password=\"${kafka-producer.password:password}\";"
+  # ssl.endpoint.identification.algorithm: ${kafka-producer.ssl.endpoint.identification.algorithm:algo-name}
+  # client.rack: ${kafka-producer.client.rack:rack-name}
+  # basic authentication user:pass for the schema registry
+  # basic.auth.user.info: ${kafka-producer.username:username}:${kafka-producer.password:password}
+  # basic.auth.credentials.source: ${kafka-producer.basic.auth.credentials.source:USER_INFO}
 
 # The default topic for the producer. Only certain producer implementation will use it.
-topic: portal-event
-# if open tracing is enable. traceability, correlation and metrics should not be in the chain if opentracing is used.
-injectOpenTracing: ${client.injectOpenTracing:false}
-# inject serviceId as callerId into the http header for metrics to collect the caller. The serviceId is from server.yml
-injectCallerId: ${client.injectCallerId:false}
-# schema registry url
-schemaRegistryUrl: http://localhost:8081
-# schema registry identity cache size
-schemaRegistryCache: 100
+topic: ${kafka-producer.topic:portal-event}
+# If open tracing is enable. traceability, correlation and metrics should not be in the chain if opentracing is used.
+injectOpenTracing: ${kafka-producer.injectOpenTracing:false}
+# Inject serviceId as callerId into the http header for metrics to collect the caller. The serviceId is from server.yml
+injectCallerId: ${kafka-producer.injectCallerId:false}
+# Confluent schema registry url
+schemaRegistryUrl: ${kafka-producer.schemaRegistryUrl:http://localhost:8081}
+# Schema registry identity cache size
+schemaRegistryCache: ${kafka-producer.schemaRegistryCache:100}
+# Indicator if the audit is enabled.
+auditEnabled: ${kafka-producer.auditEnabled:true}
+# The producer audit topic name
+auditTopic: ${kafka-producer.auditTopic:sidecar-audit}

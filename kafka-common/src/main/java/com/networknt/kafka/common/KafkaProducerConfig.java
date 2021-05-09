@@ -19,6 +19,8 @@ public class KafkaProducerConfig {
     private boolean injectCallerId;
     private String schemaRegistryUrl;
     private int schemaRegistryCache;
+    private boolean auditEnabled;
+    private String auditTopic;
 
     public KafkaProducerConfig() {
     }
@@ -69,5 +71,21 @@ public class KafkaProducerConfig {
 
     public void setSchemaRegistryCache(int schemaRegistryCache) {
         this.schemaRegistryCache = schemaRegistryCache;
+    }
+
+    public String getAuditTopic() {
+        return auditTopic;
+    }
+
+    public void setAuditTopic(String auditTopic) {
+        this.auditTopic = auditTopic;
+    }
+
+    public boolean isAuditEnabled() {
+        return auditEnabled;
+    }
+
+    public void setAuditEnabled(boolean auditEnabled) {
+        this.auditEnabled = auditEnabled;
     }
 }
