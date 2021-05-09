@@ -19,6 +19,9 @@ public class KafkaConsumerConfig {
     private String valueFormat;
     private String backendApiHost;
     private String backendApiPath;
+    private String deadLetterTopicExt;
+    private boolean auditEnabled;
+    private String auditTopic;
 
     private Map<String, Object> properties;
 
@@ -143,5 +146,29 @@ public class KafkaConsumerConfig {
 
     public void setBackendApiPath(String backendApiPath) {
         this.backendApiPath = backendApiPath;
+    }
+
+    public String getDeadLetterTopicExt() {
+        return deadLetterTopicExt;
+    }
+
+    public void setDeadLetterTopicExt(String deadLetterTopicExt) {
+        this.deadLetterTopicExt = deadLetterTopicExt;
+    }
+
+    public String getAuditTopic() {
+        return auditTopic;
+    }
+
+    public void setAuditTopic(String auditTopic) {
+        this.auditTopic = auditTopic;
+    }
+
+    public boolean isAuditEnabled() {
+        return auditEnabled;
+    }
+
+    public void setAuditEnabled(boolean auditEnabled) {
+        this.auditEnabled = auditEnabled;
     }
 }

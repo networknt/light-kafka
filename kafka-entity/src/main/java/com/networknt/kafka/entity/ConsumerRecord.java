@@ -15,7 +15,6 @@
 
 package com.networknt.kafka.entity;
 
-import java.util.List;
 import java.util.Map;
 
 public class ConsumerRecord<K, V> {
