@@ -20,6 +20,8 @@ properties:
   # basic.auth.credentials.source: ${kafka-consumer.basic.auth.credentials.source:USER_INFO}
 
 # common configuration properties between active and reactive consumers
+# Indicator if the dead letter topic is enabled.
+deadLetterEnabled: ${kafka-consumer.deadLetterEnabled:true}
 # The extension of the dead letter queue(topic) that is added to the original topic to form the dead letter topic
 deadLetterTopicExt: ${kafka-consumer.deadLetterTopicExt:dlq}
 # Indicator if the audit is enabled.

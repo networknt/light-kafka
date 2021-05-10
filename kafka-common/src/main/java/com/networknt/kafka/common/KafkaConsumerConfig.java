@@ -19,6 +19,7 @@ public class KafkaConsumerConfig {
     private String valueFormat;
     private String backendApiHost;
     private String backendApiPath;
+    private boolean deadLetterEnabled;
     private String deadLetterTopicExt;
     private boolean auditEnabled;
     private String auditTopic;
@@ -142,6 +143,14 @@ public class KafkaConsumerConfig {
 
     public String getBackendApiPath() {
         return backendApiPath;
+    }
+
+    public boolean isDeadLetterEnabled() {
+        return deadLetterEnabled;
+    }
+
+    public void setDeadLetterEnabled(boolean deadLetterEnabled) {
+        this.deadLetterEnabled = deadLetterEnabled;
     }
 
     public void setBackendApiPath(String backendApiPath) {
