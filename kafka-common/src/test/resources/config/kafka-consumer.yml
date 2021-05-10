@@ -23,7 +23,7 @@ properties:
 # Indicator if the dead letter topic is enabled.
 deadLetterEnabled: ${kafka-consumer.deadLetterEnabled:true}
 # The extension of the dead letter queue(topic) that is added to the original topic to form the dead letter topic
-deadLetterTopicExt: ${kafka-consumer.deadLetterTopicExt:dlq}
+deadLetterTopicExt: ${kafka-consumer.deadLetterTopicExt:.dlq}
 # Indicator if the audit is enabled.
 auditEnabled: ${kafka-consumer.auditEnabled:true}
 # The consumer audit topic name
