@@ -23,6 +23,7 @@ public class KafkaConsumerConfig {
     private String deadLetterTopicExt;
     private boolean auditEnabled;
     private String auditTopic;
+    private boolean useNoWrappingAvro;
 
     private Map<String, Object> properties;
 
@@ -179,5 +180,13 @@ public class KafkaConsumerConfig {
 
     public void setAuditEnabled(boolean auditEnabled) {
         this.auditEnabled = auditEnabled;
+    }
+
+    public boolean isUseNoWrappingAvro() {
+        return useNoWrappingAvro;
+    }
+
+    public void setUseNoWrappingAvro(boolean useNoWrappingAvro) {
+        this.useNoWrappingAvro = useNoWrappingAvro;
     }
 }

@@ -28,6 +28,8 @@ deadLetterTopicExt: ${kafka-consumer.deadLetterTopicExt:.dlq}
 auditEnabled: ${kafka-consumer.auditEnabled:true}
 # The consumer audit topic name
 auditTopic: ${kafka-consumer.auditTopic:sidecar-audit}
+# Indicate if the NoWrapping Avro converter is used. This should be used for avro schema with data type in JSON.
+useNoWrappingAvro: ${kafka-consumer.useNoWrappingAvro:false}
 
 # Reactive Consumer Specific Configuration
 # The topic that is going to be consumed. For reactive consumer only in the kafka-sidecar.

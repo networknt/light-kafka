@@ -19,6 +19,7 @@ import com.networknt.config.Config;
 import com.networknt.exception.FrameworkException;
 import com.networknt.kafka.common.converter.AvroConverter;
 import com.networknt.kafka.common.KafkaConsumerConfig;
+import com.networknt.kafka.common.converter.AvroNoWrappingConverter;
 import com.networknt.kafka.common.converter.JsonSchemaConverter;
 import com.networknt.kafka.common.converter.ProtobufConverter;
 import com.networknt.kafka.entity.*;
@@ -258,7 +259,7 @@ public class KafkaConsumerManager {
         return new BinaryKafkaConsumerState(config, instanceConfig, cid, consumer);
       case AVRO:
         return new SchemaKafkaConsumerState(
-            config, instanceConfig, cid, consumer, new AvroConverter());
+            config, instanceConfig, cid, consumer, config.isUseNoWrappingAvro() ? new AvroNoWrappingConverter() : new AvroConverter());
       case JSON:
         return new JsonKafkaConsumerState(config, instanceConfig, cid, consumer);
       case JSONSCHEMA:
