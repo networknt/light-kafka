@@ -12,6 +12,14 @@ properties:
   linger.ms: ${kafka-producer.linger.ms:1}
   max.in.flight.requests.per.connection: ${kafka-producer.max.in.flight.requests.per.connection:5}
   enable.idempotence: ${kafka-producer.enable.idempotence:true}
+  # Confluent schema registry url
+  schema.registry.url: ${kafka-producer.schema.registry.url:http://localhost:8081}
+  # Schema registry identity cache size
+  schema.registry.cache: ${kafka-producer.schema.registry.cache:100}
+  # Schema registry client truststore location
+  schema.registry.ssl.truststore.location: ${kafka-producer.schema.registry.ssl.truststore.location:/config/client.truststore}
+  # Schema registry client truststore password
+  schema.registry.ssl.truststore.password: ${kafka-producer.schema.registry.ssl.truststore.password:password}
   # security configuration for enterprise deployment
   # security.protocol: ${kafka-producer.security.protocol:SASL_SSL}
   # sasl.mechanism: ${kafka-producer.sasl.mechanism:PLAIN}
@@ -28,10 +36,6 @@ topic: ${kafka-producer.topic:portal-event}
 injectOpenTracing: ${kafka-producer.injectOpenTracing:false}
 # Inject serviceId as callerId into the http header for metrics to collect the caller. The serviceId is from server.yml
 injectCallerId: ${kafka-producer.injectCallerId:false}
-# Confluent schema registry url
-schemaRegistryUrl: ${kafka-producer.schemaRegistryUrl:http://localhost:8081}
-# Schema registry identity cache size
-schemaRegistryCache: ${kafka-producer.schemaRegistryCache:100}
 # Indicator if the audit is enabled.
 auditEnabled: ${kafka-producer.auditEnabled:true}
 # The producer audit topic name
