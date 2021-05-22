@@ -10,6 +10,8 @@ import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientExcept
 import io.confluent.kafka.serializers.subject.strategy.SubjectNameStrategy;
 import org.apache.kafka.common.errors.SerializationException;
 import com.networknt.kafka.entity.EmbeddedFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -19,6 +21,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 
 public class SchemaManagerImpl implements SchemaManager {
+    private static final Logger logger = LoggerFactory.getLogger(SchemaManagerImpl.class);
     private static final String FORMAT_WITH_SCHEMA_ID = "ERR12209";
     private static final String VERSION_WITH_SCHEMA_ID = "ERR12210";
     private static final String SCHEMA_WITH_SCHEMA_ID = "ERR12211";
@@ -120,6 +123,8 @@ public class SchemaManagerImpl implements SchemaManager {
         try {
             schema = schemaRegistryClient.getSchemaById(schemaId);
         } catch (IOException | RestClientException e) {
+            // don't want to output a lot of errors when schema is not defined.
+            if(logger.isDebugEnabled()) logger.debug("getSchemaById: ", e);
             throw new SerializationException(
                     String.format("Error when fetching schema by id. schemaId = %d", schemaId), e);
         }
@@ -138,6 +143,8 @@ public class SchemaManagerImpl implements SchemaManager {
         try {
             return schemaRegistryClient.getVersion(subject, schema);
         } catch (IOException | RestClientException e) {
+            // don't want to output a lot of errors when schema is not defined.
+            if(logger.isDebugEnabled()) logger.debug("getSchemaVersion: ", e);
             throw new SerializationException(
                     String.format(
                             "Error when fetching schema version. subject = %s, schema = %s",
@@ -204,6 +211,8 @@ public class SchemaManagerImpl implements SchemaManager {
                 // Check if the schema already exists first.
                 schemaId = schemaRegistryClient.getId(actualSubject, schema);
             } catch (IOException | RestClientException e) {
+                // don't want to output a lot of errors when schema is not defined.
+                if(logger.isDebugEnabled()) logger.debug("getSchemaFromRawSchema: ", e);
                 // Could not find the schema. We try to register the schema in that case.
                 schemaId = schemaRegistryClient.register(actualSubject, schema);
             }
@@ -232,6 +241,8 @@ public class SchemaManagerImpl implements SchemaManager {
         try {
             metadata = schemaRegistryClient.getLatestSchemaMetadata(actualSubject);
         } catch (IOException | RestClientException e) {
+            // don't want to output a lot of errors when schema is not defined.
+            if(logger.isDebugEnabled()) logger.debug("findLatestSchema: ", e);
             throw new SerializationException(
                     String.format("Error when fetching latest schema version. subject = %s", actualSubject),
                     e);
@@ -271,6 +282,8 @@ public class SchemaManagerImpl implements SchemaManager {
         try {
             subject = strategy.subjectName(topicName, isKey, /* schema= */ null);
         } catch (Exception e) {
+            // don't want to output a lot of errors when schema is not defined.
+            if(logger.isDebugEnabled()) logger.debug("getSchemaSubjectUnsafe: ", e);
             cause = e;
         }
 
