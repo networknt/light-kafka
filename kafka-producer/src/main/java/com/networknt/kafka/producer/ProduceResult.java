@@ -4,7 +4,6 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 
 import java.time.Instant;
 import java.util.Objects;
-import java.util.Optional;
 
 public class ProduceResult {
     int partitionId;

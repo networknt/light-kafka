@@ -3,6 +3,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.networknt.kafka.entity.ProduceRecord;
+import com.networknt.kafka.entity.ProduceRequest;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;

@@ -18,10 +18,8 @@ package com.networknt.kafka.entity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 public class ConsumerSeekRequest {
   List<PartitionOffset> offsets;
@@ -55,8 +53,8 @@ public class ConsumerSeekRequest {
 
   @JsonCreator
   static ConsumerSeekRequest fromJson(
-      @JsonProperty("offsets") @Nullable List<PartitionOffset> offsets,
-      @JsonProperty("timestamps") @Nullable List<PartitionTimestamp> timestamps
+      @JsonProperty("offsets") List<PartitionOffset> offsets,
+      @JsonProperty("timestamps") List<PartitionTimestamp> timestamps
   ) {
     return new ConsumerSeekRequest(offsets, timestamps);
   }
@@ -119,7 +117,7 @@ public class ConsumerSeekRequest {
         @JsonProperty("topic") String topic,
         @JsonProperty("partition") int partition,
         @JsonProperty("offset") long offset,
-        @JsonProperty("metadata") @Nullable String metadata
+        @JsonProperty("metadata") String metadata
     ) {
       return new PartitionOffset(topic, partition, offset, metadata);
     }
@@ -166,7 +164,7 @@ public class ConsumerSeekRequest {
         @JsonProperty("topic") String topic,
         @JsonProperty("partition") int partition,
         @JsonProperty("timestamp") Instant timestamp,
-        @JsonProperty("metadata") @Nullable String metadata
+        @JsonProperty("metadata") String metadata
     ) {
       return new PartitionTimestamp(topic, partition, timestamp, metadata);
     }

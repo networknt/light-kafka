@@ -18,23 +18,20 @@ package com.networknt.kafka.entity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public final class ConsumerSubscriptionResponse {
 
-  @Nullable
   private final List<String> topics;
 
   @JsonCreator
-  public ConsumerSubscriptionResponse(@JsonProperty("topics") @Nullable List<String> topics) {
+  public ConsumerSubscriptionResponse(@JsonProperty("topics") List<String> topics) {
     this.topics = topics;
   }
 
   @JsonProperty
-  @Nullable
   public List<String> getTopics() {
     return topics;
   }

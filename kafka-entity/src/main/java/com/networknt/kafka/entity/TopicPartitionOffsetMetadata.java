@@ -17,29 +17,24 @@ package com.networknt.kafka.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public final class TopicPartitionOffsetMetadata {
 
-  @Nullable
   private final String topic;
 
-  @Nullable
   private final Integer partition;
 
-  @Nullable
   private final Long offset;
 
-  @Nullable
   private final String metadata;
 
   public TopicPartitionOffsetMetadata(
-      @JsonProperty("topic") @Nullable String topic,
-      @JsonProperty("partition") @Nullable Integer partition,
-      @JsonProperty("offset") @Nullable Long offset,
-      @JsonProperty("metadata") @Nullable String metadata
+      @JsonProperty("topic") String topic,
+      @JsonProperty("partition") Integer partition,
+      @JsonProperty("offset") Long offset,
+      @JsonProperty("metadata") String metadata
   ) {
     this.topic = topic;
     this.partition = partition;
@@ -48,25 +43,21 @@ public final class TopicPartitionOffsetMetadata {
   }
 
   @JsonProperty
-  @Nullable
   public String getTopic() {
     return topic;
   }
 
   @JsonProperty
-  @Nullable
   public Integer getPartition() {
     return partition;
   }
 
   @JsonProperty
-  @Nullable
   public Long getOffset() {
     return offset;
   }
 
   @JsonProperty
-  @Nullable
   public String getMetadata() {
     return metadata;
   }

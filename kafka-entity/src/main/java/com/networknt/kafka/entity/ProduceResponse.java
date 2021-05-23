@@ -1,10 +1,9 @@
-package com.networknt.kafka.producer;
+package com.networknt.kafka.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.annotation.Nullable;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Objects;
@@ -27,9 +26,9 @@ public class ProduceResponse {
 
     @JsonCreator
     public ProduceResponse(
-            @JsonProperty("offsets") @Nullable List<PartitionOffset> offsets,
-            @JsonProperty("key_schema_id") @Nullable Integer keySchemaId,
-            @JsonProperty("value_schema_id") @Nullable Integer valueSchemaId
+            @JsonProperty("offsets") List<PartitionOffset> offsets,
+            @JsonProperty("key_schema_id") Integer keySchemaId,
+            @JsonProperty("value_schema_id") Integer valueSchemaId
     ) {
         this.offsets = offsets;
         this.keySchemaId = keySchemaId;

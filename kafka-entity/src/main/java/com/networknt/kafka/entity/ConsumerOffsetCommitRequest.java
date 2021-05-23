@@ -18,24 +18,21 @@ package com.networknt.kafka.entity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public final class ConsumerOffsetCommitRequest {
 
-  @Nullable
   private final List<TopicPartitionOffsetMetadata> offsets;
 
   @JsonCreator
   public ConsumerOffsetCommitRequest(
-      @JsonProperty("offsets") @Nullable List<TopicPartitionOffsetMetadata> offsets) {
-    this.offsets = offsets;
+      @JsonProperty("offsets") List<TopicPartitionOffsetMetadata> offsets) {
+      this.offsets = offsets;
   }
 
   @JsonProperty
-  @Nullable
   public List<TopicPartitionOffsetMetadata> getOffsets() {
     return offsets;
   }
