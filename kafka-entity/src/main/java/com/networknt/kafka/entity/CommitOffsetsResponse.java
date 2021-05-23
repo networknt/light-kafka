@@ -19,9 +19,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -29,16 +26,14 @@ import java.util.stream.Collectors;
 
 public final class CommitOffsetsResponse {
 
-  @Nullable
   private final List<Offset> offsets;
 
   @JsonCreator
-  private CommitOffsetsResponse(@Nullable List<Offset> offsets) {
+  private CommitOffsetsResponse(List<Offset> offsets) {
     this.offsets = offsets;
   }
 
   @JsonValue
-  @Nullable
   public List<Offset> getOffsets() {
     return offsets;
   }
@@ -74,28 +69,20 @@ public final class CommitOffsetsResponse {
 
   public static final class Offset {
 
-    @NotEmpty
-    @Nullable
     private String topic;
 
-    @PositiveOrZero
-    @Nullable
     private Integer partition;
 
-    @PositiveOrZero
-    @Nullable
     private Long consumed;
 
-    @PositiveOrZero
-    @Nullable
     private Long committed;
 
     @JsonCreator
     private Offset(
-        @JsonProperty("topic") @Nullable String topic,
-        @JsonProperty("partition") @Nullable Integer partition,
-        @JsonProperty("consumed") @Nullable Long consumed,
-        @JsonProperty("committed") @Nullable Long committed
+        @JsonProperty("topic") String topic,
+        @JsonProperty("partition") Integer partition,
+        @JsonProperty("consumed") Long consumed,
+        @JsonProperty("committed") Long committed
     ) {
       this.topic = topic;
       this.partition = partition;
@@ -104,25 +91,21 @@ public final class CommitOffsetsResponse {
     }
 
     @JsonProperty
-    @Nullable
     public String getTopic() {
       return topic;
     }
 
     @JsonProperty
-    @Nullable
     public Integer getPartition() {
       return partition;
     }
 
     @JsonProperty
-    @Nullable
     public Long getConsumed() {
       return consumed;
     }
 
     @JsonProperty
-    @Nullable
     public Long getCommitted() {
       return committed;
     }

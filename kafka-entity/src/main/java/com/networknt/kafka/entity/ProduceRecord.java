@@ -1,10 +1,9 @@
-package com.networknt.kafka.producer;
+package com.networknt.kafka.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -25,21 +24,21 @@ public class ProduceRecord {
         this.partition = partition;
     }
 
-    public static ProduceRecord create(@Nullable JsonNode key, @Nullable JsonNode value) {
+    public static ProduceRecord create(JsonNode key, JsonNode value) {
         return create(/* partition= */ null, key, value);
     }
 
     public static ProduceRecord create(
-            @Nullable Integer partition, @Nullable JsonNode key, @Nullable JsonNode value) {
+            Integer partition, JsonNode key, JsonNode value) {
         return new ProduceRecord(
                 Optional.ofNullable(partition), Optional.ofNullable(key), Optional.ofNullable(value));
     }
 
     @JsonCreator
     static ProduceRecord fromJson(
-            @JsonProperty("partition") @Nullable Integer partition,
-            @JsonProperty("key") @Nullable JsonNode key,
-            @JsonProperty("value") @Nullable JsonNode value) {
+            @JsonProperty("partition") Integer partition,
+            @JsonProperty("key") JsonNode key,
+            @JsonProperty("value") JsonNode value) {
         return create(partition, key, value);
     }
 

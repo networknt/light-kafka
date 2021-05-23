@@ -17,37 +17,29 @@ package com.networknt.kafka.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public final class CreateConsumerInstanceResponse {
 
-  @NotBlank
-  @Nullable
   private final String instanceId;
 
-  @NotBlank
-  @Nullable
   private final String baseUri;
 
   public CreateConsumerInstanceResponse(
-      @JsonProperty("instance_id") @Nullable String instanceId,
-      @JsonProperty("base_uri") @Nullable String baseUri
+      @JsonProperty("instance_id") String instanceId,
+      @JsonProperty("base_uri") String baseUri
   ) {
     this.instanceId = instanceId;
     this.baseUri = baseUri;
   }
 
   @JsonProperty("instance_id")
-  @Nullable
   public String getInstanceId() {
     return instanceId;
   }
 
   @JsonProperty("base_uri")
-  @Nullable
   public String getBaseUri() {
     return baseUri;
   }

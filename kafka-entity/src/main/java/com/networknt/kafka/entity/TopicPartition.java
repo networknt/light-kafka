@@ -17,38 +17,29 @@ package com.networknt.kafka.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public final class TopicPartition {
 
-  @NotEmpty
-  @Nullable
   private final String topic;
 
-  @PositiveOrZero
-  @Nullable
   private final Integer partition;
     
   public TopicPartition(
-      @JsonProperty("topic") @Nullable String topic,
-      @JsonProperty("partition") @Nullable Integer partition
+      @JsonProperty("topic") String topic,
+      @JsonProperty("partition") Integer partition
   ) {
     this.topic = topic;
     this.partition = partition;
   }
 
   @JsonProperty
-  @Nullable
   public String getTopic() {
     return topic;
   }
 
   @JsonProperty
-  @Nullable
   public Integer getPartition() {
     return partition;
   }

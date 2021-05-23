@@ -19,8 +19,6 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -38,37 +36,30 @@ public final class CreateConsumerInstanceRequest {
           /* responseMinBytes= */ null,
           /* requestWaitMs= */ null);
 
-  @Nullable
   private final String id;
 
-  @Nullable
   private final String name;
 
-  @NotNull
   private final EmbeddedFormat format;
 
-  @Nullable
   private final String autoOffsetReset;
 
-  @Nullable
   private final String autoCommitEnable;
 
-  @Nullable
   private final Integer responseMinBytes;
 
-  @Nullable
   private final Integer requestWaitMs;
 
   @JsonCreator
   public CreateConsumerInstanceRequest(
-      @JsonProperty("id") @Nullable String id,
-      @JsonProperty("name") @Nullable String name,
-      @JsonProperty("format") @Nullable String format,
-      @JsonProperty("auto.offset.reset") @JsonAlias("autoOffsetReset") @Nullable String autoOffsetReset,
-      @JsonProperty("auto.commit.enable") @JsonAlias("autoCommitEnable") @Nullable String autoCommitEnable,
-      @JsonProperty("fetch.min.bytes") @JsonAlias("responseMinBytes") @Nullable Integer
+      @JsonProperty("id") String id,
+      @JsonProperty("name") String name,
+      @JsonProperty("format") String format,
+      @JsonProperty("auto.offset.reset") @JsonAlias("autoOffsetReset") String autoOffsetReset,
+      @JsonProperty("auto.commit.enable") @JsonAlias("autoCommitEnable") String autoCommitEnable,
+      @JsonProperty("fetch.min.bytes") @JsonAlias("responseMinBytes") Integer
           responseMinBytes,
-      @JsonProperty("consumer.request.timeout.ms") @JsonAlias("requestWaitMs") @Nullable Integer
+      @JsonProperty("consumer.request.timeout.ms") @JsonAlias("requestWaitMs") Integer
           requestWaitMs
   ) {
     this.id = id;
@@ -80,7 +71,7 @@ public final class CreateConsumerInstanceRequest {
     this.requestWaitMs = requestWaitMs;
   }
 
-  private static EmbeddedFormat computeFormat(@Nullable String format) {
+  private static EmbeddedFormat computeFormat(String format) {
     if (format == null) {
       return DEFAULT_FORMAT;
     }
@@ -94,13 +85,11 @@ public final class CreateConsumerInstanceRequest {
   }
 
   @JsonProperty
-  @Nullable
   public String getId() {
     return id;
   }
 
   @JsonProperty
-  @Nullable
   public String getName() {
     return name;
   }
@@ -111,25 +100,21 @@ public final class CreateConsumerInstanceRequest {
   }
 
   @JsonProperty("auto.offset.reset")
-  @Nullable
   public String getAutoOffsetReset() {
     return autoOffsetReset;
   }
 
   @JsonProperty("auto.commit.enable")
-  @Nullable
   public String getAutoCommitEnable() {
     return autoCommitEnable;
   }
 
   @JsonProperty("fetch.min.bytes")
-  @Nullable
   public Integer getResponseMinBytes() {
     return responseMinBytes;
   }
 
   @JsonProperty("consumer.request.timeout.ms")
-  @Nullable
   public Integer getRequestWaitMs() {
     return requestWaitMs;
   }

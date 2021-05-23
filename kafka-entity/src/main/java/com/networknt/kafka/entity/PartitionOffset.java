@@ -1,4 +1,4 @@
-package com.networknt.kafka.producer;
+package com.networknt.kafka.entity;
 
 import java.util.Objects;
 

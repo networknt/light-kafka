@@ -18,24 +18,21 @@ package com.networknt.kafka.entity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public final class ConsumerAssignmentResponse {
 
-  @Nullable
   private final List<TopicPartition> partitions;
 
   @JsonCreator
   public ConsumerAssignmentResponse(
-      @JsonProperty("partitions") @Nullable List<TopicPartition> partitions) {
+      @JsonProperty("partitions") List<TopicPartition> partitions) {
     this.partitions = partitions;
   }
 
   @JsonProperty
-  @Nullable
   public List<TopicPartition> getPartitions() {
     return partitions;
   }
