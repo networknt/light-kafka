@@ -1,5 +1,18 @@
 # Change Log
 
+## [2.0.27](https://github.com/networknt/light-kafka/tree/2.0.27) (2021-05-25)
+
+
+**Merged pull requests:**
+
+
+- fixes \#60 move producer entities to the kafka-entity module [\#61](https://github.com/networknt/light-kafka/pull/61) ([stevehu](https://github.com/stevehu))
+- fixes \#58 support tls connection to the schema-registry [\#59](https://github.com/networknt/light-kafka/pull/59) ([stevehu](https://github.com/stevehu))
+- fixes \#56 add a test case to serialize the ProduceRequest into a JSON [\#57](https://github.com/networknt/light-kafka/pull/57) ([stevehu](https://github.com/stevehu))
+- fixes \#54 Allow the consumer with Avro schema to use NoWrapping conve… [\#55](https://github.com/networknt/light-kafka/pull/55) ([stevehu](https://github.com/stevehu))
+- fixes \#52 add deadLetterEnabled flag to the kafka-consumer.yml [\#53](https://github.com/networknt/light-kafka/pull/53) ([stevehu](https://github.com/stevehu))
+- fixes \#50 exclude conflict dependencies from kafka-avro-serializer [\#51](https://github.com/networknt/light-kafka/pull/51) ([stevehu](https://github.com/stevehu))
+- fixes \#48 update consumer and producer config to support dead letter … [\#49](https://github.com/networknt/light-kafka/pull/49) ([stevehu](https://github.com/stevehu))
 ## [2.0.26](https://github.com/networknt/light-kafka/tree/2.0.26) (2021-04-27)
 
 
