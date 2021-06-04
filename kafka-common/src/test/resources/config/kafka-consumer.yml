@@ -10,6 +10,10 @@ properties:
   group.id: ${kafka-consumer.group.id:group1}
   # Schema registry url
   schema.registry.url: ${kafka-consumer.schema.registry.url:http://localhost:8081}
+  # Schema registry client truststore location, use the following two properties only if schema registry url is https.
+  # schema.registry.ssl.truststore.location: ${kafka-consumer.schema.registry.ssl.truststore.location:/config/client.truststore}
+  # Schema registry client truststore password
+  # schema.registry.ssl.truststore.password: ${kafka-consumer.schema.registry.ssl.truststore.password:password}
   # security configuration for enterprise deployment
   # security.protocol: ${kafka-consumer.security.protocol:SASL_SSL}
   # sasl.mechanism: ${kafka-consumer.sasl.mechanism:PLAIN}
@@ -19,6 +23,14 @@ properties:
   # basic authentication user:pass for the schema registry
   # basic.auth.user.info: ${kafka-consumer.username:username}:${kafka-consumer.password:password}
   # basic.auth.credentials.source: ${kafka-consumer.basic.auth.credentials.source:USER_INFO}
+  # max fetch size from Kafka cluster. Default 50mb is too big for cache consumption on the sidecar
+  fetch.max.bytes: ${kafka-consumer.fetch.max.bytes:1048576}
+  # max pol records default is 500. Adjust it based on the size of the records to make sure each poll
+  # is similar to requestMaxBytes down below.
+  max.poll.records: ${kafka-consumer.max.poll.records:100}
+  # The maximum amount of data per-partition the server will return. Records are fetched in batches by the consumer.
+  # If the first record batch in the first non-empty partition of the fetch is larger than this limit, the batch will still be returned to ensure that the consumer can make progress.
+  max.partition.fetch.bytes: ${kafka-consumer.max.partition.fetch.bytes:1048576}
 
 # common configuration properties between active and reactive consumers
 # Indicator if the dead letter topic is enabled.
@@ -42,7 +54,7 @@ keyFormat: ${kafka-consumer.keyFormat:jsonschema}
 # the format of the value optional
 valueFormat: ${kafka-consumer.valueFormat:jsonschema}
 # Waiting period in millisecond to poll another batch
-waitPeriod: ${kafka-consumer.waitPeriod:10000}
+waitPeriod: ${kafka-consumer.waitPeriod:1000}
 # Backend API host
 backendApiHost: ${kafka-consumer.backendApiHost:https://localhost:8444}
 # Backend API path
@@ -54,11 +66,11 @@ maxConsumerThreads: ${kafka-consumer.maxConsumerThreads:50}
 # a unique id for the server instance, if running in a Kubernetes cluster, use the container id environment variable
 serverId: ${kafka-consumer.serverId:id}
 # maximum number of bytes message keys and values returned. Default to 64*1024*1024
-requestMaxBytes: ${kafka-consumer.requestMaxBytes:67108864}
+requestMaxBytes: ${kafka-consumer.requestMaxBytes:10240}
 # The maximum total time to wait for messages for a request if the maximum number of messages hs not yet been reached.
 requestTimeoutMs: ${kafka-consumer.requestTimeoutMs:1000}
 # Minimum bytes of records to accumulate before returning a response to a consumer request. Default 10MB
-fetchMinBytes: ${kafka-consumer.fetchMinBytes:10000000}
+fetchMinBytes: ${kafka-consumer.fetchMinBytes:-1}
 # amount of idle time before a consumer instance is automatically destroyed.
 instanceTimeoutMs: ${kafka-consumer.instanceTimeoutMs:300000}
 # Amount of time to backoff when an iterator runs out of date.
