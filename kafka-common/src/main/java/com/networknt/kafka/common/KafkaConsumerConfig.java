@@ -4,7 +4,8 @@ import java.util.Map;
 
 public class KafkaConsumerConfig {
     public static final String CONFIG_NAME = "kafka-consumer";
-
+    public static final String AUDIT_TARGET_TOPIC = "topic";
+    public static final String AUDIT_TARGET_LOGFILE = "logfile";
     private String groupId;
     private int maxConsumerThreads;
     private String serverId;

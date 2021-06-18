@@ -12,6 +12,9 @@ import java.util.Map;
  */
 public class KafkaProducerConfig {
     public static final String CONFIG_NAME = "kafka-producer";
+    public static final String AUDIT_TARGET_TOPIC = "topic";
+    public static final String AUDIT_TARGET_LOGFILE = "logfile";
+
     private Map<String, Object> properties;
 
     private String topic;
