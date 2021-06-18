@@ -39,5 +39,7 @@ injectOpenTracing: ${kafka-producer.injectOpenTracing:false}
 injectCallerId: ${kafka-producer.injectCallerId:false}
 # Indicator if the audit is enabled.
 auditEnabled: ${kafka-producer.auditEnabled:true}
-# The producer audit topic name
+# Audit log destination topic or logfile. Default to topic
+auditTarget: ${kafka-producer.auditTarget:topic}
+# The consumer audit topic name if the auditTarget is topic
 auditTopic: ${kafka-producer.auditTopic:sidecar-audit}

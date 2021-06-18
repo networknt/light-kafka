@@ -18,6 +18,7 @@ public class KafkaProducerConfig {
     private boolean injectOpenTracing;
     private boolean injectCallerId;
     private boolean auditEnabled;
+    private String auditTarget;
     private String auditTopic;
 
     public KafkaProducerConfig() {
@@ -69,5 +70,13 @@ public class KafkaProducerConfig {
 
     public void setAuditEnabled(boolean auditEnabled) {
         this.auditEnabled = auditEnabled;
+    }
+
+    public String getAuditTarget() {
+        return auditTarget;
+    }
+
+    public void setAuditTarget(String auditTarget) {
+        this.auditTarget = auditTarget;
     }
 }
