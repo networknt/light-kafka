@@ -12,12 +12,16 @@ import java.util.Map;
  */
 public class KafkaProducerConfig {
     public static final String CONFIG_NAME = "kafka-producer";
+    public static final String AUDIT_TARGET_TOPIC = "topic";
+    public static final String AUDIT_TARGET_LOGFILE = "logfile";
+
     private Map<String, Object> properties;
 
     private String topic;
     private boolean injectOpenTracing;
     private boolean injectCallerId;
     private boolean auditEnabled;
+    private String auditTarget;
     private String auditTopic;
 
     public KafkaProducerConfig() {
@@ -69,5 +73,13 @@ public class KafkaProducerConfig {
 
     public void setAuditEnabled(boolean auditEnabled) {
         this.auditEnabled = auditEnabled;
+    }
+
+    public String getAuditTarget() {
+        return auditTarget;
+    }
+
+    public void setAuditTarget(String auditTarget) {
+        this.auditTarget = auditTarget;
     }
 }

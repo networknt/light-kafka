@@ -39,7 +39,9 @@ deadLetterEnabled: ${kafka-consumer.deadLetterEnabled:true}
 deadLetterTopicExt: ${kafka-consumer.deadLetterTopicExt:.dlq}
 # Indicator if the audit is enabled.
 auditEnabled: ${kafka-consumer.auditEnabled:true}
-# The consumer audit topic name
+# Audit log destination topic or logfile. Default to topic
+auditTarget: ${kafka-consumer.auditTarget:topic}
+# The consumer audit topic name if the auditTarget is topic
 auditTopic: ${kafka-consumer.auditTopic:sidecar-audit}
 # Indicate if the NoWrapping Avro converter is used. This should be used for avro schema with data type in JSON.
 useNoWrappingAvro: ${kafka-consumer.useNoWrappingAvro:false}
