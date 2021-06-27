@@ -1,5 +1,15 @@
 # Change Log
 
+## [2.0.28](https://github.com/networknt/light-kafka/tree/2.0.28) (2021-06-27)
+
+
+**Merged pull requests:**
+
+
+- Issue67 [\#68](https://github.com/networknt/light-kafka/pull/68) ([stevehu](https://github.com/stevehu))
+- fixes \#65 fix a warning in the producer pom.xml [\#66](https://github.com/networknt/light-kafka/pull/66) ([stevehu](https://github.com/stevehu))
+-  fix the build issue [\#64](https://github.com/networknt/light-kafka/pull/64) ([chenyan71](https://github.com/chenyan71))
+- fixes \#62 sync the test config file kafka-consumer.yml and kafka-prod… [\#63](https://github.com/networknt/light-kafka/pull/63) ([stevehu](https://github.com/stevehu))
 ## [2.0.27](https://github.com/networknt/light-kafka/tree/2.0.27) (2021-05-25)
 
 
