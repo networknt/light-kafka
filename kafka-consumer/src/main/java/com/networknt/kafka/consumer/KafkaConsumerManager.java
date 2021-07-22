@@ -393,8 +393,8 @@ public class KafkaConsumerManager {
           log.trace("Finished executing consumer read task ({})", taskState.task);
         }
       } catch (FrameworkException e) {
-        log.error("Failed to read records from consumer {} while executing read task ({}). {}",
-                  taskState.consumerState.getId().toString(), taskState.task, e);
+        log.error(String.format("Failed to read records from consumer %s while executing read task %s",
+                  taskState.consumerState.getId().toString(), taskState.task), e);
         taskState.callback.onCompletion(null, e);
       }
     }

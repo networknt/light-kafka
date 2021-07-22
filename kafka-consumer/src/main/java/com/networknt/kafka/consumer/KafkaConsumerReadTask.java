@@ -136,7 +136,7 @@ class KafkaConsumerReadTask<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT> {
     } catch (Exception e) {
       Status status = new Status(UNEXPECTED_CONSUMER_READ_EXCEPTION, this);
       finish(new FrameworkException(status));
-      log.error("Unexpected exception in consumer read task id={} ", this, e);
+      log.error("Unexpected exception in consumer read task", e);
     }
   }
 
