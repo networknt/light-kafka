@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.0.29](https://github.com/networknt/light-kafka/tree/2.0.29) (2021-07-25)
+
+
+**Merged pull requests:**
+
+
+- fixes \#69 update the logging statement to allow the stacktrace output [\#70](https://github.com/networknt/light-kafka/pull/70) ([stevehu](https://github.com/stevehu))
 ## [2.0.28](https://github.com/networknt/light-kafka/tree/2.0.28) (2021-06-27)
 
 
