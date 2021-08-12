@@ -41,10 +41,10 @@ import java.util.Vector;
  * is the format returned by the Kafka consumer's decoder/deserializer, ClientK/ClientV is
  * the format returned to the client in the HTTP response. In some cases these may be identical.
  */
-class KafkaConsumerReadTask<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT> {
+public class KafkaConsumerReadTask<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT> {
 
   private static final Logger log = LoggerFactory.getLogger(KafkaConsumerReadTask.class);
-  private static final String UNEXPECTED_CONSUMER_READ_EXCEPTION = "ERR12205";
+  public static final String UNEXPECTED_CONSUMER_READ_EXCEPTION = "ERR12205";
 
   private final KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT> parent;
   private final Duration requestTimeout;
