@@ -19,18 +19,19 @@ properties:
   # sasl.mechanism: ${kafka-consumer.sasl.mechanism:PLAIN}
   # sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-consumer.username:username}\" password=\"${kafka-consumer.password:password}\";"
   # ssl.endpoint.identification.algorithm: ${kafka-consumer.ssl.endpoint.identification.algorithm:algo-name}
+  # Apache Kafka 2.3 clients or later will then read from followers that have matching broker.rack as the specified client.rack ID.
   # client.rack: ${kafka-consumer.client.rack:rack-name}
   # basic authentication user:pass for the schema registry
   # basic.auth.user.info: ${kafka-consumer.username:username}:${kafka-consumer.password:password}
   # basic.auth.credentials.source: ${kafka-consumer.basic.auth.credentials.source:USER_INFO}
   # max fetch size from Kafka cluster. Default 50mb is too big for cache consumption on the sidecar
-  fetch.max.bytes: ${kafka-consumer.fetch.max.bytes:1048576}
+  fetch.max.bytes: ${kafka-consumer.fetch.max.bytes:102400}
   # max pol records default is 500. Adjust it based on the size of the records to make sure each poll
   # is similar to requestMaxBytes down below.
   max.poll.records: ${kafka-consumer.max.poll.records:100}
   # The maximum amount of data per-partition the server will return. Records are fetched in batches by the consumer.
   # If the first record batch in the first non-empty partition of the fetch is larger than this limit, the batch will still be returned to ensure that the consumer can make progress.
-  max.partition.fetch.bytes: ${kafka-consumer.max.partition.fetch.bytes:1048576}
+  max.partition.fetch.bytes: ${kafka-consumer.max.partition.fetch.bytes:102400}
 
 # common configuration properties between active and reactive consumers
 # Indicator if the dead letter topic is enabled.
@@ -40,7 +41,7 @@ deadLetterTopicExt: ${kafka-consumer.deadLetterTopicExt:.dlq}
 # Indicator if the audit is enabled.
 auditEnabled: ${kafka-consumer.auditEnabled:true}
 # Audit log destination topic or logfile. Default to topic
-auditTarget: ${kafka-consumer.auditTarget:topic}
+auditTarget: ${kafka-consumer.auditTarget:logfile}
 # The consumer audit topic name if the auditTarget is topic
 auditTopic: ${kafka-consumer.auditTopic:sidecar-audit}
 # Indicate if the NoWrapping Avro converter is used. This should be used for avro schema with data type in JSON.
@@ -56,7 +57,7 @@ keyFormat: ${kafka-consumer.keyFormat:jsonschema}
 # the format of the value optional
 valueFormat: ${kafka-consumer.valueFormat:jsonschema}
 # Waiting period in millisecond to poll another batch
-waitPeriod: ${kafka-consumer.waitPeriod:1000}
+waitPeriod: ${kafka-consumer.waitPeriod:100}
 # Backend API host
 backendApiHost: ${kafka-consumer.backendApiHost:https://localhost:8444}
 # Backend API path
@@ -67,8 +68,8 @@ backendApiPath: ${kafka-consumer.backendApiPath:/kafka/records}
 maxConsumerThreads: ${kafka-consumer.maxConsumerThreads:50}
 # a unique id for the server instance, if running in a Kubernetes cluster, use the container id environment variable
 serverId: ${kafka-consumer.serverId:id}
-# maximum number of bytes message keys and values returned. Default to 64*1024*1024
-requestMaxBytes: ${kafka-consumer.requestMaxBytes:10240}
+# maximum number of bytes message keys and values returned. Default to 100*1024
+requestMaxBytes: ${kafka-consumer.requestMaxBytes:102400}
 # The maximum total time to wait for messages for a request if the maximum number of messages hs not yet been reached.
 requestTimeoutMs: ${kafka-consumer.requestTimeoutMs:1000}
 # Minimum bytes of records to accumulate before returning a response to a consumer request. Default 10MB
