@@ -21,6 +21,8 @@ import com.google.common.io.BaseEncoding;
 import com.google.protobuf.ByteString;
 import io.confluent.kafka.serializers.KafkaJsonSerializer;
 import io.confluent.kafka.serializers.KafkaJsonSerializerConfig;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 import com.networknt.kafka.entity.EmbeddedFormat;
@@ -47,6 +49,8 @@ public class NoSchemaRecordSerializer {
             case JSON:
                 return Optional.of(serializeJson(data));
 
+            case STRING:
+                return Optional.of(serializeString(data));
             default:
                 throw new AssertionError(String.format("Unexpected enum constant: %s", format));
         }
@@ -62,6 +66,20 @@ public class NoSchemaRecordSerializer {
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(
                     String.format("data=%s is not a valid base64 string.", data), e);
+        }
+        return ByteString.copyFrom(serialized);
+    }
+
+    private static ByteString serializeString(JsonNode data) {
+        if (!data.isTextual()) {
+            throw new RuntimeException(String.format("data=%s is not a string.", data));
+        }
+        byte[] serialized;
+        try {
+            serialized = data.asText().getBytes(StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(
+                    String.format("data=%s is not a valid string.", data), e);
         }
         return ByteString.copyFrom(serialized);
     }

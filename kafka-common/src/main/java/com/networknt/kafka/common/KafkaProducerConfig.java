@@ -23,6 +23,8 @@ public class KafkaProducerConfig {
     private boolean auditEnabled;
     private String auditTarget;
     private String auditTopic;
+    private String keyFormat;
+    private String valueFormat;
 
     public KafkaProducerConfig() {
     }
@@ -81,5 +83,21 @@ public class KafkaProducerConfig {
 
     public void setAuditTarget(String auditTarget) {
         this.auditTarget = auditTarget;
+    }
+
+    public String getKeyFormat() {
+        return keyFormat;
+    }
+
+    public void setKeyFormat(String keyFormat) {
+        this.keyFormat = keyFormat;
+    }
+
+    public String getValueFormat() {
+        return valueFormat;
+    }
+
+    public void setValueFormat(String valueFormat) {
+        this.valueFormat = valueFormat;
     }
 }
