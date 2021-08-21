@@ -94,6 +94,18 @@ public enum EmbeddedFormat {
         public SchemaProvider getSchemaProvider() {
             return schemaProvider;
         }
+    },
+
+    STRING {
+        @Override
+        public boolean requiresSchema() {
+            return false;
+        }
+
+        @Override
+        public SchemaProvider getSchemaProvider() {
+            throw new UnsupportedOperationException();
+        }
     };
 
     public abstract boolean requiresSchema();
