@@ -26,7 +26,7 @@ properties:
   # basic.auth.credentials.source: ${kafka-consumer.basic.auth.credentials.source:USER_INFO}
   # max fetch size from Kafka cluster. Default 50mb is too big for cache consumption on the sidecar
   fetch.max.bytes: ${kafka-consumer.fetch.max.bytes:102400}
-  # max pol records default is 500. Adjust it based on the size of the records to make sure each poll
+  # max poll records default is 500. Adjust it based on the size of the records to make sure each poll
   # is similar to requestMaxBytes down below.
   max.poll.records: ${kafka-consumer.max.poll.records:100}
   # The maximum amount of data per-partition the server will return. Records are fetched in batches by the consumer.
