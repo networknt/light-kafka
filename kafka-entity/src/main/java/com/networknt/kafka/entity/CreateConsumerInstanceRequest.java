@@ -24,13 +24,15 @@ import java.util.StringJoiner;
 
 public final class CreateConsumerInstanceRequest {
 
-  private static final EmbeddedFormat DEFAULT_FORMAT = EmbeddedFormat.BINARY;
+  private static final EmbeddedFormat DEFAULT_KEY_FORMAT = EmbeddedFormat.STRING;
+  private static final EmbeddedFormat DEFAULT_VALUE_FORMAT = EmbeddedFormat.BINARY;
 
   public static final CreateConsumerInstanceRequest PROTOTYPE =
       new CreateConsumerInstanceRequest(
           /* id= */ null,
           /* name= */ null,
-          /* format= */ null,
+          /* keyFormat= */ null,
+          /* valueFormat = */ null,
           /* autoOffsetReset= */ null,
           /* autoCommitEnable= */ null,
           /* responseMinBytes= */ null,
@@ -40,7 +42,9 @@ public final class CreateConsumerInstanceRequest {
 
   private final String name;
 
-  private final EmbeddedFormat format;
+  private final EmbeddedFormat keyFormat;
+
+  private final EmbeddedFormat valueFormat;
 
   private final String autoOffsetReset;
 
@@ -54,7 +58,8 @@ public final class CreateConsumerInstanceRequest {
   public CreateConsumerInstanceRequest(
       @JsonProperty("id") String id,
       @JsonProperty("name") String name,
-      @JsonProperty("format") String format,
+      @JsonProperty("keyFormat") String keyFormat,
+      @JsonProperty("valueFormat") String valueFormat,
       @JsonProperty("auto.offset.reset") @JsonAlias("autoOffsetReset") String autoOffsetReset,
       @JsonProperty("auto.commit.enable") @JsonAlias("autoCommitEnable") String autoCommitEnable,
       @JsonProperty("fetch.min.bytes") @JsonAlias("responseMinBytes") Integer
@@ -64,16 +69,21 @@ public final class CreateConsumerInstanceRequest {
   ) {
     this.id = id;
     this.name = name;
-    this.format = computeFormat(format);
+    this.keyFormat = computeFormat(keyFormat, true);
+    this.valueFormat = computeFormat(valueFormat, false);
     this.autoOffsetReset = autoOffsetReset;
     this.autoCommitEnable = autoCommitEnable;
     this.responseMinBytes = responseMinBytes;
     this.requestWaitMs = requestWaitMs;
   }
 
-  private static EmbeddedFormat computeFormat(String format) {
+  private static EmbeddedFormat computeFormat(String format, boolean isKey) {
     if (format == null) {
-      return DEFAULT_FORMAT;
+      if(isKey) {
+        return DEFAULT_KEY_FORMAT;
+      } else {
+        return DEFAULT_VALUE_FORMAT;
+      }
     }
     String formatCanonical = format.toUpperCase();
     for (EmbeddedFormat f : EmbeddedFormat.values()) {
@@ -95,8 +105,13 @@ public final class CreateConsumerInstanceRequest {
   }
 
   @JsonProperty
-  public String getFormat() {
-    return format.name().toLowerCase();
+  public String getKeyFormat() {
+    return keyFormat.name().toLowerCase();
+  }
+
+  @JsonProperty
+  public String getValueFormat() {
+    return valueFormat.name().toLowerCase();
   }
 
   @JsonProperty("auto.offset.reset")
@@ -123,7 +138,8 @@ public final class CreateConsumerInstanceRequest {
     return ConsumerInstanceConfig.create(
         id,
         name,
-        format,
+        keyFormat,
+        valueFormat,
         autoOffsetReset,
         autoCommitEnable,
         responseMinBytes,
@@ -141,7 +157,8 @@ public final class CreateConsumerInstanceRequest {
     CreateConsumerInstanceRequest that = (CreateConsumerInstanceRequest) o;
     return Objects.equals(id, that.id)
         && Objects.equals(name, that.name)
-        && format == that.format
+        && keyFormat == that.keyFormat
+        && valueFormat == that.valueFormat
         && Objects.equals(autoOffsetReset, that.autoOffsetReset)
         && Objects.equals(autoCommitEnable, that.autoCommitEnable)
         && Objects.equals(responseMinBytes, that.responseMinBytes)
@@ -151,7 +168,7 @@ public final class CreateConsumerInstanceRequest {
   @Override
   public int hashCode() {
     return Objects.hash(
-        id, name, format, autoOffsetReset, autoCommitEnable, responseMinBytes, requestWaitMs);
+        id, name, keyFormat, valueFormat, autoOffsetReset, autoCommitEnable, responseMinBytes, requestWaitMs);
   }
 
   @Override
@@ -160,7 +177,8 @@ public final class CreateConsumerInstanceRequest {
         ", ", CreateConsumerInstanceRequest.class.getSimpleName() + "[", "]")
         .add("id='" + id + "'")
         .add("name='" + name + "'")
-        .add("format=" + format)
+        .add("keyFormat=" + keyFormat)
+        .add("valueFormat=" + valueFormat)
         .add("autoOffsetReset='" + autoOffsetReset + "'")
         .add("autoCommitEnable='" + autoCommitEnable + "'")
         .add("responseMinBytes=" + responseMinBytes)

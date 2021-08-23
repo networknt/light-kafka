@@ -19,7 +19,8 @@ public class ConsumerInstanceConfig {
 
   String id;
   String name;
-  EmbeddedFormat format;
+  EmbeddedFormat keyFormat;
+  EmbeddedFormat valueFormat;
   String autoOffsetReset;
   String autoCommitEnable;
   Integer responseMinBytes;
@@ -28,10 +29,11 @@ public class ConsumerInstanceConfig {
   ConsumerInstanceConfig() {
   }
 
-  public ConsumerInstanceConfig(String id, String name, EmbeddedFormat format, String autoOffsetReset, String autoCommitEnable, Integer responseMinBytes, Integer requestWaitMs) {
+  public ConsumerInstanceConfig(String id, String name, EmbeddedFormat keyFormat, EmbeddedFormat valueFormat, String autoOffsetReset, String autoCommitEnable, Integer responseMinBytes, Integer requestWaitMs) {
     this.id = id;
     this.name = name;
-    this.format = format;
+    this.keyFormat = keyFormat;
+    this.valueFormat = valueFormat;
     this.autoOffsetReset = autoOffsetReset;
     this.autoCommitEnable = autoCommitEnable;
     this.responseMinBytes = responseMinBytes;
@@ -46,8 +48,12 @@ public class ConsumerInstanceConfig {
     return name;
   }
 
-  public EmbeddedFormat getFormat() {
-    return format;
+  public EmbeddedFormat getKeyFormat() {
+    return keyFormat;
+  }
+
+  public EmbeddedFormat getValueFormat() {
+    return valueFormat;
   }
 
   public String getAutoOffsetReset() {
@@ -74,8 +80,12 @@ public class ConsumerInstanceConfig {
     this.name = name;
   }
 
-  public void setFormat(EmbeddedFormat format) {
-    this.format = format;
+  public void setKeyFormat(EmbeddedFormat keyFormat) {
+    this.keyFormat = keyFormat;
+  }
+
+  public void setValueFormat(EmbeddedFormat valueFormat) {
+    this.valueFormat = valueFormat;
   }
 
   public void setAutoOffsetReset(String autoOffsetReset) {
@@ -94,11 +104,12 @@ public class ConsumerInstanceConfig {
     this.requestWaitMs = requestWaitMs;
   }
 
-  public static ConsumerInstanceConfig create(EmbeddedFormat format) {
+  public static ConsumerInstanceConfig create(EmbeddedFormat keyFormat, EmbeddedFormat valueFormat) {
     return create(
         /* id= */ null,
         /* name= */ null,
-        format,
+        keyFormat,
+        valueFormat,
         /* autoOffsetReset= */ null,
         /* autoCommitEnable= */ null,
         /* responseMinBytes= */ null,
@@ -108,13 +119,14 @@ public class ConsumerInstanceConfig {
   public static ConsumerInstanceConfig create(
       String id,
       String name,
-      EmbeddedFormat format,
+      EmbeddedFormat keyFormat,
+      EmbeddedFormat valueFormat,
       String autoOffsetReset,
       String autoCommitEnable,
       Integer responseMinBytes,
       Integer requestWaitMs
   ) {
     return new ConsumerInstanceConfig(
-        id, name, format, autoOffsetReset, autoCommitEnable, responseMinBytes, requestWaitMs);
+        id, name, keyFormat, valueFormat, autoOffsetReset, autoCommitEnable, responseMinBytes, requestWaitMs);
   }
 }

@@ -15,11 +15,14 @@
 
 package com.networknt.kafka.consumer;
 
+import com.google.protobuf.ByteString;
 import com.networknt.kafka.common.KafkaConsumerConfig;
+import com.networknt.kafka.common.converter.SchemaConverter;
 import com.networknt.kafka.entity.*;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
 
@@ -32,6 +35,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.networknt.config.JsonMapper.objectMapper;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 
@@ -41,10 +45,12 @@ import static java.util.Collections.singletonMap;
  * {@code KafkaMessageAndMetadata<K,V>} values to ConsumerRecords that can be returned to the client
  * (including translation if the decoded Kafka consumer type and ConsumerRecord types differ).
  */
-public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT> {
+public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT> {
 
   private ConsumerInstanceId instanceId;
   private Consumer<KafkaKeyT, KafkaValueT> consumer;
+  private KafkaConsumerConfig config;
+  private final SchemaConverter schemaConverter;
   private final Clock clock = Clock.systemUTC();
   private final Duration consumerInstanceTimeout;
   private final ConsumerInstanceConfig consumerInstanceConfig;
@@ -57,10 +63,13 @@ public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, Cli
       KafkaConsumerConfig config,
       ConsumerInstanceConfig consumerInstanceConfig,
       ConsumerInstanceId instanceId,
-      Consumer<KafkaKeyT, KafkaValueT> consumer
+      Consumer<KafkaKeyT, KafkaValueT> consumer,
+      SchemaConverter schemaConverter
   ) {
+    this.config = config;
     this.instanceId = instanceId;
     this.consumer = consumer;
+    this.schemaConverter = schemaConverter;
     this.consumerInstanceTimeout =
         Duration.ofMillis(config.getInstanceTimeoutMs());
     this.expiration = clock.instant().plus(consumerInstanceTimeout);
@@ -80,12 +89,81 @@ public abstract class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, Cli
    * client's requested types. While doing so, computes the approximate size of the message in
    * bytes, which is used to track the approximate total payload size for consumer read responses to
    * determine when to trigger the response.
-   * @param msg the message
+   * @param record the message
    * @return consumer record and size
    */
-  public abstract ConsumerRecordAndSize<ClientKeyT, ClientValueT> createConsumerRecord(
-      ConsumerRecord<KafkaKeyT, KafkaValueT> msg
-  );
+  public ConsumerRecordAndSize<ClientKeyT, ClientValueT> createConsumerRecord(ConsumerRecord<KafkaKeyT, KafkaValueT> record) {
+    long keySize = 0L;
+    long valueSize = 0L;
+    Object key = null;
+    Object value = null;
+
+    if(record.key() != null) {
+      switch (config.getKeyFormat()) {
+        case "binary":
+          keySize = (record.key() != null ? ((byte[])record.key()).length : 0);
+          key = new String(((byte[])record.key()), StandardCharsets.UTF_8);
+          break;
+        case "string":
+          keySize = (record.key() != null ? ((String)record.key()).length() : 0);
+          key = record.key();
+          break;
+        case "json":
+          keySize = (record.key() != null ? ((byte[])record.key()).length : 0);
+          key = deserializeJson(((byte[])record.key()));
+          break;
+        case "avro":
+        case "jsonschema":
+        case "protobuf":
+          SchemaConverter.JsonNodeAndSize keyNode = schemaConverter.toJson(record.key());
+          keySize = keyNode.getSize();
+          key = keyNode.getJson();
+          break;
+      }
+    }
+
+    if(record.value() != null) {
+      switch (config.getValueFormat()) {
+        case "binary":
+          valueSize = (record.value() != null ? ((byte[])record.value()).length : 0);
+          value = ByteString.copyFrom(((byte[])record.value()));
+        case "string":
+          valueSize = (record.value() != null ? ((String)record.value()).length() : 0);
+          value = record.value();
+          break;
+        case "json":
+          valueSize = (record.value() != null ? ((byte[])record.value()).length : 0);
+          value = deserializeJson(((byte[])record.value()));
+          break;
+        case "avro":
+        case "jsonschema":
+        case "protobuf":
+          SchemaConverter.JsonNodeAndSize valueNode = schemaConverter.toJson(record.value());
+          valueSize = valueNode.getSize();
+          value = valueNode.getJson();
+          break;
+      }
+    }
+
+    return new ConsumerRecordAndSize<ClientKeyT, ClientValueT>(
+            com.networknt.kafka.entity.ConsumerRecord.create(
+                    record.topic(),
+                    (ClientKeyT)key,
+                    (ClientValueT)value,
+                    record.headers() != null ? convertHeaders(record.headers()) : null,
+                    record.partition(),
+                    record.offset()),
+            keySize + valueSize);
+
+  }
+
+  private Object deserializeJson(byte[] data) {
+    try {
+      return objectMapper.readValue(data, Object.class);
+    } catch (Exception e) {
+      throw new SerializationException(e);
+    }
+  }
 
   /**
    * Commit the given list of offsets
