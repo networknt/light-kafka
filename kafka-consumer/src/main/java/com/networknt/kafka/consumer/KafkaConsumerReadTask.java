@@ -105,7 +105,6 @@ public class KafkaConsumerReadTask<KafkaKeyT, KafkaValueT, ClientKeyT, ClientVal
       if (messages == null) {
         messages = new Vector<>();
       }
-
       addRecords();
 
       log.trace(
@@ -136,6 +135,7 @@ public class KafkaConsumerReadTask<KafkaKeyT, KafkaValueT, ClientKeyT, ClientVal
     } catch (Exception e) {
       Status status = new Status(UNEXPECTED_CONSUMER_READ_EXCEPTION, this);
       finish(new FrameworkException(status));
+      e.printStackTrace();
       log.error("Unexpected exception in consumer read task", e);
     }
   }

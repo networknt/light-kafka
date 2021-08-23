@@ -193,22 +193,23 @@ public class KafkaConsumerManager {
       // and should not be propagated to the consumer
       props.setProperty("request.timeout.ms", "30000");
 
-      switch (instanceConfig.getFormat()) {
+      switch (instanceConfig.getKeyFormat()) {
         case AVRO:
           props.put("key.deserializer", "io.confluent.kafka.serializers.KafkaAvroDeserializer");
-          props.put("value.deserializer", "io.confluent.kafka.serializers.KafkaAvroDeserializer");
           break;
         case JSONSCHEMA:
           props.put("key.deserializer",
-              "io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer");
-          props.put("value.deserializer",
               "io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer");
           break;
         case PROTOBUF:
           props.put("key.deserializer",
               "io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer");
-          props.put("value.deserializer",
-              "io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer");
+          break;
+        case STRING:
+          props.put(
+                  "key.deserializer",
+                  "org.apache.kafka.common.serialization.StringDeserializer"
+          );
           break;
         case JSON:
         case BINARY:
@@ -217,9 +218,32 @@ public class KafkaConsumerManager {
               "key.deserializer",
               "org.apache.kafka.common.serialization.ByteArrayDeserializer"
           );
+      }
+
+      switch (instanceConfig.getValueFormat()) {
+        case AVRO:
+          props.put("value.deserializer", "io.confluent.kafka.serializers.KafkaAvroDeserializer");
+          break;
+        case JSONSCHEMA:
+          props.put("value.deserializer",
+                  "io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer");
+          break;
+        case PROTOBUF:
+          props.put("value.deserializer",
+                  "io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer");
+          break;
+        case STRING:
           props.put(
-              "value.deserializer",
-              "org.apache.kafka.common.serialization.ByteArrayDeserializer"
+                  "value.deserializer",
+                  "org.apache.kafka.common.serialization.StringDeserializer"
+          );
+          break;
+        case JSON:
+        case BINARY:
+        default:
+          props.put(
+                  "value.deserializer",
+                  "org.apache.kafka.common.serialization.ByteArrayDeserializer"
           );
       }
 
@@ -254,23 +278,12 @@ public class KafkaConsumerManager {
           ConsumerInstanceConfig instanceConfig,
           ConsumerInstanceId cid, Consumer consumer
   ) throws FrameworkException {
-    switch (instanceConfig.getFormat()) {
-      case BINARY:
-        return new BinaryKafkaConsumerState(config, instanceConfig, cid, consumer);
-      case AVRO:
-        return new SchemaKafkaConsumerState(
-            config, instanceConfig, cid, consumer, config.isUseNoWrappingAvro() ? new AvroNoWrappingConverter() : new AvroConverter());
-      case JSON:
-        return new JsonKafkaConsumerState(config, instanceConfig, cid, consumer);
-      case JSONSCHEMA:
-        return new SchemaKafkaConsumerState(
-            config, instanceConfig, cid, consumer, new JsonSchemaConverter());
-      case PROTOBUF:
-        return new SchemaKafkaConsumerState(
-            config, instanceConfig, cid, consumer, new ProtobufConverter());
-      default:
-        Status status = new Status(INVALID_EMBEDDED_FORMAT, instanceConfig.getFormat());
-        throw new FrameworkException(status);
+    if(instanceConfig.getKeyFormat() != null && instanceConfig.getValueFormat() != null) {
+      return new KafkaConsumerState(
+              config, instanceConfig, cid, consumer, config.isUseNoWrappingAvro() ? new AvroNoWrappingConverter() : new AvroConverter());
+    } else {
+      Status status = new Status(INVALID_EMBEDDED_FORMAT, instanceConfig.getKeyFormat(), instanceConfig.getValueFormat());
+      throw new FrameworkException(status);
     }
   }
 
@@ -280,7 +293,7 @@ public class KafkaConsumerManager {
   public <KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT> void readRecords(
       final String group,
       final String instance,
-      Class<? extends KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT>>
+      Class<? extends KafkaConsumerState>
           consumerStateType,
       final Duration timeout,
       final long maxBytes,
@@ -537,8 +550,7 @@ public class KafkaConsumerManager {
 
   private ConsumerInstanceId createAdminConsumerInstance() {
     String consumerGroup = createAdminConsumerGroup();
-    String consumerInstance = createConsumer(consumerGroup, ConsumerInstanceConfig.create(
-        EmbeddedFormat.BINARY));
+    String consumerInstance = createConsumer(consumerGroup, ConsumerInstanceConfig.create(EmbeddedFormat.STRING, EmbeddedFormat.BINARY));
     return new ConsumerInstanceId(consumerGroup, consumerInstance);
   }
 
