@@ -39,13 +39,15 @@ properties:
   # basic authentication user:pass for the schema registry
   # basic.auth.user.info: ${kafka-producer.username:username}:${kafka-producer.password:password}
   # basic.auth.credentials.source: ${kafka-producer.basic.auth.credentials.source:USER_INFO}
+  # If you have message that is bigger than 1 MB to produce, increase this value.
+  max.message.size: ${kafka-producer.max.message.size:1048576}
 
 # The default topic for the producer. Only certain producer implementation will use it.
 topic: ${kafka-producer.topic:portal-event}
 # Default key format if no schema for the topic key
-keyFormat: string
+keyFormat: ${kafka-producer.keyFormat:jsonschema}
 # Default value format if no schema for the topic value
-valueFormat: string
+valueFormat: ${kafka-producer.valueFormat:jsonschema}
 # If open tracing is enable. traceability, correlation and metrics should not be in the chain if opentracing is used.
 injectOpenTracing: ${kafka-producer.injectOpenTracing:false}
 # Inject serviceId as callerId into the http header for metrics to collect the caller. The serviceId is from server.yml
@@ -53,6 +55,6 @@ injectCallerId: ${kafka-producer.injectCallerId:false}
 # Indicator if the audit is enabled.
 auditEnabled: ${kafka-producer.auditEnabled:true}
 # Audit log destination topic or logfile. Default to topic
-auditTarget: ${kafka-producer.auditTarget:topic}
+auditTarget: ${kafka-producer.auditTarget:logfile}
 # The consumer audit topic name if the auditTarget is topic
 auditTopic: ${kafka-producer.auditTopic:sidecar-audit}
