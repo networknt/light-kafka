@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.0.30](https://github.com/networknt/light-kafka/tree/2.0.30) (2021-08-23)
+
+
+**Merged pull requests:**
+
+
+- fixes \#82 update the kafka-producer.yml and kafka-consumer.yml based … [\#83](https://github.com/networknt/light-kafka/pull/83) ([stevehu](https://github.com/stevehu))
+- fixes \#78 update consumer record to alllow key and value have differe… [\#81](https://github.com/networknt/light-kafka/pull/81) ([stevehu](https://github.com/stevehu))
+- fixes \#79 add default key and value formats configuration for produce… [\#80](https://github.com/networknt/light-kafka/pull/80) ([stevehu](https://github.com/stevehu))
+- fixes \#76 add kafka-streams to the dependency for parent and kafka-st… [\#77](https://github.com/networknt/light-kafka/pull/77) ([stevehu](https://github.com/stevehu))
+- fixes \#74 Make KafkaConsumerReadTask public and expose exception public [\#75](https://github.com/networknt/light-kafka/pull/75) ([stevehu](https://github.com/stevehu))
+- fixes \#72 Add KafkaAdminConfig for Kafka client admin configuration [\#73](https://github.com/networknt/light-kafka/pull/73) ([stevehu](https://github.com/stevehu))
 ## [2.0.29](https://github.com/networknt/light-kafka/tree/2.0.29) (2021-07-25)
 
 
