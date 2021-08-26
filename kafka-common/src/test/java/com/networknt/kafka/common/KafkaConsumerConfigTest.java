@@ -11,5 +11,6 @@ public class KafkaConsumerConfigTest {
     public void testLoadingConfig() {
         KafkaConsumerConfig config = (KafkaConsumerConfig) Config.getInstance().getJsonObjectConfig(KafkaConsumerConfig.CONFIG_NAME, KafkaConsumerConfig.class);
         Assertions.assertNotNull(config);
+        Assertions.assertNotNull(config.getGroupId());
     }
 }

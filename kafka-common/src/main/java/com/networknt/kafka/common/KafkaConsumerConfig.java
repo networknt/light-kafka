@@ -118,6 +118,7 @@ public class KafkaConsumerConfig {
 
     public void setProperties(Map<String, Object> properties) {
         this.properties = properties;
+        this.groupId = (String)getProperties().get("group.id");
     }
 
     public String getKeyFormat() {
