@@ -280,7 +280,7 @@ public class KafkaConsumerManager {
   ) throws FrameworkException {
     if(instanceConfig.getKeyFormat() != null && instanceConfig.getValueFormat() != null) {
       return new KafkaConsumerState(
-              config, instanceConfig, cid, consumer, config.isUseNoWrappingAvro() ? new AvroNoWrappingConverter() : new AvroConverter());
+              config, instanceConfig, cid, consumer);
     } else {
       Status status = new Status(INVALID_EMBEDDED_FORMAT, instanceConfig.getKeyFormat(), instanceConfig.getValueFormat());
       throw new FrameworkException(status);
