@@ -138,6 +138,7 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
         case "binary":
           valueSize = (record.value() != null ? ((byte[])record.value()).length : 0);
           value = ByteString.copyFrom(((byte[])record.value()));
+          break;
         case "string":
           valueSize = (record.value() != null ? ((String)record.value()).length() : 0);
           value = record.value();
