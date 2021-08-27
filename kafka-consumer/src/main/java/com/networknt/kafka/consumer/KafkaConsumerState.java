@@ -105,7 +105,7 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
       switch (config.getKeyFormat()) {
         case "binary":
           keySize = (record.key() != null ? ((byte[])record.key()).length : 0);
-          key = new String(((byte[])record.key()), StandardCharsets.UTF_8);
+          key = ByteString.copyFrom((byte[])record.key());
           break;
         case "string":
           keySize = (record.key() != null ? ((String)record.key()).length() : 0);
@@ -113,7 +113,7 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
           break;
         case "json":
           keySize = (record.key() != null ? ((byte[])record.key()).length : 0);
-          key = deserializeJson(((byte[])record.key()));
+          key = deserializeJson((byte[])record.key());
           break;
         case "avro":
           SchemaConverter.JsonNodeAndSize keyAvro = avroSchemaConverter.toJson(record.key());
@@ -137,7 +137,7 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
       switch (config.getValueFormat()) {
         case "binary":
           valueSize = (record.value() != null ? ((byte[])record.value()).length : 0);
-          value = ByteString.copyFrom(((byte[])record.value()));
+          value = ByteString.copyFrom((byte[])record.value());
           break;
         case "string":
           valueSize = (record.value() != null ? ((String)record.value()).length() : 0);
@@ -145,7 +145,7 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
           break;
         case "json":
           valueSize = (record.value() != null ? ((byte[])record.value()).length : 0);
-          value = deserializeJson(((byte[])record.value()));
+          value = deserializeJson((byte[])record.value());
           break;
         case "avro":
           SchemaConverter.JsonNodeAndSize valueAvro = avroSchemaConverter.toJson(record.value());
