@@ -5,6 +5,8 @@ properties:
   key.deserializer: ${kafka-streams.key.deserializer:org.apache.kafka.common.serialization.ByteArrayDeserializer}
   value.deserializer: ${kafka-streams.value.deserializer:org.apache.kafka.common.serialization.ByteArrayDeserializer}
   auto.offset.reset: ${kafka-streams.auto.offset.reset:earliest}
+  # A unique application id for the Kafka streams app. You need to replace it or overwrite it in your code.
+  application.id: ${kafka-streams.application.id:placeholder}
   # Schema registry url
   schema.registry.url: ${kafka-streams.schema.registry.url:http://localhost:8081}
   # Schema registry client truststore location, use the following two properties only if schema registry url is https.
