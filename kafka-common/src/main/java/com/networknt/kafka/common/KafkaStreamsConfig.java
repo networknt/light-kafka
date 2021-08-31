@@ -1,13 +1,13 @@
 package com.networknt.kafka.common;
 
+import java.util.Map;
+
 public class KafkaStreamsConfig {
     public static final String CONFIG_NAME = "kafka-streams";
 
     String applicationId;
-    String bootstrapServers;
-    String processingGuarantee;
-    int replicationFactor;
     boolean cleanUp;
+    private Map<String, Object> properties;
 
     public KafkaStreamsConfig() {
     }
@@ -20,35 +20,19 @@ public class KafkaStreamsConfig {
         this.applicationId = applicationId;
     }
 
-    public String getBootstrapServers() {
-        return bootstrapServers;
-    }
-
-    public void setBootstrapServers(String bootstrapServers) {
-        this.bootstrapServers = bootstrapServers;
-    }
-
-    public String getProcessingGuarantee() {
-        return processingGuarantee;
-    }
-
-    public void setProcessingGuarantee(String processingGuarantee) {
-        this.processingGuarantee = processingGuarantee;
-    }
-
-    public int getReplicationFactor() {
-        return replicationFactor;
-    }
-
-    public void setReplicationFactor(int replicationFactor) {
-        this.replicationFactor = replicationFactor;
-    }
-
     public boolean isCleanUp() {
         return cleanUp;
     }
 
     public void setCleanUp(boolean cleanUp) {
         this.cleanUp = cleanUp;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
     }
 }
