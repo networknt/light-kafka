@@ -24,7 +24,7 @@ public class SidecarProducer implements NativeLightProducer {
 
     @Override
     public void open() {
-        producer = new KafkaProducer<>(config.getProperties(), new ByteArraySerializer(), new ByteArraySerializer());
+        producer = new KafkaProducer<>(config.getProperties());
     }
 
     @Override
