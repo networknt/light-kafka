@@ -24,7 +24,5 @@ properties:
   # basic.auth.user.info: ${kafka-streams.username:username}:${kafka-streams.password:password}
   # basic.auth.credentials.source: ${kafka-streams.basic.auth.credentials.source:USER_INFO}
 
-# If there is only one streams in your application, you can define the applicationId here. Otherwise, override it in the app.
-applicationId: ${kafka-streams.applicationId:placeholder}
 # Only set to true right after the streams reset and start the server. Once the server is up, shutdown and change this to false and restart.
 cleanUp: ${kafka-streams.cleanUp:false}
