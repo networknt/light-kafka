@@ -17,7 +17,7 @@ package com.networknt.kafka.consumer;
 
 import com.google.protobuf.ByteString;
 import com.networknt.kafka.common.KafkaConsumerConfig;
-import com.networknt.kafka.common.converter.SchemaConverter;
+import com.networknt.kafka.common.converter.*;
 import com.networknt.kafka.entity.*;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -50,7 +50,9 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
   private ConsumerInstanceId instanceId;
   private Consumer<KafkaKeyT, KafkaValueT> consumer;
   private KafkaConsumerConfig config;
-  private final SchemaConverter schemaConverter;
+  private SchemaConverter avroSchemaConverter;
+  private SchemaConverter jsonSchemaConverter;
+  private SchemaConverter protobufSchemaConverter;
   private final Clock clock = Clock.systemUTC();
   private final Duration consumerInstanceTimeout;
   private final ConsumerInstanceConfig consumerInstanceConfig;
@@ -63,17 +65,18 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
       KafkaConsumerConfig config,
       ConsumerInstanceConfig consumerInstanceConfig,
       ConsumerInstanceId instanceId,
-      Consumer<KafkaKeyT, KafkaValueT> consumer,
-      SchemaConverter schemaConverter
+      Consumer<KafkaKeyT, KafkaValueT> consumer
   ) {
     this.config = config;
     this.instanceId = instanceId;
     this.consumer = consumer;
-    this.schemaConverter = schemaConverter;
     this.consumerInstanceTimeout =
         Duration.ofMillis(config.getInstanceTimeoutMs());
     this.expiration = clock.instant().plus(consumerInstanceTimeout);
     this.consumerInstanceConfig = consumerInstanceConfig;
+    this.avroSchemaConverter = config.isUseNoWrappingAvro() ? new AvroNoWrappingConverter() : new AvroConverter();
+    this.jsonSchemaConverter = new JsonSchemaConverter();
+    this.protobufSchemaConverter = new ProtobufConverter();
   }
 
   public ConsumerInstanceId getId() {
@@ -102,7 +105,7 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
       switch (config.getKeyFormat()) {
         case "binary":
           keySize = (record.key() != null ? ((byte[])record.key()).length : 0);
-          key = new String(((byte[])record.key()), StandardCharsets.UTF_8);
+          key = ByteString.copyFrom((byte[])record.key());
           break;
         case "string":
           keySize = (record.key() != null ? ((String)record.key()).length() : 0);
@@ -110,14 +113,22 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
           break;
         case "json":
           keySize = (record.key() != null ? ((byte[])record.key()).length : 0);
-          key = deserializeJson(((byte[])record.key()));
+          key = deserializeJson((byte[])record.key());
           break;
         case "avro":
+          SchemaConverter.JsonNodeAndSize keyAvro = avroSchemaConverter.toJson(record.key());
+          keySize = keyAvro.getSize();
+          key = keyAvro.getJson();
+          break;
         case "jsonschema":
+          SchemaConverter.JsonNodeAndSize keyJson = jsonSchemaConverter.toJson(record.key());
+          keySize = keyJson.getSize();
+          key = keyJson.getJson();
+          break;
         case "protobuf":
-          SchemaConverter.JsonNodeAndSize keyNode = schemaConverter.toJson(record.key());
-          keySize = keyNode.getSize();
-          key = keyNode.getJson();
+          SchemaConverter.JsonNodeAndSize keyProtobuf = protobufSchemaConverter.toJson(record.key());
+          keySize = keyProtobuf.getSize();
+          key = keyProtobuf.getJson();
           break;
       }
     }
@@ -126,21 +137,32 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
       switch (config.getValueFormat()) {
         case "binary":
           valueSize = (record.value() != null ? ((byte[])record.value()).length : 0);
-          value = ByteString.copyFrom(((byte[])record.value()));
+          value = ByteString.copyFrom((byte[])record.value());
+          break;
         case "string":
           valueSize = (record.value() != null ? ((String)record.value()).length() : 0);
           value = record.value();
           break;
         case "json":
           valueSize = (record.value() != null ? ((byte[])record.value()).length : 0);
-          value = deserializeJson(((byte[])record.value()));
+          value = deserializeJson((byte[])record.value());
           break;
         case "avro":
+          SchemaConverter.JsonNodeAndSize valueAvro = avroSchemaConverter.toJson(record.value());
+          valueSize = valueAvro.getSize();
+          value = valueAvro.getJson();
+          break;
+
         case "jsonschema":
+          SchemaConverter.JsonNodeAndSize valueJson = jsonSchemaConverter.toJson(record.value());
+          valueSize = valueJson.getSize();
+          value = valueJson.getJson();
+          break;
+
         case "protobuf":
-          SchemaConverter.JsonNodeAndSize valueNode = schemaConverter.toJson(record.value());
-          valueSize = valueNode.getSize();
-          value = valueNode.getJson();
+          SchemaConverter.JsonNodeAndSize valueProtobuf = protobufSchemaConverter.toJson(record.value());
+          valueSize = valueProtobuf.getSize();
+          value = valueProtobuf.getJson();
           break;
       }
     }
