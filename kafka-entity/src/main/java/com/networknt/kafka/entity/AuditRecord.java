@@ -26,6 +26,7 @@ public class AuditRecord {
     // Distributed tracing info
     String correlationId;
     String traceabilityId;
+    String key;
     AuditStatus auditStatus;
     String stacktrace;
 
@@ -107,5 +108,13 @@ public class AuditRecord {
 
     public void setStacktrace(String stacktrace) {
         this.stacktrace = stacktrace;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }
