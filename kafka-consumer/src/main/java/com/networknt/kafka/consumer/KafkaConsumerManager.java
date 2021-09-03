@@ -650,6 +650,19 @@ public class KafkaConsumerManager {
     }
   }
 
+  public synchronized KafkaConsumerState<?, ?, ?, ?> getExistingConsumerInstance(
+          String group,
+          String instance
+  ) {
+    ConsumerInstanceId id = new ConsumerInstanceId(group, instance);
+    final KafkaConsumerState state = consumers.get(id);
+    if (state != null) {
+      state.updateExpiration();
+    }
+    return state;
+  }
+
+
   /**
    * Gets the specified consumer instance or throws a not found exception. Also removes the
    * consumer's expiration timeout so it is not cleaned up mid-operation.

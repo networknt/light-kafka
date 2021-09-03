@@ -14,6 +14,8 @@ public class RecordProcessedResult {
     // the values from the value to identify the transaction.
     String key;
 
+    Integer retried = 0;
+
     public RecordProcessedResult() {
     }
 
@@ -72,5 +74,13 @@ public class RecordProcessedResult {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public Integer getRetried() {
+        return retried;
+    }
+
+    public void setRetried(Integer retried) {
+        this.retried = retried;
     }
 }
