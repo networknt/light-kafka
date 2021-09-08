@@ -22,7 +22,6 @@ public class KafkaConsumerConfig {
     private String backendApiPath;
     private boolean deadLetterEnabled;
     private String deadLetterTopicExt;
-    private int deadLetterMessageRetry;
     private boolean auditEnabled;
     private String auditTarget;
     private String auditTopic;
@@ -202,11 +201,4 @@ public class KafkaConsumerConfig {
         this.useNoWrappingAvro = useNoWrappingAvro;
     }
 
-    public int getDeadLetterMessageRetry() {
-        return deadLetterMessageRetry;
-    }
-
-    public void setDeadLetterMessageRetry(int deadLetterMessageRetry) {
-        this.deadLetterMessageRetry = deadLetterMessageRetry;
-    }
 }
