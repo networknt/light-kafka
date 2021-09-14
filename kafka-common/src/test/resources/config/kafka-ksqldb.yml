@@ -1,13 +1,29 @@
 # ksqlDB host
-ksqldbHost: localhost
+ksqldbHost: ${kafka-ksqldb.ksqldbHost:localhost}
 # ksqlDB port
-ksqldbPort: 8088
-# query for the ksqldb. It can be a table or stream.
-query: SELECT * from TEST EMIT CHANGES;
-# backend API URL
-backendUrl: https://localhost:8444
-# backend API path
-backendPath: /kafka/ksqldb
+ksqldbPort: ${kafka-ksqldb.ksqldbPort:8088}
+# ksqlDB use tls or not. For local environment, default set as false. For enterprise kafka, please change to use true
+useTls: ${kafka-ksqldb.useTls:false}
+# ksqlDB ssl truststore location
+trustStore: ${kafka-ksqldb.trustStore:/truststore/kafka.server.truststore.jks}
+# ksqlDB ssl truststore Password
+trustStorePassword: ${kafka-ksqldb.trustStorePassword:changeme}
+# ksqlDB basic Authentication Credentials username
+basicAuthCredentialsUser: ${kafka-ksqldb.basicAuthCredentialsUser:userId}
+# ksqlDB basic Authentication Credentials Password
+basicAuthCredentialsPassword: ${kafka-ksqldb.basicAuthCredentialsPassword:changeme}
+# create streams for ksqldb process.
+initialStreams:
+  - CREATE STREAM TEST_STREAM (userId VARCHAR KEY) WITH (kafka_topic = 'test', value_format = 'JSON_SR');
+initialTables:
+  - CREATE STREAM TEST_STREAM (userId VARCHAR KEY) WITH (kafka_topic = 'test', value_format = 'JSON_SR');
+# Run a push query over the stream on ksqldb. It can be a table or stream.
+query: ${kafka-ksqldb.query:SELECT * from TEST_STREAM EMIT CHANGES};
 # stream query properties
 properties:
-  auto.offset.reset: earliest
+  auto.offset.reset: ${kafka-ksqldb.auto.offset.reset:earliest}
+
+# Backend API host
+backendUrl: ${kafka-ksqldb.backendUrl:https://localhost:8080}
+# Backend API path
+backendPath: ${kafka-ksqldb.backendPath:/kafka/ksqldb}
