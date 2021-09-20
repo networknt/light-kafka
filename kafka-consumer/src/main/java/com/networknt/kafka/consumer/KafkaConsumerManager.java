@@ -26,6 +26,7 @@ import com.networknt.kafka.entity.*;
 import com.networknt.status.Status;
 import io.undertow.server.HttpServerExchange;
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.config.ConfigException;
@@ -174,7 +175,12 @@ public class KafkaConsumerManager {
       Properties props = new Properties();
       props.putAll(config.getProperties());
       if(group != null) {
-        props.setProperty("group.id", group);
+        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, group);
+      }
+      // Update max.poll.interval.ms in sync with instanceTimeoutMs from the config if the value is greater
+      // than 300000 (5 minutes).
+      if(config.getInstanceTimeoutMs() > 300000) {
+        props.setProperty(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, "" + config.getInstanceTimeoutMs());
       }
       // This ID we pass here has to be unique, only pass a value along if the deprecated ID field
       // was passed in. This generally shouldn't be used, but is maintained for compatibility.
@@ -182,69 +188,63 @@ public class KafkaConsumerManager {
         props.setProperty("consumer.id", instanceConfig.getId());
       }
       if (instanceConfig.getAutoCommitEnable() != null) {
-        props.setProperty("enable.auto.commit", instanceConfig.getAutoCommitEnable());
+        props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, instanceConfig.getAutoCommitEnable());
       }
       if (instanceConfig.getAutoOffsetReset() != null) {
-        props.setProperty("auto.offset.reset", instanceConfig.getAutoOffsetReset());
+        props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, instanceConfig.getAutoOffsetReset());
       }
       // override request.timeout.ms to the default
       // the consumer.request.timeout.ms setting given by the user denotes
       // how much time the proxy should wait before returning a response
       // and should not be propagated to the consumer
-      props.setProperty("request.timeout.ms", "30000");
+      props.setProperty(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, "30000");
 
       switch (instanceConfig.getKeyFormat()) {
         case AVRO:
-          props.put("key.deserializer", "io.confluent.kafka.serializers.KafkaAvroDeserializer");
+          props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer");
           break;
         case JSONSCHEMA:
-          props.put("key.deserializer",
+          props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
               "io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer");
           break;
         case PROTOBUF:
-          props.put("key.deserializer",
+          props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
               "io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer");
           break;
         case STRING:
-          props.put(
-                  "key.deserializer",
-                  "org.apache.kafka.common.serialization.StringDeserializer"
+          props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+              "org.apache.kafka.common.serialization.StringDeserializer"
           );
           break;
         case JSON:
         case BINARY:
         default:
-          props.put(
-              "key.deserializer",
+          props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
               "org.apache.kafka.common.serialization.ByteArrayDeserializer"
           );
       }
 
       switch (instanceConfig.getValueFormat()) {
         case AVRO:
-          props.put("value.deserializer", "io.confluent.kafka.serializers.KafkaAvroDeserializer");
+          props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer");
           break;
         case JSONSCHEMA:
-          props.put("value.deserializer",
-                  "io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer");
+          props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+              "io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer");
           break;
         case PROTOBUF:
-          props.put("value.deserializer",
-                  "io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer");
+          props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+              "io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer");
           break;
         case STRING:
-          props.put(
-                  "value.deserializer",
-                  "org.apache.kafka.common.serialization.StringDeserializer"
-          );
+          props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+              "org.apache.kafka.common.serialization.StringDeserializer");
           break;
         case JSON:
         case BINARY:
         default:
-          props.put(
-                  "value.deserializer",
-                  "org.apache.kafka.common.serialization.ByteArrayDeserializer"
-          );
+          props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+              "org.apache.kafka.common.serialization.ByteArrayDeserializer");
       }
 
       Consumer consumer;
