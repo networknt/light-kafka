@@ -1,5 +1,23 @@
 # Change Log
 
+## [2.0.31](https://github.com/networknt/light-kafka/tree/2.0.31) (2021-09-22)
+
+
+**Merged pull requests:**
+
+
+- fixes \#104 Sync the max.poll.interval.ms to instanceTimeoutMs if latt… [\#105](https://github.com/networknt/light-kafka/pull/105) ([stevehu](https://github.com/stevehu))
+- fixes \#102, implement new endpoint [\#103](https://github.com/networknt/light-kafka/pull/103) ([GavinChenYan](https://github.com/GavinChenYan))
+- fixes \#100 remove the kafka server dependency and add a workaround [\#101](https://github.com/networknt/light-kafka/pull/101) ([stevehu](https://github.com/stevehu))
+- dlq implementation for kafka sidecar refactoring [\#99](https://github.com/networknt/light-kafka/pull/99) ([GavinChenYan](https://github.com/GavinChenYan))
+- model and config change for kafka-sidecar issue 19 implementation [\#98](https://github.com/networknt/light-kafka/pull/98) ([GavinChenYan](https://github.com/GavinChenYan))
+- fixes \#96 add correlationId, traceabilityId and key to the RecordProc… [\#97](https://github.com/networknt/light-kafka/pull/97) ([stevehu](https://github.com/stevehu))
+- Issue94 [\#95](https://github.com/networknt/light-kafka/pull/95) ([GavinChenYan](https://github.com/GavinChenYan))
+- fixes \#92 update the kafka-streams.yml format to separate Kafka prope… [\#93](https://github.com/networknt/light-kafka/pull/93) ([stevehu](https://github.com/stevehu))
+- fixes \#90 update sidecar producer to use config serializer [\#91](https://github.com/networknt/light-kafka/pull/91) ([stevehu](https://github.com/stevehu))
+- fixes \#88 Treat binary key as byte array instead of string in sync wi… [\#89](https://github.com/networknt/light-kafka/pull/89) ([stevehu](https://github.com/stevehu))
+- fixes \#86 Missing break in the value format switch in the KafkaConsum… [\#87](https://github.com/networknt/light-kafka/pull/87) ([stevehu](https://github.com/stevehu))
+- fixes \#84 Initialize schema coverters and use them based on the confi… [\#85](https://github.com/networknt/light-kafka/pull/85) ([stevehu](https://github.com/stevehu))
 ## [2.0.30](https://github.com/networknt/light-kafka/tree/2.0.30) (2021-08-23)
 
 
