@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.util.Objects;
 
 public class ProduceResult {
+    String topic;
     int partitionId;
     long offset;
     Instant timestamp;
@@ -23,6 +24,15 @@ public class ProduceResult {
         this.serializeValueSize = serializeValueSize;
     }
 
+    public ProduceResult(String topic, int partitionId, long offset, Instant timestamp, int serializeKeySize, int serializeValueSize) {
+        this.topic = topic;
+        this.partitionId = partitionId;
+        this.offset = offset;
+        this.timestamp = timestamp;
+        this.serializeKeySize = serializeKeySize;
+        this.serializeValueSize = serializeValueSize;
+    }
+
     public int getPartitionId() {
         return partitionId;
     }
@@ -33,6 +43,10 @@ public class ProduceResult {
 
     public long getOffset() {
         return offset;
+    }
+
+    public String getTopic() {
+        return topic;
     }
 
     public void setOffset(long offset) {
@@ -78,6 +92,7 @@ public class ProduceResult {
 
     public static ProduceResult fromRecordMetadata(RecordMetadata metadata) {
         return new ProduceResult(
+                metadata.topic(),
                 metadata.partition(),
                 metadata.offset(),
                 metadata.hasTimestamp() ? Instant.ofEpochMilli(metadata.timestamp()) : null,
