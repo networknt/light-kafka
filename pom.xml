@@ -278,6 +278,11 @@
                 <artifactId>kafka-protobuf-serializer</artifactId>
                 <version>${version.confluent}</version>
             </dependency>
+            <dependency>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-streams-avro-serde</artifactId>
+                <version>${version.confluent}</version>
+            </dependency>
 
             <!-- Test dependencies -->
             <dependency>
