@@ -24,6 +24,7 @@ import com.networknt.kafka.common.converter.JsonSchemaConverter;
 import com.networknt.kafka.common.converter.ProtobufConverter;
 import com.networknt.kafka.entity.*;
 import com.networknt.status.Status;
+import com.networknt.utility.ModuleRegistry;
 import io.undertow.server.HttpServerExchange;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -80,6 +81,12 @@ public class KafkaConsumerManager {
   private ConsumerInstanceId adminConsumerInstanceId = null;
 
   public KafkaConsumerManager(final KafkaConsumerConfig config) {
+    // register the module with the configuration properties.
+    List<String> masks = new ArrayList<>();
+    masks.add("basic.auth.user.info");
+    masks.add("sasl.jaas.config");
+    masks.add("schema.registry.ssl.truststore.password");
+    ModuleRegistry.registerModule(KafkaConsumerManager.class.getName(), Config.getInstance().getJsonMapConfigNoCache(KafkaConsumerConfig.CONFIG_NAME), masks);
 
     // Cached thread pool
     int maxThreadCount = config.getMaxConsumerThreads();
