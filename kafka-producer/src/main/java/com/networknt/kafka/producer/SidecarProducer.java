@@ -25,6 +25,8 @@ public class SidecarProducer implements NativeLightProducer {
     @Override
     public void open() {
         producer = new KafkaProducer<>(config.getProperties());
+        // register the config to the module registry to output in server info.
+        registerModule();
     }
 
     @Override
