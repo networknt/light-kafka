@@ -99,12 +99,12 @@
         <version.light-4j>2.0.32-SNAPSHOT</version.light-4j>
         <version.jackson>2.12.1</version.jackson>
         <version.slf4j>1.7.25</version.slf4j>
-        <version.kafka>2.7.0</version.kafka>
-        <version.confluent>6.1.0</version.confluent>
+        <version.kafka>2.8.0</version.kafka>
+        <version.confluent>6.2.1</version.confluent>
         <version.logback>1.2.3</version.logback>
         <version.junit>5.6.0</version.junit>
         <version.undertow>2.2.4.Final</version.undertow>
-        <version.avro>1.9.2</version.avro>
+        <version.avro>1.10.2</version.avro>
         <version.schemaConverter>0.2.9</version.schemaConverter>
         <version.hamcrest>2.2</version.hamcrest>
         <version.mockito>1.10.19</version.mockito>
