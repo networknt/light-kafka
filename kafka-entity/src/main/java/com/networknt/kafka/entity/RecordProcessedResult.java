@@ -13,6 +13,8 @@ public class RecordProcessedResult {
     // backend need to set this up for the audit record. It might be the record key in a readable format or one of
     // the values from the value to identify the transaction.
     String key;
+    //Define current record process timestamp for audit purpose
+    Long timestamp;
 
 
     public RecordProcessedResult() {
@@ -25,6 +27,16 @@ public class RecordProcessedResult {
         this.correlationId = correlationId;
         this.traceabilityId = traceabilityId;
         this.key = key;
+    }
+
+    public RecordProcessedResult(ConsumerRecord record, boolean processed, String stacktrace, String correlationId, String traceabilityId, String key, Long timestamp) {
+        this.record = record;
+        this.processed = processed;
+        this.stacktrace = stacktrace;
+        this.correlationId = correlationId;
+        this.traceabilityId = traceabilityId;
+        this.key = key;
+        this.timestamp = timestamp;
     }
 
     public ConsumerRecord getRecord() {
@@ -75,4 +87,11 @@ public class RecordProcessedResult {
         this.key = key;
     }
 
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
 }

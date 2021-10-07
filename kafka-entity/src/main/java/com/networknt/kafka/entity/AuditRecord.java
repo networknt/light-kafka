@@ -30,6 +30,9 @@ public class AuditRecord {
     AuditStatus auditStatus;
     String stacktrace;
 
+    //Define current  timestamp for audit purpose
+    Long timestamp;
+
     public String getId() {
         return id;
     }
@@ -116,5 +119,13 @@ public class AuditRecord {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
     }
 }
