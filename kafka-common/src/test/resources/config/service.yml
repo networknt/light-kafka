@@ -1,0 +1,4 @@
+# Singleton service factory configuration/IoC injection
+singletons:
+  - io.confluent.kafka.schemaregistry.client.SchemaRegistryClient:
+    - com.networknt.kafka.common.LightSchemaRegistryClient
