@@ -1,7 +1,6 @@
 package com.networknt.kafka.common;
 
 import org.apache.avro.specific.SpecificRecord;
-import com.networknt.kafka.common.converter.AvroConverter;
 
 public class EventNotification {
     long nonce;
@@ -72,13 +71,12 @@ public class EventNotification {
 
     @Override
     public String toString() {
-        AvroConverter converter = new AvroConverter();
         return "{\"nonce\":" + nonce
                 + ",\"app\":\"" + app + "\""
                 + ",\"name\":\"" + name + "\""
                 + ",\"success\":" + success + ","
                 + ((error == null) ? "" : ("\"error\":\"" + error + "\","))
-                + "\"event\":" + converter.toJson(event).getJson().toString()
+                + "\"event\":" + AvroConverter.toJson(event, false)
                 + "}";
     }
 }
