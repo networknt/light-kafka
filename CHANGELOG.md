@@ -1,5 +1,19 @@
 # Change Log
 
+## [2.0.32](https://github.com/networknt/light-kafka/tree/2.0.32) (2021-10-19)
+
+
+**Merged pull requests:**
+
+
+- fixes \#115 remove the customized deserilizer serializer and add share… [\#116](https://github.com/networknt/light-kafka/pull/116) ([stevehu](https://github.com/stevehu))
+- add timestamp to RecordProcessResult for audit purpose [\#114](https://github.com/networknt/light-kafka/pull/114) ([GavinChenYan](https://github.com/GavinChenYan))
+- fixes \#112 upgrade to kafka 2.8.0 confluent 6.2.1 and avro 1.10.2 in … [\#113](https://github.com/networknt/light-kafka/pull/113) ([stevehu](https://github.com/stevehu))
+- fixes \#109 add default method to the interface for module registry [\#110](https://github.com/networknt/light-kafka/pull/110) ([stevehu](https://github.com/stevehu))
+- fixes \#107 add kafka-streams-avro-serde to the kafka-streams dependency [\#108](https://github.com/networknt/light-kafka/pull/108) ([stevehu](https://github.com/stevehu))
+-  change produceResult model for dql producer endpoint [\#106](https://github.com/networknt/light-kafka/pull/106) ([GavinChenYan](https://github.com/GavinChenYan))
+
+
 ## [2.0.31](https://github.com/networknt/light-kafka/tree/2.0.31) (2021-09-22)
 
 
