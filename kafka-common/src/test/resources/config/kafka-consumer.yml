@@ -20,6 +20,8 @@ properties:
   # security.protocol: ${kafka-consumer.security.protocol:SASL_SSL}
   # sasl.mechanism: ${kafka-consumer.sasl.mechanism:PLAIN}
   # sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-consumer.username:username}\" password=\"${kafka-consumer.password:password}\";"
+  # ssl.truststore.location: ${kafka-consumer.ssl.truststore.location:/truststore/kafka.server.truststore.jks}
+  # ssl.truststore.password: ${kafka-consumer.ssl.truststore.password:changeme}
   # ssl.endpoint.identification.algorithm: ${kafka-consumer.ssl.endpoint.identification.algorithm:algo-name}
   # Apache Kafka 2.3 clients or later will then read from followers that have matching broker.rack as the specified client.rack ID.
   # client.rack: ${kafka-consumer.client.rack:rack-name}
@@ -76,7 +78,11 @@ requestMaxBytes: ${kafka-consumer.requestMaxBytes:102400}
 requestTimeoutMs: ${kafka-consumer.requestTimeoutMs:1000}
 # Minimum bytes of records to accumulate before returning a response to a consumer request. Default 10MB
 fetchMinBytes: ${kafka-consumer.fetchMinBytes:-1}
-# amount of idle time before a consumer instance is automatically destroyed.
+# amount of idle time before a consumer instance is automatically destroyed. If you use the ActiveConsumer and do not
+# want to recreate the consumer instance for every request, increase this number to a bigger value. Default to 5 minutes
+# that is in sync with max.poll.interval.ms default value. When this value is increased to a value greater than 5 minutes,
+# the max.poll.interval.ms will be automatically increased as these two values are related although completely different.
 instanceTimeoutMs: ${kafka-consumer.instanceTimeoutMs:300000}
 # Amount of time to backoff when an iterator runs out of date.
 iteratorBackoffMs: ${kafka-consumer.iteratorBackoffMs:50}
+

@@ -1,4 +1,3 @@
----
 # Generic configuration for Kafka producer.
 properties:
   # The sidecar does the serialization to byte array for both key and value
@@ -37,12 +36,14 @@ properties:
   # sasl.mechanism: ${kafka-producer.sasl.mechanism:PLAIN}
   # sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-producer.username:username}\" password=\"${kafka-producer.password:password}\";"
   # ssl.endpoint.identification.algorithm: ${kafka-producer.ssl.endpoint.identification.algorithm:algo-name}
+  # ssl.truststore.location: ${kafka-producer.ssl.truststore.location:/truststore/kafka.server.truststore.jks}
+  # ssl.truststore.password: ${kafka-producer.ssl.truststore.password:changeme}
   # client.rack: ${kafka-producer.client.rack:rack-name}
   # basic authentication user:pass for the schema registry
   # basic.auth.user.info: ${kafka-producer.username:username}:${kafka-producer.password:password}
   # basic.auth.credentials.source: ${kafka-producer.basic.auth.credentials.source:USER_INFO}
   # If you have message that is bigger than 1 MB to produce, increase this value.
-  max.message.size: ${kafka-producer.max.message.size:1048576}
+  max.request.size: ${kafka-producer.max.request.size:1048576}
 
 # The default topic for the producer. Only certain producer implementation will use it.
 topic: ${kafka-producer.topic:portal-event}
