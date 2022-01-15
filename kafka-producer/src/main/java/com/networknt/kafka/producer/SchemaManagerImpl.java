@@ -52,10 +52,6 @@ public class SchemaManagerImpl implements SchemaManager {
             boolean isKey) {
         // (subject|subjectNameStrategy)?, schemaId
         if (schemaId.isPresent()) {
-            if(format.isPresent()) {
-                Status status = new Status(FORMAT_WITH_SCHEMA_ID, isKey ? "key" : "value");
-                throw new FrameworkException(status);
-            }
             if(schemaVersion.isPresent()) {
                 Status status = new Status(VERSION_WITH_SCHEMA_ID, isKey ? "key" : "value");
                 throw new FrameworkException(status);
@@ -74,10 +70,6 @@ public class SchemaManagerImpl implements SchemaManager {
 
         // (subject|subjectNameStrategy)?, schemaVersion
         if (schemaVersion.isPresent()) {
-            if(format.isPresent()) {
-                Status status = new Status(FORMAT_WITH_SCHEMA_VERSION, isKey ? "key" : "value");
-                throw new FrameworkException(status);
-            }
             if(rawSchema.isPresent()) {
                 Status status = new Status(SCHEMA_WITH_SCHEMA_VERSION, isKey ? "key" : "value");
                 throw new FrameworkException(status);
@@ -105,11 +97,6 @@ public class SchemaManagerImpl implements SchemaManager {
                     isKey);
         }
 
-        // (subject|subjectNameStrategy)?
-        if(format.isPresent()) {
-            Status status = new Status(FORMAT_WITH_SUBJECT, isKey ? "key" : "value");
-            throw new FrameworkException(status);
-        }
         return findLatestSchema(topicName, subject, subjectNameStrategy, isKey);
     }
 
