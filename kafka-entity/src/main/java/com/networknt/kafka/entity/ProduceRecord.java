@@ -14,32 +14,36 @@ public class ProduceRecord {
     Optional<JsonNode> value;
     @JsonProperty("partition")
     Optional<Integer> partition;
+    @JsonProperty("traceabilityId")
+    Optional<String> traceabilityId;
 
     public ProduceRecord() {
     }
 
-    public ProduceRecord(Optional<Integer> partition, Optional<JsonNode> key, Optional<JsonNode> value) {
+    public ProduceRecord(Optional<Integer> partition, Optional<JsonNode> key, Optional<JsonNode> value, Optional<String> traceabilityId) {
         this.key = key;
         this.value = value;
         this.partition = partition;
+        this.traceabilityId = traceabilityId;
     }
 
     public static ProduceRecord create(JsonNode key, JsonNode value) {
-        return create(/* partition= */ null, key, value);
+        return create(/* partition= */ null, key, value, null);
     }
 
     public static ProduceRecord create(
-            Integer partition, JsonNode key, JsonNode value) {
+            Integer partition, JsonNode key, JsonNode value, String traceabilityId) {
         return new ProduceRecord(
-                Optional.ofNullable(partition), Optional.ofNullable(key), Optional.ofNullable(value));
+                Optional.ofNullable(partition), Optional.ofNullable(key), Optional.ofNullable(value), Optional.ofNullable(traceabilityId));
     }
 
     @JsonCreator
     static ProduceRecord fromJson(
             @JsonProperty("partition") Integer partition,
             @JsonProperty("key") JsonNode key,
-            @JsonProperty("value") JsonNode value) {
-        return create(partition, key, value);
+            @JsonProperty("value") JsonNode value,
+            @JsonProperty("traceabilityId") String traceabilityId) {
+        return create(partition, key, value, traceabilityId);
     }
 
     public Optional<JsonNode> getKey() {
@@ -66,16 +70,24 @@ public class ProduceRecord {
         this.partition = partition;
     }
 
+    public Optional<String> getTraceabilityId() {
+        return traceabilityId;
+    }
+
+    public void setTraceabilityId(Optional<String> traceabilityId) {
+        this.traceabilityId = traceabilityId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProduceRecord that = (ProduceRecord) o;
-        return Objects.equals(key, that.key) && Objects.equals(value, that.value) && Objects.equals(partition, that.partition);
+        return Objects.equals(key, that.key) && Objects.equals(value, that.value) && Objects.equals(partition, that.partition) && Objects.equals(traceabilityId, that.traceabilityId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(key, value, partition);
+        return Objects.hash(key, value, partition, traceabilityId);
     }
 }

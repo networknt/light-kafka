@@ -7,18 +7,20 @@ import java.util.Optional;
 
 public class SerializedKeyAndValue {
     Optional<Integer> partitionId;
+    Optional<String> traceabilityId;
     Optional<ByteString> key;
     Optional<ByteString> value;
 
-    public SerializedKeyAndValue(Optional<Integer> partitionId, Optional<ByteString> key, Optional<ByteString> value) {
+    public SerializedKeyAndValue(Optional<Integer> partitionId, Optional<String> traceabilityId, Optional<ByteString> key, Optional<ByteString> value) {
         this.partitionId = partitionId;
+        this.traceabilityId = traceabilityId;
         this.key = key;
         this.value = value;
     }
 
     public static SerializedKeyAndValue create(
-            Optional<Integer> partitionId, Optional<ByteString> key, Optional<ByteString> value) {
-        return new SerializedKeyAndValue(partitionId, key, value);
+            Optional<Integer> partitionId, Optional<String> traceabilityId, Optional<ByteString> key, Optional<ByteString> value) {
+        return new SerializedKeyAndValue(partitionId, traceabilityId, key, value);
     }
 
     public Optional<Integer> getPartitionId() {
@@ -27,6 +29,14 @@ public class SerializedKeyAndValue {
 
     public void setPartitionId(Optional<Integer> partitionId) {
         this.partitionId = partitionId;
+    }
+
+    public Optional<String> getTraceabilityId() {
+        return traceabilityId;
+    }
+
+    public void setTraceabilityId(Optional<String> traceabilityId) {
+        this.traceabilityId = traceabilityId;
     }
 
     public Optional<ByteString> getKey() {
@@ -50,11 +60,11 @@ public class SerializedKeyAndValue {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SerializedKeyAndValue that = (SerializedKeyAndValue) o;
-        return Objects.equals(partitionId, that.partitionId) && Objects.equals(key, that.key) && Objects.equals(value, that.value);
+        return Objects.equals(partitionId, that.partitionId) && Objects.equals(traceabilityId, that.traceabilityId) && Objects.equals(key, that.key) && Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(partitionId, key, value);
+        return Objects.hash(partitionId, traceabilityId, key, value);
     }
 }
