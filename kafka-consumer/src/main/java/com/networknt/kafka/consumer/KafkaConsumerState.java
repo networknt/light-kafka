@@ -241,6 +241,8 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
         topicPartitions.add(new TopicPartition(t.getTopic(), t.getPartition()));
       }
       consumer.seekToBeginning(topicPartitions);
+      // clear the consumerRecords so that the Kafka record will be retrieved again based on the seek offset.
+      ((ArrayDeque)consumerRecords).clear();
     }
   }
 
@@ -256,6 +258,8 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
         topicPartitions.add(new TopicPartition(t.getTopic(), t.getPartition()));
       }
       consumer.seekToEnd(topicPartitions);
+      // clear the consumerRecords so that the Kafka record will be retrieved again based on the seek offset.
+      ((ArrayDeque)consumerRecords).clear();
     }
   }
 
@@ -297,6 +301,8 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
           new OffsetAndMetadata(
               offset.getValue().offset(), metadata.get(offset.getKey())));
     }
+    // clear the consumerRecords so that the Kafka record will be retrieved again based on the seek offset.
+    ((ArrayDeque)consumerRecords).clear();
   }
 
   /**
