@@ -16,25 +16,28 @@ public class ProduceRecord {
     Optional<Integer> partition;
     @JsonProperty("traceabilityId")
     Optional<String> traceabilityId;
+    @JsonProperty("correlationId")
+    Optional<String> correlationId;
 
     public ProduceRecord() {
     }
 
-    public ProduceRecord(Optional<Integer> partition, Optional<JsonNode> key, Optional<JsonNode> value, Optional<String> traceabilityId) {
+    public ProduceRecord(Optional<Integer> partition, Optional<JsonNode> key, Optional<JsonNode> value, Optional<String> traceabilityId, Optional<String> correlationId) {
         this.key = key;
         this.value = value;
         this.partition = partition;
         this.traceabilityId = traceabilityId;
+        this.correlationId = correlationId;
     }
 
     public static ProduceRecord create(JsonNode key, JsonNode value) {
-        return create(/* partition= */ null, key, value, null);
+        return create(/* partition= */ null, key, value, null, null);
     }
 
     public static ProduceRecord create(
-            Integer partition, JsonNode key, JsonNode value, String traceabilityId) {
+            Integer partition, JsonNode key, JsonNode value, String traceabilityId, String correlationId) {
         return new ProduceRecord(
-                Optional.ofNullable(partition), Optional.ofNullable(key), Optional.ofNullable(value), Optional.ofNullable(traceabilityId));
+                Optional.ofNullable(partition), Optional.ofNullable(key), Optional.ofNullable(value), Optional.ofNullable(traceabilityId), Optional.ofNullable(correlationId));
     }
 
     @JsonCreator
@@ -42,8 +45,9 @@ public class ProduceRecord {
             @JsonProperty("partition") Integer partition,
             @JsonProperty("key") JsonNode key,
             @JsonProperty("value") JsonNode value,
-            @JsonProperty("traceabilityId") String traceabilityId) {
-        return create(partition, key, value, traceabilityId);
+            @JsonProperty("traceabilityId") String traceabilityId,
+            @JsonProperty("correlationId") String correlationId) {
+        return create(partition, key, value, traceabilityId, correlationId);
     }
 
     public Optional<JsonNode> getKey() {
@@ -78,16 +82,24 @@ public class ProduceRecord {
         this.traceabilityId = traceabilityId;
     }
 
+    public Optional<String> getCorrelationId() {
+        return correlationId;
+    }
+
+    public void setCorrelationId(Optional<String> correlationId) {
+        this.correlationId = correlationId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProduceRecord that = (ProduceRecord) o;
-        return Objects.equals(key, that.key) && Objects.equals(value, that.value) && Objects.equals(partition, that.partition) && Objects.equals(traceabilityId, that.traceabilityId);
+        return Objects.equals(key, that.key) && Objects.equals(value, that.value) && Objects.equals(partition, that.partition) && Objects.equals(traceabilityId, that.traceabilityId) && Objects.equals(correlationId, that.correlationId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(key, value, partition, traceabilityId);
+        return Objects.hash(key, value, partition, traceabilityId, correlationId);
     }
 }
