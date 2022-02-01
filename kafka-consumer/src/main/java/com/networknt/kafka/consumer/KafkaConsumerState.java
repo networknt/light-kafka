@@ -19,12 +19,16 @@ import com.google.protobuf.ByteString;
 import com.networknt.kafka.common.KafkaConsumerConfig;
 import com.networknt.kafka.common.converter.*;
 import com.networknt.kafka.entity.*;
+import com.networknt.utility.Constants;
+import com.networknt.utility.Util;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.InternalServerErrorException;
 import java.nio.charset.StandardCharsets;
@@ -46,6 +50,7 @@ import static java.util.Collections.singletonMap;
  * (including translation if the decoded Kafka consumer type and ConsumerRecord types differ).
  */
 public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT> {
+  private static final Logger logger = LoggerFactory.getLogger(KafkaConsumerState.class);
 
   private ConsumerInstanceId instanceId;
   private Consumer<KafkaKeyT, KafkaValueT> consumer;
@@ -534,10 +539,22 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
 
   protected Map<String, String> convertHeaders(Headers headers) {
     Map<String, String> headerMap = new HashMap<>();
-    Iterator<Header> headerIterator = headers.iterator();
-    while(headerIterator.hasNext()) {
-      Header header = headerIterator.next();
-      headerMap.put(header.key(), new String(header.value(), StandardCharsets.UTF_8));
+    if(headers != null) {
+      // convert all the headers into a hash map in order to send to the backend.
+      Iterator<Header> headerIterator = headers.iterator();
+      while(headerIterator.hasNext()) {
+        Header header = headerIterator.next();
+        headerMap.put(header.key(), new String(header.value(), StandardCharsets.UTF_8));
+      }
+    }
+    // add correlationId if it doesn't exist.
+    if(headerMap.get(Constants.CORRELATION_ID_STRING) == null) {
+      String cId = Util.getUUID();
+      headerMap.put(Constants.CORRELATION_ID_STRING, cId);
+      if(headerMap.get(Constants.TRACEABILITY_ID_STRING) != null) {
+        // associate correlateId to the traceabilityId if it is not empty.
+        logger.info("Associate traceability Id " + headerMap.get(Constants.TRACEABILITY_ID_STRING) + " with correlation Id " + cId);
+      }
     }
     return headerMap;
   }
