@@ -307,7 +307,13 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
               offset.getValue().offset(), metadata.get(offset.getKey())));
     }
     // clear the consumerRecords so that the Kafka record will be retrieved again based on the seek offset.
-    ((ArrayDeque)consumerRecords).clear();
+   logger.info("Messages in the queue are ::: "+ ((ArrayDeque)consumerRecords).size());
+   ArrayDeque dequeue= ((ArrayDeque)consumerRecords);
+   for (Iterator itr = dequeue.iterator();
+             itr.hasNext();) {
+             logger.info("Messages in the queue are ::: "+ itr.next());
+        }
+    dequeue.clear();
   }
 
   /**
