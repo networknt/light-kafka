@@ -278,6 +278,9 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
     }
 
     for (ConsumerSeekRequest.PartitionOffset partition : request.getOffsets()) {
+      if(logger.isTraceEnabled()) {
+        logger.trace("seek to topic = " + partition.getTopic() + " partition = " + partition.getPartition() + " offset = " + partition.getOffset());
+      }
       consumer.seek(
           new TopicPartition(partition.getTopic(), partition.getPartition()),
           new OffsetAndMetadata(partition.getOffset(), partition.getMetadata()));
@@ -307,13 +310,10 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
               offset.getValue().offset(), metadata.get(offset.getKey())));
     }
     // clear the consumerRecords so that the Kafka record will be retrieved again based on the seek offset.
-   logger.info("Messages in the queue are ::: "+ ((ArrayDeque)consumerRecords).size());
-   ArrayDeque dequeue= ((ArrayDeque)consumerRecords);
-   for (Iterator itr = dequeue.iterator();
-             itr.hasNext();) {
-             logger.info("Messages in the queue are ::: "+ itr.next());
-        }
-    dequeue.clear();
+    if(logger.isTraceEnabled()) {
+      logger.trace("Number of records in the queue to be cleared = "+ ((ArrayDeque)consumerRecords).size());
+    }
+    ((ArrayDeque)consumerRecords).clear();
   }
 
   /**
