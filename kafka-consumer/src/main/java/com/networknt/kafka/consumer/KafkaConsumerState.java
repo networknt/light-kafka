@@ -276,7 +276,32 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
     if (request == null) {
       return;
     }
-
+    // We have a list of PartitionOffset objects from the Kafka-sidecar to rollback; however, the consumerRecords might have cached records with
+    // other topic and partition combinations. We need to add those topic/partition pairs to the seek so that those partitions can be retrieved.
+    Map<String, ConsumerSeekRequest.PartitionOffset> topicPartitionMap = new HashMap<>();
+    for (ConsumerSeekRequest.PartitionOffset partition : request.getOffsets()) {
+      topicPartitionMap.put(partition.getTopic() + ":" + partition.getPartition(), partition);
+    }
+    ArrayDeque dequeue= (ArrayDeque)consumerRecords;
+    for (Iterator itr = dequeue.iterator(); itr.hasNext();) {
+      // iterate all records in the queue and add any topic/partition keys that are not in the topicPartitionMap to rollback.
+      ConsumerRecord record = (ConsumerRecord) itr.next();
+      ConsumerSeekRequest.PartitionOffset partitionOffset = topicPartitionMap.get(record.topic() + ":" + record.partition());
+      if(partitionOffset == null) {
+        partitionOffset = new ConsumerSeekRequest.PartitionOffset(record.topic(), record.partition(), record.offset(), null);
+        topicPartitionMap.put(record.topic() + ":" + record.partition(), partitionOffset);
+        if(logger.isDebugEnabled()) logger.debug("A new seek request is added for topic = " + record.topic() + " partition = " + record.partition());
+      } else {
+        // found the record in the map, set the offset if the current offset is smaller.
+        if(partitionOffset.getOffset() > record.offset()) {
+          partitionOffset.setOffset(record.offset());
+        }
+      }
+    }
+    List<ConsumerSeekRequest.PartitionOffset> pos = topicPartitionMap.values().stream()
+            .collect(Collectors.toList());
+    if(pos.size() > request.getOffsets().size()) request.setOffsets(pos);
+    
     for (ConsumerSeekRequest.PartitionOffset partition : request.getOffsets()) {
       if(logger.isDebugEnabled()) {
         logger.debug("seek to topic = " + partition.getTopic() + " partition = " + partition.getPartition() + " offset = " + partition.getOffset());
