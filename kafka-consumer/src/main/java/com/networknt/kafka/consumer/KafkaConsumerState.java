@@ -306,10 +306,19 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
       if(logger.isDebugEnabled()) {
         logger.debug("seek to topic = " + partition.getTopic() + " partition = " + partition.getPartition() + " offset = " + partition.getOffset());
       }
+      while(true){
+      try{
       consumer.seek(
           new TopicPartition(partition.getTopic(), partition.getPartition()),
           new OffsetAndMetadata(partition.getOffset(), partition.getMetadata()));
+      }
+      break;
     }
+    catch(IllegalStateException ie){
+      logger.info("seeking to topic = " + partition.getTopic() + " partition = " + partition.getPartition() + " offset = " + partition.getOffset() + " caught illegal state exception will sleep for 1 sec and retry again.")
+      Thread.sleep(1000);
+    }
+  }
 
     Map<TopicPartition, String> metadata =
         request.getTimestamps().stream()
