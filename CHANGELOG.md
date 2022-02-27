@@ -1,5 +1,27 @@
 # Change Log
 
+## [2.1.0](https://github.com/networknt/light-kafka/tree/2.1.0) (2022-02-27)
+
+
+**Merged pull requests:**
+
+
+- fixes \#141 retry seek as we might have illegal state exception during… [\#142](https://github.com/networknt/light-kafka/pull/142) ([stevehu](https://github.com/stevehu))
+- updated logic to handle IllegalStateException while seeking to offset [\#140](https://github.com/networknt/light-kafka/pull/140) ([Debashisa](https://github.com/Debashisa))
+- fixes \#138 search the consumerRecords to find other rollback points [\#139](https://github.com/networknt/light-kafka/pull/139) ([stevehu](https://github.com/stevehu))
+- fixes \#136 output trace log in the seek method in the KafkaConsumerState [\#137](https://github.com/networknt/light-kafka/pull/137) ([stevehu](https://github.com/stevehu))
+- updated consumer state for dqueue check [\#135](https://github.com/networknt/light-kafka/pull/135) ([Debashisa](https://github.com/Debashisa))
+- fixes \#133 populate the correlationId into the headerMap for consumer [\#134](https://github.com/networknt/light-kafka/pull/134) ([stevehu](https://github.com/stevehu))
+- Issue131 [\#132](https://github.com/networknt/light-kafka/pull/132) ([stevehu](https://github.com/stevehu))
+- fixes \#129 Clear the consumerRecords if seek is called in the KafkaCo… [\#130](https://github.com/networknt/light-kafka/pull/130) ([stevehu](https://github.com/stevehu))
+- fixes \#127 Update ProduceRecord and SerializedKeyAndValue to add trac… [\#128](https://github.com/networknt/light-kafka/pull/128) ([stevehu](https://github.com/stevehu))
+- fixes \#125 update the SchemaManagerImpl to remove the format present … [\#126](https://github.com/networknt/light-kafka/pull/126) ([stevehu](https://github.com/stevehu))
+- fixes \#123 update kafka-consumer.yml and kafka-producer.yml for the a… [\#124](https://github.com/networknt/light-kafka/pull/124) ([stevehu](https://github.com/stevehu))
+- fixes \#121 update the kafka-producer.yml and kafka-consumer.yml [\#122](https://github.com/networknt/light-kafka/pull/122) ([stevehu](https://github.com/stevehu))
+- fixes \#119 add schema registry auto register schemas to true by default [\#120](https://github.com/networknt/light-kafka/pull/120) ([stevehu](https://github.com/stevehu))
+- fixes \#117 remove schema registry config class and config file [\#118](https://github.com/networknt/light-kafka/pull/118) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.0.32](https://github.com/networknt/light-kafka/tree/2.0.32) (2021-10-19)
 
 
