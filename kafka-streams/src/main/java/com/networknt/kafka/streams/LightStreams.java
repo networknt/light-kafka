@@ -71,9 +71,6 @@ public interface LightStreams {
                 }
             }
         } while (storeMoved);
-        if(returnObj == null) {
-            logger.debug("Timeout occurred trying to get key '{}' from stream.", key);
-        }
         return returnObj;
     }
 
@@ -110,9 +107,6 @@ public interface LightStreams {
                 }
             }
         } while (storeMoved);
-        if(returnObj == null) {
-            logger.debug("Timeout occurred trying to get 'all' from stream.");
-        }
         return returnObj;
     }
 }
