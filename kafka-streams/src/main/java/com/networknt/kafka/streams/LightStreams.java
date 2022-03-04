@@ -37,6 +37,18 @@ public interface LightStreams {
         ModuleRegistry.registerModule(LightStreams.class.getName(), Config.getInstance().getJsonMapConfigNoCache(KafkaStreamsConfig.CONFIG_NAME), masks);
     }
 
+    /**
+     * Get a value from a ReadOnlyKeyStore based on a given key.
+     *
+     * InvalidStateStoreException may be caused by a rebalance (transient),
+     * so it is valid to retry the query.
+     *
+     * We try for a max of 30 seconds.
+     *
+     * @param keyValueStore - keystore we want to query.
+     * @param key - key of the value we want to grab.
+     * @return - return Object from keyValueStore (if any)
+     */
     default Object getKafkaValueByKey(ReadOnlyKeyValueStore<String, ?> keyValueStore, String key) {
         Object returnObj = null;
         boolean storeMoved;
@@ -65,6 +77,17 @@ public interface LightStreams {
         return returnObj;
     }
 
+    /**
+     * Get all from ReadOnlyKeyStore.
+     *
+     * InvalidStateStoreException may be caused by a rebalance (transient),
+     * so it is valid to retry the query.
+     *
+     * We try for a max of 30 seconds.
+     *
+     * @param keyValueStore - keystore we want to query.
+     * @return - return Object from keyValueStore (if any)
+     */
     default Object getAllKafkaValue(ReadOnlyKeyValueStore<String, ?> keyValueStore) {
         Object returnObj = null;
         boolean storeMoved;
