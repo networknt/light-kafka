@@ -25,6 +25,7 @@ import com.networknt.kafka.common.converter.ProtobufConverter;
 import com.networknt.kafka.entity.*;
 import com.networknt.status.Status;
 import com.networknt.utility.ModuleRegistry;
+import com.networknt.utility.StringUtils;
 import io.undertow.server.HttpServerExchange;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -681,7 +682,7 @@ public class KafkaConsumerManager {
   ) {
     ConsumerInstanceId id = new ConsumerInstanceId(group, instance);
     final KafkaConsumerState state = toRemove ? consumers.remove(id) : consumers.get(id);
-    if (state == null) {
+    if (state == null || state.getId() ==null || StringUtils.isEmpty(state.getId().getInstance())) {
       Status status = new Status(CONSUMER_INSTANCE_NOT_FOUND, group, instance);
       throw new FrameworkException(status);
     }
