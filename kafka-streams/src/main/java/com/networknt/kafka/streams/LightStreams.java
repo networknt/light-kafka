@@ -85,7 +85,7 @@ public interface LightStreams {
      * @param keyValueStore - keystore we want to query.
      * @return - return Object from keyValueStore (if any)
      */
-    default Object getAllKafkaValue(ReadOnlyKeyValueStore<String, ?> keyValueStore) {
+    default Object getAllKafkaValue(ReadOnlyKeyValueStore<?, ?> keyValueStore) {
         Object returnObj = null;
         boolean storeMoved;
         long timeout = System.currentTimeMillis() + WAIT_THRESHOLD;
