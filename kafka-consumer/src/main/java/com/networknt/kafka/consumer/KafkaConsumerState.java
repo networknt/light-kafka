@@ -315,7 +315,7 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
                   new OffsetAndMetadata(partition.getOffset(), partition.getMetadata()));
           break;
         } catch (IllegalStateException ie) {
-          logger.info("seeking to topic = " + partition.getTopic() + " partition = " + partition.getPartition() + " offset = " + partition.getOffset() + " caught illegal state exception will sleep for 1 sec and retry again.");
+          logger.info("seeking to topic = " + partition.getTopic() + " partition = " + partition.getPartition() + " offset = " + partition.getOffset() + " caught illegal state exception will sleep for 1 sec and retry again. Exception:", ie);
           try {
             Thread.sleep(1000);
           } catch (InterruptedException e) {
