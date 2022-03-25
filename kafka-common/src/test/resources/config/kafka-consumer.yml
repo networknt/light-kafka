@@ -85,4 +85,8 @@ fetchMinBytes: ${kafka-consumer.fetchMinBytes:-1}
 instanceTimeoutMs: ${kafka-consumer.instanceTimeoutMs:300000}
 # Amount of time to backoff when an iterator runs out of date.
 iteratorBackoffMs: ${kafka-consumer.iteratorBackoffMs:50}
+#In case of .NET application we realized , under load, response comes back for batch HTTP request however FinACK does not come until
+#keep alive time out occurs and sidecar consumer does not move forward. Hence we are adding this property so that we can explicitly close the connection
+#when we receive the response and not wait for FinAck.
+backendConnectionReset: ${kafka-consumer.backendConnectionReset:false}
 
