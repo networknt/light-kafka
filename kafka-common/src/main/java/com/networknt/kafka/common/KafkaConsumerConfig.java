@@ -26,6 +26,7 @@ public class KafkaConsumerConfig {
     private String auditTarget;
     private String auditTopic;
     private boolean useNoWrappingAvro;
+    private boolean backendConnectionReset;
 
     private Map<String, Object> properties;
 
@@ -200,5 +201,9 @@ public class KafkaConsumerConfig {
     public void setUseNoWrappingAvro(boolean useNoWrappingAvro) {
         this.useNoWrappingAvro = useNoWrappingAvro;
     }
+
+    public boolean isBackendConnectionReset() { return backendConnectionReset; }
+
+    public void setBackendConnectionReset(boolean backendConnectionReset) { this.backendConnectionReset = backendConnectionReset; }
 
 }
