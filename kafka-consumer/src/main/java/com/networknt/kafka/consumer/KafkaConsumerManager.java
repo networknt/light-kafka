@@ -610,7 +610,7 @@ public class KafkaConsumerManager {
   }
 
   public void seek(String group, String instance, ConsumerSeekRequest request) {
-    log.debug("seeking to offset " + instance + " in group " + group);
+    log.debug("Seeking for instance " + instance + " in group " + group);
     KafkaConsumerState<?, ?, ?, ?> state = getConsumerInstance(group, instance);
     if (state != null) {
       state.seek(request);
@@ -618,7 +618,7 @@ public class KafkaConsumerManager {
   }
 
   public void assign(String group, String instance, ConsumerAssignmentRequest assignmentRequest) {
-    log.debug("seeking to end " + instance + " in group " + group);
+    log.debug("seeking for instance " + instance + " in group " + group);
     KafkaConsumerState state = getConsumerInstance(group, instance);
     if (state != null) {
       state.assign(assignmentRequest);
