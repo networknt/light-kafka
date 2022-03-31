@@ -304,24 +304,22 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
             .collect(Collectors.toList());
     if (pos.size() > request.getOffsets().size()) request.setOffsets(pos);
 
+    /**
+     * we call poll() once
+     * to make sure we join a consumer group and get assigned partitions, and then we
+     * immediately seek() to the correct offset in the partitions we are assigned to.
+     * Keep in mind that seek() only updates the position we are consuming from, so
+     * the next poll() will fetch the right messages. If there was an error in seek()
+     * (e.g., the offset does not exist), the exception will be thrown by poll().
+     */
+    consumer.poll(0);
     for (ConsumerSeekRequest.PartitionOffset partition : request.getOffsets()) {
       if (logger.isDebugEnabled()) {
         logger.debug("seek to topic = " + partition.getTopic() + " partition = " + partition.getPartition() + " offset = " + partition.getOffset());
       }
-      while (true) {
-        try {
-          consumer.seek(
-                  new TopicPartition(partition.getTopic(), partition.getPartition()),
-                  new OffsetAndMetadata(partition.getOffset(), partition.getMetadata()));
-          break;
-        } catch (IllegalStateException ie) {
-          logger.info("seeking to topic = " + partition.getTopic() + " partition = " + partition.getPartition() + " offset = " + partition.getOffset() + " caught illegal state exception will sleep for 1 sec and retry again. Exception:", ie);
-          try {
-            Thread.sleep(1000);
-          } catch (InterruptedException e) {
-          }
-        }
-      }
+      consumer.seek(
+              new TopicPartition(partition.getTopic(), partition.getPartition()),
+              new OffsetAndMetadata(partition.getOffset(), partition.getMetadata()));
     }
 
     Map<TopicPartition, String> metadata =
