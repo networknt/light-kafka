@@ -15,32 +15,41 @@
 
 package com.networknt.kafka.consumer;
 
+import com.networknt.client.Http2Client;
 import com.networknt.config.Config;
+import com.networknt.config.JsonMapper;
 import com.networknt.exception.FrameworkException;
-import com.networknt.kafka.common.converter.AvroConverter;
 import com.networknt.kafka.common.KafkaConsumerConfig;
-import com.networknt.kafka.common.converter.AvroNoWrappingConverter;
-import com.networknt.kafka.common.converter.JsonSchemaConverter;
-import com.networknt.kafka.common.converter.ProtobufConverter;
 import com.networknt.kafka.entity.*;
 import com.networknt.status.Status;
+import com.networknt.utility.Constants;
 import com.networknt.utility.ModuleRegistry;
 import com.networknt.utility.StringUtils;
+import io.undertow.UndertowOptions;
+import io.undertow.client.ClientConnection;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Headers;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.config.ConfigException;
+import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnio.OptionMap;
 
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
+
+import static com.networknt.handler.LightHttpHandler.logger;
 
 /**
  * Manages consumer instances by mapping instance IDs to consumer objects, processing read requests,
@@ -80,6 +89,8 @@ public class KafkaConsumerManager {
   private ReadTaskSchedulerThread readTaskSchedulerThread;
 
   private ConsumerInstanceId adminConsumerInstanceId = null;
+  public static ClientConnection connection;
+  public static Http2Client client = Http2Client.getInstance();
 
   public KafkaConsumerManager(final KafkaConsumerConfig config) {
     // register the module with the configuration properties.
@@ -805,4 +816,118 @@ public class KafkaConsumerManager {
       }
     }
   }
+
+  public <ClientValueT, ClientKeyT> void rollback(List<ConsumerRecord<ClientKeyT,ClientValueT>> records, String groupId, String instanceId) {
+
+    List<ConsumerSeekRequest.PartitionOffset> offsets=seekOffsetListUtility(records);
+    offsets.stream().forEach((consumerOffset ->{
+      logger.info("Rolling back to topic = " + consumerOffset.getTopic() + " partition = "+ consumerOffset.getPartition()+ " offset = "+ consumerOffset.getOffset());
+    }));
+    List<ConsumerSeekRequest.PartitionTimestamp> timestamps = new ArrayList<>();
+    ConsumerSeekRequest consumerSeekRequest = new ConsumerSeekRequest(offsets, timestamps);
+    seek(groupId, instanceId, consumerSeekRequest);
+  }
+
+  public <ClientValueT, ClientKeyT> void seekToParticularOffset(List<ConsumerRecord<ClientKeyT,ClientValueT>> records, String groupId, String instanceId) {
+
+    List<ConsumerSeekRequest.PartitionOffset> offsets=seekOffsetListUtility(records);
+    offsets.stream().forEach((consumerOffset ->{
+      logger.info("Seeking to topic = " + consumerOffset.getTopic() + " partition = "+ consumerOffset.getPartition()+ " offset = "+ consumerOffset.getOffset());
+    }));
+    List<ConsumerSeekRequest.PartitionTimestamp> timestamps = new ArrayList<>();
+    ConsumerSeekRequest consumerSeekRequest = new ConsumerSeekRequest(offsets, timestamps);
+    seek(groupId, instanceId, consumerSeekRequest);
+  }
+
+  public <ClientValueT, ClientKeyT> List<ConsumerSeekRequest.PartitionOffset> seekOffsetListUtility(List<ConsumerRecord<ClientKeyT,ClientValueT>> records){
+
+    // as one topic multiple partitions or multiple topics records will be in the same list, we need to find out how many offsets that is need to seek.
+    Map<String, ConsumerSeekRequest.PartitionOffset> topicPartitionMap = new HashMap<>();
+    for(ConsumerRecord record: records) {
+      String topic = record.getTopic();
+      int partition = record.getPartition();
+      long offset = record.getOffset();
+      ConsumerSeekRequest.PartitionOffset partitionOffset = topicPartitionMap.get(topic + ":" + partition);
+      if(partitionOffset == null) {
+        partitionOffset = new ConsumerSeekRequest.PartitionOffset(topic, partition, offset, null);
+        topicPartitionMap.put(topic + ":" + partition, partitionOffset);
+      } else {
+        // found the record in the map, set the offset if the current offset is smaller.
+        if(partitionOffset.getOffset() > offset) {
+          partitionOffset.setOffset(offset);
+        }
+      }
+    }
+    // convert the map values to a list.
+    List<ConsumerSeekRequest.PartitionOffset> offsets = topicPartitionMap.values().stream()
+            .collect(Collectors.toList());
+    return offsets;
+
+  }
+
+  public org.apache.kafka.common.header.Headers populateHeaders(RecordProcessedResult recordProcessedResult) {
+    org.apache.kafka.common.header.Headers headers = new RecordHeaders();
+    if (recordProcessedResult.getCorrelationId() != null) {
+      headers.add(Constants.CORRELATION_ID_STRING, recordProcessedResult.getCorrelationId().getBytes(StandardCharsets.UTF_8));
+    }
+    if (recordProcessedResult.getTraceabilityId() != null) {
+      headers.add(Constants.TRACEABILITY_ID_STRING, recordProcessedResult.getTraceabilityId().getBytes(StandardCharsets.UTF_8));
+    }
+    if (recordProcessedResult.getStacktrace() != null) {
+      headers.add(Constants.STACK_TRACE, recordProcessedResult.getStacktrace().getBytes(StandardCharsets.UTF_8));
+    }
+    Map<String, String> recordHeaders = recordProcessedResult.getRecord().getHeaders();
+    if (recordHeaders != null && recordHeaders.size() > 0) {
+      recordHeaders.keySet().stream().forEach(h -> {
+        if (recordHeaders.get(h) != null) {
+          headers.add(h, recordHeaders.get(h).getBytes(StandardCharsets.UTF_8));
+        }
+      });
+    }
+
+    return headers;
+  }
+
+  public void rollbackExchangeDefinition(HttpServerExchange exchange, String groupId, String instanceId, List<String> topics, List<ConsumerRecord<Object, Object>> records){
+    exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+    exchange.setStatusCode(200);
+    DeadLetterQueueReplayResponse deadLetterQueueReplayResponse = new DeadLetterQueueReplayResponse();
+    deadLetterQueueReplayResponse.setGroup(groupId);
+    deadLetterQueueReplayResponse.setTopics(topics);
+    deadLetterQueueReplayResponse.setInstance(instanceId);
+    deadLetterQueueReplayResponse.setRecords(Long.valueOf(records.size()));
+    ConsumerRecord<Object, Object> record = records.get(records.size()-1);
+    deadLetterQueueReplayResponse.setDescription("Pulled records from DLQ , processing error, rolled back to partition:" + record.getPartition() +  "| offset:" + record.getOffset());
+    exchange.getResponseSender().send(JsonMapper.toJson(deadLetterQueueReplayResponse));
+  }
+
+  public void successExchangeDefinition(HttpServerExchange exchange, String groupId, String instanceId, List<String> topics, List<ConsumerRecord<Object, Object>> records){
+    exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+    exchange.setStatusCode(200);
+    DeadLetterQueueReplayResponse deadLetterQueueReplayResponse = new DeadLetterQueueReplayResponse();
+    deadLetterQueueReplayResponse.setGroup(groupId);
+    deadLetterQueueReplayResponse.setTopics(topics);
+    deadLetterQueueReplayResponse.setInstance(instanceId);
+    deadLetterQueueReplayResponse.setRecords(Long.valueOf(records.size()));
+    ConsumerRecord<Object, Object> record = records.get(records.size()-1);
+    deadLetterQueueReplayResponse.setDescription("Dead letter queue process successful to partition:" + record.getPartition() +  "| offset:" + record.getOffset());
+    exchange.getResponseSender().send(JsonMapper.toJson(deadLetterQueueReplayResponse));
+  }
+
+  public ClientConnection getConnection() {
+
+    if (connection == null || !connection.isOpen()) {
+      try {
+        if (config.getBackendApiHost().startsWith("https")) {
+          connection = client.borrowConnection(new URI(config.getBackendApiHost()), Http2Client.WORKER, client.getDefaultXnioSsl(), Http2Client.BUFFER_POOL, OptionMap.create(UndertowOptions.ENABLE_HTTP2, true)).get();
+        } else {
+          connection = client.borrowConnection(new URI(config.getBackendApiHost()), Http2Client.WORKER, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
+        }
+      } catch (Exception ex) {
+        throw new RuntimeException();
+      }
+    }
+    return connection;
+  }
+
 }
