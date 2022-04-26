@@ -1,5 +1,19 @@
 # Change Log
 
+## [2.1.1](https://github.com/networknt/light-kafka/tree/2.1.1) (2022-04-26)
+
+
+**Merged pull requests:**
+
+
+- fixes \#151 Move some of the common methods to KafkaConsumerManager [\#152](https://github.com/networknt/light-kafka/pull/152) ([stevehu](https://github.com/stevehu))
+- fixes \#149 Move the produce code to the SidecarProducer for sharing [\#150](https://github.com/networknt/light-kafka/pull/150) ([stevehu](https://github.com/stevehu))
+- Consumer seek fix [\#148](https://github.com/networknt/light-kafka/pull/148) ([Debashisa](https://github.com/Debashisa))
+- Fin ack fix [\#147](https://github.com/networknt/light-kafka/pull/147) ([Debashisa](https://github.com/Debashisa))
+- adding exception stack trace to log line [\#146](https://github.com/networknt/light-kafka/pull/146) ([Debashisa](https://github.com/Debashisa))
+- Generic fix for grabbing all from readkeyvaluestore [\#145](https://github.com/networknt/light-kafka/pull/145) ([KalevGonvick](https://github.com/KalevGonvick))
+- updated code for health check fix [\#144](https://github.com/networknt/light-kafka/pull/144) ([Debashisa](https://github.com/Debashisa))
+- Feature/light stream common functions [\#143](https://github.com/networknt/light-kafka/pull/143) ([KalevGonvick](https://github.com/KalevGonvick))
 ## [2.1.0](https://github.com/networknt/light-kafka/tree/2.1.0) (2022-02-27)
 
 
