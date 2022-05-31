@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Objects;
 
@@ -91,21 +90,4 @@ public class ProduceResponse {
     public int hashCode() {
         return Objects.hash(offsets, keySchemaId, valueSchemaId);
     }
-
-    public Response.Status getRequestStatus() {
-        for (PartitionOffset partitionOffset : offsets) {
-            if (partitionOffset.getErrorCode() == null) {
-                continue;
-            }
-
-            if (partitionOffset.getErrorCode() == KAFKA_AUTHENTICATION_ERROR_CODE) {
-                return Response.Status.UNAUTHORIZED;
-            } else if (partitionOffset.getErrorCode() == KAFKA_AUTHORIZATION_ERROR_CODE) {
-                return Response.Status.FORBIDDEN;
-            }
-        }
-        return Response.Status.OK;
-    }
-
-
 }
