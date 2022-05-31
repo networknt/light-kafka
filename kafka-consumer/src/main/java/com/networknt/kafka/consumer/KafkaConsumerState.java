@@ -30,7 +30,6 @@ import org.apache.kafka.common.header.Headers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.InternalServerErrorException;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Duration;
@@ -470,7 +469,7 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
         consumer.beginningOffsets(singletonList(new TopicPartition(topic, partition)));
 
     if (response.size() != 1) {
-      throw new InternalServerErrorException(
+      throw new RuntimeException(
           String.format("Expected one offset, but got %d instead.", response.size()));
     }
 
@@ -489,7 +488,7 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
         consumer.endOffsets(singletonList(new TopicPartition(topic, partition)));
 
     if (response.size() != 1) {
-      throw new InternalServerErrorException(
+      throw new RuntimeException(
           String.format("Expected one offset, but got %d instead.", response.size()));
     }
 
@@ -510,7 +509,7 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
             singletonMap(new TopicPartition(topic, partition), timestamp.toEpochMilli()));
 
     if (response.size() != 1) {
-      throw new InternalServerErrorException(
+      throw new RuntimeException(
           String.format("Expected one offset, but got %d instead.", response.size()));
     }
 
