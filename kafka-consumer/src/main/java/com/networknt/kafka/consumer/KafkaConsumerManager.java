@@ -853,7 +853,7 @@ public class KafkaConsumerManager {
         topicPartitionMap.put(topic + ":" + partition, partitionOffset);
       } else {
         // found the record in the map, set the offset if the current offset is smaller.
-        if(partitionOffset.getOffset() > offset) {
+        if(partitionOffset.getOffset() < offset) {
           partitionOffset.setOffset(offset);
         }
       }
