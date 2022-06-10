@@ -90,4 +90,19 @@ public class ProduceResponse {
     public int hashCode() {
         return Objects.hash(offsets, keySchemaId, valueSchemaId);
     }
+
+    public String getRequestStatus() {
+        for (PartitionOffset partitionOffset : offsets) {
+            if (partitionOffset.getErrorCode() == null) {
+                continue;
+            }
+
+            if (partitionOffset.getErrorCode() == KAFKA_AUTHENTICATION_ERROR_CODE) {
+                return "UNAUTHORIZED";
+            } else if (partitionOffset.getErrorCode() == KAFKA_AUTHORIZATION_ERROR_CODE) {
+                return "FORBIDDEN";
+            }
+        }
+        return "OK";
+    }
 }
