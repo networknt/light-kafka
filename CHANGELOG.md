@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.6.40](https://github.com/networknt/light-kafka/tree/1.6.40) (2022-08-05)
+
+
+**Merged pull requests:**
+
+
+- fixes \#154 upgrade 1.6.x branch confluent, kafka and logback [\#155](https://github.com/networknt/light-kafka/pull/155) ([stevehu](https://github.com/stevehu))
 ## [1.6.39](https://github.com/networknt/light-kafka/tree/1.6.39) (2022-04-26)
 
 
