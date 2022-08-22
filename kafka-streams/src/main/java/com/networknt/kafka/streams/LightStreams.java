@@ -2,14 +2,20 @@ package com.networknt.kafka.streams;
 
 import com.networknt.config.Config;
 import com.networknt.kafka.common.KafkaStreamsConfig;
+import com.networknt.kafka.entity.StreamsDLQMetadata;
 import com.networknt.utility.ModuleRegistry;
+import com.networknt.utility.ObjectUtils;
+import com.networknt.utility.StringUtils;
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.errors.InvalidStateStoreException;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public interface LightStreams {
     Logger logger = LoggerFactory.getLogger(LightStreams.class);
@@ -108,5 +114,52 @@ public interface LightStreams {
             }
         } while (storeMoved);
         return returnObj;
+    }
+
+    default KafkaStreams startStream(String ip, int port, Topology topology, KafkaStreamsConfig config, Map<String, StreamsDLQMetadata> dlqTopicSerdeMap, String... auditParentNames)throws RuntimeException {
+
+        /**
+         *This code base prepares topology by adding auditing and exception handling sinks to the topology.
+         * Then starts the streams and returns the same
+         */
+        Properties streamProps = new Properties();
+        streamProps.putAll(config.getProperties());
+        streamProps.put(StreamsConfig.APPLICATION_SERVER_CONFIG, ip + ":" + port);
+
+
+        if(config.isAuditEnabled() && !StringUtils.isEmpty(config.getAuditTarget()) && config.getAuditTarget().equalsIgnoreCase("topic")) {
+            topology.addSink("AuditSink",
+                    config.getAuditTopic(),
+                    Serdes.String().serializer(),
+                    Serdes.String().serializer(),
+                    auditParentNames);
+        }
+
+        if(config.isDeadLetterEnabled()) {
+            if(!ObjectUtils.isEmpty(dlqTopicSerdeMap) && !dlqTopicSerdeMap.isEmpty()) {
+               dlqTopicSerdeMap.entrySet().forEach(
+                        dlqTopicSerde -> {
+                            topology.addSink(dlqTopicSerde.getKey().trim() + "_DLQSink",
+                                    dlqTopicSerde.getKey().trim(),
+                                    Serdes.String().serializer(),
+                                    dlqTopicSerde.getValue().getSerde().serializer(),
+                                    dlqTopicSerde.getValue().getParentNames().toArray(String[] :: new));
+                        }
+                );
+            }
+            else{
+                throw new RuntimeException("DLQ is enabled, SreamsDLQMetadata can not be null");
+            }
+
+        }
+
+        KafkaStreams kafkaStreams = new KafkaStreams(topology, streamProps);
+
+        if (config.isCleanUp()) {
+            kafkaStreams.cleanUp();
+        }
+        kafkaStreams.start();
+
+        return kafkaStreams;
     }
 }
