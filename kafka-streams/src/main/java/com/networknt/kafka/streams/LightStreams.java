@@ -6,19 +6,16 @@ import com.networknt.kafka.entity.StreamsDLQMetadata;
 import com.networknt.utility.ModuleRegistry;
 import com.networknt.utility.ObjectUtils;
 import com.networknt.utility.StringUtils;
-import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.errors.InvalidStateStoreException;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
-import org.apache.kafka.streams.state.Stores;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 
 public interface LightStreams {
     Logger logger = LoggerFactory.getLogger(LightStreams.class);
