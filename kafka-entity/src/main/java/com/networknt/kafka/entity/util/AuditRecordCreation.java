@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class AuditRecordCreation {
 
-    public AuditRecord createAuditRecord (
+    public static AuditRecord createAuditRecord (
             String id,
             String serviceId,
             AuditRecord.AuditType auditType,
