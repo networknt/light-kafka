@@ -25,7 +25,10 @@ import io.confluent.kafka.serializers.KafkaJsonSerializerConfig;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.networknt.kafka.entity.EmbeddedFormat;
+import org.apache.kafka.common.errors.SerializationException;
 
 public class NoSchemaRecordSerializer {
 
@@ -35,7 +38,7 @@ public class NoSchemaRecordSerializer {
         jsonSerializer = new JsonSerializer(jsonSerializerConfigs);
     }
 
-    public Optional<ByteString> serialize(EmbeddedFormat format, JsonNode data) {
+    public Optional<ByteString> serialize(int index, EmbeddedFormat format, JsonNode data) {
         checkArgument(!format.requiresSchema());
 
         if (data.isNull()) {
@@ -44,48 +47,54 @@ public class NoSchemaRecordSerializer {
 
         switch (format) {
             case BINARY:
-                return Optional.of(serializeBinary(data));
+                return Optional.of(serializeBinary(index, data));
 
             case JSON:
-                return Optional.of(serializeJson(data));
+                return Optional.of(serializeJson(index, data));
 
             case STRING:
-                return Optional.of(serializeString(data));
+                return Optional.of(serializeString(index, data));
             default:
                 throw new AssertionError(String.format("Unexpected enum constant: %s", format));
         }
     }
 
-    private static ByteString serializeBinary(JsonNode data) {
+    private static ByteString serializeBinary(int index, JsonNode data) {
         if (!data.isTextual()) {
-            throw new RuntimeException(String.format("data=%s is not a base64 string.", data));
+            throw new RuntimeException(String.format("data = %s is not a base64 string at index = %d.", data, index));
         }
         byte[] serialized;
         try {
             serialized = BaseEncoding.base64().decode(data.asText());
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(
-                    String.format("data=%s is not a valid base64 string.", data), e);
+                    String.format("data = %s is not a valid base64 string at index = %d.", data, index), e);
         }
         return ByteString.copyFrom(serialized);
     }
 
-    private static ByteString serializeString(JsonNode data) {
+    private static ByteString serializeString(int index, JsonNode data) {
         if (!data.isTextual()) {
-            throw new RuntimeException(String.format("data=%s is not a string.", data));
+            throw new RuntimeException(String.format("data = %s is not a string at index = %d.", data, index));
         }
         byte[] serialized;
         try {
             serialized = data.asText().getBytes(StandardCharsets.UTF_8);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(
-                    String.format("data=%s is not a valid string.", data), e);
+                    String.format("data = %s is not a valid string at index = %d.", data, index), e);
         }
         return ByteString.copyFrom(serialized);
     }
 
-    private ByteString serializeJson(JsonNode data) {
-        return ByteString.copyFrom(jsonSerializer.serialize(data));
+    private ByteString serializeJson(int index, JsonNode data) {
+        try {
+            return ByteString.copyFrom(jsonSerializer.serialize(data));
+        }
+        catch(Exception e){
+            throw new RuntimeException(
+                    String.format("data = %s is not a valid json at index = %d.", data, index), e);
+        }
     }
 
     private static final class JsonSerializer extends KafkaJsonSerializer<JsonNode> {

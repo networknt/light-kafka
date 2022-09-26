@@ -62,6 +62,7 @@ public class SchemaRecordSerializer {
     }
 
     public Optional<ByteString> serialize(
+            int index,
             EmbeddedFormat format,
             String topicName,
             Optional<RegisteredSchema> schema,
@@ -79,48 +80,48 @@ public class SchemaRecordSerializer {
 
         switch (format) {
             case AVRO:
-                return Optional.of(serializeAvro(schema.get().getSubject(), schema.get(), data));
+                return Optional.of(serializeAvro(index, schema.get().getSubject(), schema.get(), data));
 
             case JSONSCHEMA:
-                return Optional.of(serializeJsonschema(schema.get().getSubject(), schema.get(), data));
+                return Optional.of(serializeJsonschema(index, schema.get().getSubject(), schema.get(), data));
 
             case PROTOBUF:
                 return Optional.of(
-                        serializeProtobuf(schema.get().getSubject(), topicName, schema.get(), data, isKey));
+                        serializeProtobuf(index, schema.get().getSubject(), topicName, schema.get(), data, isKey));
 
             default:
                 throw new AssertionError(String.format("Unexpected enum constant: %s", format));
         }
     }
 
-    private ByteString serializeAvro(String subject, RegisteredSchema schema, JsonNode data) {
+    private ByteString serializeAvro(int index, String subject, RegisteredSchema schema, JsonNode data) {
         AvroSchema avroSchema = (AvroSchema) schema.getSchema();
         Object record;
         try {
             record = AvroSchemaUtils.toObject(data, avroSchema);
         } catch (AvroTypeException | IOException e) {
-            logger.error("Exception for data: " + data.toString() + " with schemaId: " + schema.getSchemaId());
-            Status status = new Status(SERIALIZE_SCHEMA_EXCEPTION, "avro", e.getMessage());
+            logger.error("Exception for data at index: " + index +" data : "+ data.toString() + " with schemaId: " + schema.getSchemaId());
+            Status status = new Status(SERIALIZE_SCHEMA_EXCEPTION, "avro , index in batch : "+ index, e.getMessage());
             throw new FrameworkException(status);
         }
         return ByteString.copyFrom(avroSerializer.serialize(subject, avroSchema, record));
     }
 
-    private ByteString serializeJsonschema(String subject, RegisteredSchema schema, JsonNode data) {
+    private ByteString serializeJsonschema(int index, String subject, RegisteredSchema schema, JsonNode data) {
         JsonSchema jsonSchema = (JsonSchema) schema.getSchema();
         Object record;
         try {
             record = JsonSchemaUtils.toObject(data, jsonSchema);
         } catch (IOException | ValidationException e) {
-            logger.error("Exception for data: " + data.toString() + " with schemaId: " + schema.getSchemaId());
-            Status status = new Status(SERIALIZE_SCHEMA_EXCEPTION, "jsonschema", e.getMessage());
+            logger.error("Exception for data at index: " + index +" data : "+ data.toString() + " with schemaId: " + schema.getSchemaId());
+            Status status = new Status(SERIALIZE_SCHEMA_EXCEPTION, "jsonschema , index in batch : "+ index, e.getMessage());
             throw new FrameworkException(status);
         }
         return ByteString.copyFrom(jsonschemaSerializer.serialize(subject, jsonSchema, record));
     }
 
     private ByteString serializeProtobuf(
-            String subject, String topicName, RegisteredSchema schema, JsonNode data, boolean isKey) {
+            int index, String subject, String topicName, RegisteredSchema schema, JsonNode data, boolean isKey) {
         ProtobufSchema protobufSchema = (ProtobufSchema) schema.getSchema();
         Message record;
         try {

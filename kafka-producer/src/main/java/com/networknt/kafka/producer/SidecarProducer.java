@@ -25,7 +25,6 @@ import org.apache.kafka.common.errors.AuthenticationException;
 import org.apache.kafka.common.errors.AuthorizationException;
 import org.apache.kafka.common.errors.RetriableException;
 import org.apache.kafka.common.header.Headers;
-import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +35,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
@@ -220,33 +220,39 @@ public class SidecarProducer implements NativeLightProducer {
             Optional<RegisteredSchema> valueSchema,
             List<ProduceRecord> records) {
 
+        AtomicInteger atomicInteger= new AtomicInteger(0);
         return records.stream()
                 .map(
                         record ->
-                                new SerializedKeyAndValue(
-                                        record.getPartition().map(Optional::of).orElse(partition),
-                                        record.getTraceabilityId(),
-                                        record.getCorrelationId(),
-                                        keyFormat.isPresent() && keyFormat.get().requiresSchema() ?
-                                                schemaRecordSerializer
-                                                        .serialize(
-                                                                keyFormat.get(),
-                                                                topicName,
-                                                                keySchema,
-                                                                record.getKey().orElse(NullNode.getInstance()),
-                                                                /* isKey= */ true) :
-                                                noSchemaRecordSerializer
-                                                        .serialize(keyFormat.orElse(EmbeddedFormat.valueOf(config.getKeyFormat().toUpperCase())), record.getKey().orElse(NullNode.getInstance())),
-                                        valueFormat.isPresent() && valueFormat.get().requiresSchema() ?
-                                                schemaRecordSerializer
-                                                        .serialize(
-                                                                valueFormat.get(),
-                                                                topicName,
-                                                                valueSchema,
-                                                                record.getValue().orElse(NullNode.getInstance()),
-                                                                /* isKey= */ false) :
-                                                noSchemaRecordSerializer.serialize(valueFormat.orElse(EmbeddedFormat.valueOf(config.getValueFormat().toUpperCase())), record.getValue().orElse(NullNode.getInstance())))
-                )
+                        {
+                            int atomicIntegerNew=atomicInteger.getAndIncrement();
+                            return new SerializedKeyAndValue(
+                                    record.getPartition().map(Optional::of).orElse(partition),
+                                    record.getTraceabilityId(),
+                                    record.getCorrelationId(),
+                                    keyFormat.isPresent() && keyFormat.get().requiresSchema() ?
+                                            schemaRecordSerializer
+                                                    .serialize(
+                                                            atomicIntegerNew,
+                                                            keyFormat.get(),
+                                                            topicName,
+                                                            keySchema,
+                                                            record.getKey().orElse(NullNode.getInstance()),
+                                                            /* isKey= */ true) :
+                                            noSchemaRecordSerializer
+                                                    .serialize(atomicIntegerNew, keyFormat.orElse(EmbeddedFormat.valueOf(config.getKeyFormat().toUpperCase())), record.getKey().orElse(NullNode.getInstance())),
+                                    valueFormat.isPresent() && valueFormat.get().requiresSchema() ?
+                                            schemaRecordSerializer
+                                                    .serialize(
+                                                            atomicIntegerNew,
+                                                            valueFormat.get(),
+                                                            topicName,
+                                                            valueSchema,
+                                                            record.getValue().orElse(NullNode.getInstance()),
+                                                            /* isKey= */ false) :
+                                            noSchemaRecordSerializer
+                                                    .serialize(atomicIntegerNew, valueFormat.orElse(EmbeddedFormat.valueOf(config.getValueFormat().toUpperCase())), record.getValue().orElse(NullNode.getInstance())));
+                        })
                 .collect(Collectors.toList());
     }
 
