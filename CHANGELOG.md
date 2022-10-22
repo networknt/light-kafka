@@ -1,5 +1,18 @@
 # Change Log
 
+## [2.1.2](https://github.com/networknt/light-kafka/tree/2.1.2) (2022-10-22)
+
+
+**Merged pull requests:**
+
+
+- Enhanced error and log line for schema serialization failure [\#167](https://github.com/networknt/light-kafka/pull/167) ([Debashisa](https://github.com/Debashisa))
+- I1488 [\#166](https://github.com/networknt/light-kafka/pull/166) ([Debashisa](https://github.com/Debashisa))
+- fixes \#164 upgrade confluent to 7.2.1 to match the 3.2.0 kafka verison [\#165](https://github.com/networknt/light-kafka/pull/165) ([stevehu](https://github.com/stevehu))
+- I1488 [\#163](https://github.com/networknt/light-kafka/pull/163) ([Debashisa](https://github.com/Debashisa))
+- fixes \#159 fixed a bug that not return the request status in ProduceR… [\#160](https://github.com/networknt/light-kafka/pull/160) ([stevehu](https://github.com/stevehu))
+- updated seek to offset utility fix [\#158](https://github.com/networknt/light-kafka/pull/158) ([Debashisa](https://github.com/Debashisa))
+- fixes \#156 update ProduceResponse to remove the ws.rs dependency [\#157](https://github.com/networknt/light-kafka/pull/157) ([stevehu](https://github.com/stevehu))
 ## [2.1.1](https://github.com/networknt/light-kafka/tree/2.1.1) (2022-04-26)
 
 
