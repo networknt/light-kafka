@@ -13,6 +13,7 @@ public class KafkaStreamsConfig {
     private String auditTopic;
     private boolean deadLetterEnabled;
     private String deadLetterTopicExt;
+    private String deadLetterControllerTopic;
     private Map<String, Object> properties;
 
     public KafkaStreamsConfig() {
@@ -64,6 +65,15 @@ public class KafkaStreamsConfig {
     public void setDeadLetterTopicExt(String deadLetterTopicExt) {
         this.deadLetterTopicExt = deadLetterTopicExt;
     }
+
+    public String getDeadLetterControllerTopic() {
+        return deadLetterControllerTopic;
+    }
+
+    public void setDeadLetterControllerTopic(String deadLetterControllerTopic) {
+        this.deadLetterControllerTopic = deadLetterControllerTopic;
+    }
+
 
     public Map<String, Object> getProperties() {
         return properties;

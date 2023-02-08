@@ -5,17 +5,18 @@ public class TopicReplayMetadata {
     private String topicName;
     private boolean dlqIndicator;
     private int partition;
-    private long offset;
-    private String dlqConsumerGroup;
+    private long startOffset;
+    private long endOffset;
+    private String consumerGroup;
     private int timeout;
     private boolean lastRetry;
 
-    public String getDlqConsumerGroup() {
-        return dlqConsumerGroup;
+    public String getConsumerGroup() {
+        return consumerGroup;
     }
 
-    public void setDlqConsumerGroup(String dlqConsumerGroup) {
-        this.dlqConsumerGroup = dlqConsumerGroup;
+    public void setConsumerGroup(String consumerGroup) {
+        this.consumerGroup = consumerGroup;
     }
 
     public int getTimeout() {
@@ -58,11 +59,19 @@ public class TopicReplayMetadata {
         this.partition = partition;
     }
 
-    public long getOffset() {
-        return offset;
+    public long getStartOffset() {
+        return startOffset;
     }
 
-    public void setOffset(long offset) {
-        this.offset = offset;
+    public void setStartOffset(long startOffset) {
+        this.startOffset = startOffset;
+    }
+
+    public long getEndOffset() {
+        return endOffset;
+    }
+
+    public void setEndOffset(long endOffset) {
+        this.endOffset = endOffset;
     }
 }
