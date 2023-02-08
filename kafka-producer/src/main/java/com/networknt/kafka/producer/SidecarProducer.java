@@ -343,7 +343,7 @@ public class SidecarProducer implements NativeLightProducer {
                         // we cannot call the writeAuditLog in the callback function. It needs to be processed with another thread.
                         if(config.isAuditEnabled()) {
                             synchronized (auditRecords) {
-                                auditRecords.add(auditFromRecordMetadata(null, exception, serviceId, key, traceabilityId, correlationId, false));
+                                auditRecords.add(auditFromRecordMetadata(null,topicName, exception, serviceId, key, traceabilityId, correlationId, false));
                             }
                         }
                         result.completeExceptionally(exception);
@@ -351,7 +351,7 @@ public class SidecarProducer implements NativeLightProducer {
                         //writeAuditLog(metadata, null, headers, true);
                         if(config.isAuditEnabled()) {
                             synchronized (auditRecords) {
-                                auditRecords.add(auditFromRecordMetadata(metadata, null, serviceId, key, traceabilityId, correlationId, true));
+                                auditRecords.add(auditFromRecordMetadata(metadata,topicName, null, serviceId, key, traceabilityId, correlationId, true));
                             }
                         }
                         result.complete(ProduceResult.fromRecordMetadata(metadata));
@@ -416,13 +416,13 @@ public class SidecarProducer implements NativeLightProducer {
         }
     }
 
-    protected AuditRecord auditFromRecordMetadata(RecordMetadata rmd, Exception e, String serviceId, Optional<ByteString> key, Optional<String> traceabilityId, Optional<String> correlationId, boolean produced) {
+    protected AuditRecord auditFromRecordMetadata(RecordMetadata rmd, String topicName,Exception e, String serviceId, Optional<ByteString> key, Optional<String> traceabilityId, Optional<String> correlationId, boolean produced) {
         AuditRecord auditRecord = new AuditRecord();
+        auditRecord.setTopic(topicName);
         auditRecord.setId(UUID.randomUUID().toString());
         auditRecord.setServiceId(serviceId);
         auditRecord.setAuditType(AuditRecord.AuditType.PRODUCER);
         if(rmd != null) {
-            auditRecord.setTopic(rmd.topic());
             auditRecord.setPartition(rmd.partition());
             auditRecord.setOffset(rmd.offset());
         } else {
