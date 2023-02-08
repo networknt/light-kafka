@@ -9,7 +9,10 @@ public class TopicReplayMetadata {
     private long endOffset;
     private String consumerGroup;
     private int timeout;
+    private boolean streamingApp;
+    private String destinationTopic;
     private boolean lastRetry;
+
 
     public String getConsumerGroup() {
         return consumerGroup;
@@ -74,4 +77,22 @@ public class TopicReplayMetadata {
     public void setEndOffset(long endOffset) {
         this.endOffset = endOffset;
     }
+
+
+    public boolean isStreamingApp() {
+        return streamingApp;
+    }
+
+    public void setStreamingApp(boolean streamingApp) {
+        this.streamingApp = streamingApp;
+    }
+
+    public String getDestinationTopic() {
+        return destinationTopic;
+    }
+
+    public void setDestinationTopic(String destinationTopic) {
+        this.destinationTopic = destinationTopic;
+    }
+
 }
