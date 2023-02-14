@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.1.7](https://github.com/networknt/light-kafka/tree/2.1.7) (2023-02-14)
+
+
+**Merged pull requests:**
+
+
+- adding fields to topic replay metadata [\#172](https://github.com/networknt/light-kafka/pull/172) ([Debashisa](https://github.com/Debashisa))
+- I1800 [\#171](https://github.com/networknt/light-kafka/pull/171) ([Debashisa](https://github.com/Debashisa))
+- I1800 [\#170](https://github.com/networknt/light-kafka/pull/170) ([Debashisa](https://github.com/Debashisa))
 ## [2.1.6](https://github.com/networknt/light-kafka/tree/2.1.6) (2023-02-06)
 
 
