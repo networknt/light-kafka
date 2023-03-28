@@ -27,7 +27,7 @@ public final class ConsumerAssignmentRequest {
   private final List<TopicPartition> partitions;
 
   @JsonCreator
-  private ConsumerAssignmentRequest(
+  public ConsumerAssignmentRequest(
       @JsonProperty("partitions") List<TopicPartition> partitions) {
     this.partitions = partitions;
   }
