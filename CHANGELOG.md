@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.9](https://github.com/networknt/light-kafka/tree/2.1.9) (2023-03-30)
+
+
+**Merged pull requests:**
+
+
+- making consumer assignment request constructor public [\#175](https://github.com/networknt/light-kafka/pull/175) ([Debashisa](https://github.com/Debashisa))
 ## [2.1.8](https://github.com/networknt/light-kafka/tree/2.1.8) (2023-03-06)
 
 
