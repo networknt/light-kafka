@@ -6,6 +6,8 @@
 **Merged pull requests:**
 
 
+
+
 ## [2.1.11](https://github.com/networknt/light-kafka/tree/2.1.11) (2023-04-10)
 
 
