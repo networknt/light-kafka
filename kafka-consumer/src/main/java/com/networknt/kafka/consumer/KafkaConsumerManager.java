@@ -16,6 +16,7 @@
 package com.networknt.kafka.consumer;
 
 import com.networknt.client.Http2Client;
+import com.networknt.client.simplepool.SimpleConnectionHolder;
 import com.networknt.config.Config;
 import com.networknt.config.JsonMapper;
 import com.networknt.exception.FrameworkException;
@@ -913,21 +914,4 @@ public class KafkaConsumerManager {
     deadLetterQueueReplayResponse.setDescription("Dead letter queue process successful to partition:" + record.getPartition() +  "| offset:" + record.getOffset());
     exchange.getResponseSender().send(JsonMapper.toJson(deadLetterQueueReplayResponse));
   }
-
-  public ClientConnection getConnection() {
-
-    if (connection == null || !connection.isOpen()) {
-      try {
-        if (config.getBackendApiHost().startsWith("https")) {
-          connection = client.borrowConnection(new URI(config.getBackendApiHost()), Http2Client.WORKER, client.getDefaultXnioSsl(), Http2Client.BUFFER_POOL, OptionMap.create(UndertowOptions.ENABLE_HTTP2, true)).get();
-        } else {
-          connection = client.borrowConnection(new URI(config.getBackendApiHost()), Http2Client.WORKER, Http2Client.BUFFER_POOL, OptionMap.EMPTY).get();
-        }
-      } catch (Exception ex) {
-        throw new RuntimeException();
-      }
-    }
-    return connection;
-  }
-
 }
