@@ -7,6 +7,8 @@
 
 
 - fixes \#176 remove the getConnection from the KafkaConsumerManager [\#177](https://github.com/networknt/light-kafka/pull/177) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.1.15](https://github.com/networknt/light-kafka/tree/2.1.15) (2023-04-19)
 
 
