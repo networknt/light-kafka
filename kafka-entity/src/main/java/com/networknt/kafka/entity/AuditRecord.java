@@ -7,7 +7,7 @@ package com.networknt.kafka.entity;
  */
 public class AuditRecord {
     public enum AuditType {
-        PRODUCER, REACTIVE_CONSUMER, ACTIVE_CONSUMER
+        PRODUCER, REACTIVE_CONSUMER, ACTIVE_CONSUMER, STREAMING_CONSUMER, STREAMING_PRODUCER
     }
     public enum AuditStatus {
         SUCCESS, FAILURE
