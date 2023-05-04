@@ -141,7 +141,7 @@ public interface LightStreams {
                         dlqTopicSerde -> {
                             topology.addSink(dlqTopicSerde.getKey().trim() + "_DLQSink",
                                     dlqTopicSerde.getKey().trim(),
-                                    Serdes.String().serializer(),
+                                    Serdes.ByteArray().serializer(),
                                     dlqTopicSerde.getValue().getSerde().serializer(),
                                     dlqTopicSerde.getValue().getParentNames().toArray(String[] :: new));
                         }
