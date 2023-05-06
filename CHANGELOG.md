@@ -7,6 +7,8 @@
 
 
 - adding 2 new audit types for streaming consumer and producer [\#178](https://github.com/networknt/light-kafka/pull/178) ([Debashisa](https://github.com/Debashisa))
+
+
 ## [2.1.17](https://github.com/networknt/light-kafka/tree/2.1.17) (2023-05-05)
 
 
