@@ -150,7 +150,11 @@
                 <artifactId>kafka-streams</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>server</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>utility</artifactId>
