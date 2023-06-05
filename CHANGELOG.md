@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.1.19](https://github.com/networknt/light-kafka/tree/2.1.19) (2023-06-05)
+
+
+**Merged pull requests:**
+
+
+- fixes \#180 add a kafka common constant class [\#181](https://github.com/networknt/light-kafka/pull/181) ([stevehu](https://github.com/stevehu))
+- I2022 [\#179](https://github.com/networknt/light-kafka/pull/179) ([Debashisa](https://github.com/Debashisa))
 ## [2.1.18](https://github.com/networknt/light-kafka/tree/2.1.18) (2023-05-06)
 
 
