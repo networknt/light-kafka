@@ -1,16 +1,24 @@
 # Generic configuration for Kafka producer.
 properties:
-  # The sidecar does the serialization to byte array for both key and value
-  key.serializer: org.apache.kafka.common.serialization.ByteArraySerializer
-  value.serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+  # Kafka key serializer. Default to ByteArraySerializer
+  key.serializer: ${kafka-producer.key.serializer:org.apache.kafka.common.serialization.ByteArraySerializer}
+  # Kafka value serializer. Default to ByteArraySerializer
+  value.serializer: ${kafka-producer.value.serializer:org.apache.kafka.common.serialization.ByteArraySerializer}
   # This value is a string, if using 1 or 0, you must use '1' or '0' as the value
   acks: ${kafka-producer.acks:all}
+  # Kafka bootstrap servers. Default to localhost:9092
   bootstrap.servers: ${kafka-producer.bootstrap.servers:localhost:9092}
+  # Buffer size for unsent records. Default to 33554432
   buffer.memory: ${kafka-producer.buffer.memory:33554432}
+  # Retry times for producer. Default to 3
   retries: ${kafka-producer.retries:3}
+  # Batch size. Default to 16KB
   batch.size: ${kafka-producer.batch.size:16384}
+  # Linger time. Default to 1ms
   linger.ms: ${kafka-producer.linger.ms:1}
+  # max in-flight requests per connection. Default to 5
   max.in.flight.requests.per.connection: ${kafka-producer.max.in.flight.requests.per.connection:5}
+  # enable idempotence. Default to true
   enable.idempotence: ${kafka-producer.enable.idempotence:true}
   # Transactional producer configuration
   # The TransactionalId to use for transactional delivery.
@@ -32,15 +40,21 @@ properties:
   # Schema registry client truststore password
   # schema.registry.ssl.truststore.password: ${kafka-producer.schema.registry.ssl.truststore.password:password}
   # security configuration for enterprise deployment
+  # Security protocol type. Default to SASL_SSL
   # security.protocol: ${kafka-producer.security.protocol:SASL_SSL}
+  # SASL mechanism. Default to PLAIN
   # sasl.mechanism: ${kafka-producer.sasl.mechanism:PLAIN}
+  # SASL JAAS config
   # sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-producer.username:username}\" password=\"${kafka-producer.password:password}\";"
+  # SSL endpoint identification algorithm.
   # ssl.endpoint.identification.algorithm: ${kafka-producer.ssl.endpoint.identification.algorithm:algo-name}
   # ssl.truststore.location: ${kafka-producer.ssl.truststore.location:/truststore/kafka.server.truststore.jks}
   # ssl.truststore.password: ${kafka-producer.ssl.truststore.password:changeme}
+  # Apache Kafka 2.3 clients or later will then read from followers that have matching broker.rack as the specified client.rack ID.
   # client.rack: ${kafka-producer.client.rack:rack-name}
   # basic authentication user:pass for the schema registry
   # basic.auth.user.info: ${kafka-producer.username:username}:${kafka-producer.password:password}
+  # basic authentication credentials source. Default to USER_INFO
   # basic.auth.credentials.source: ${kafka-producer.basic.auth.credentials.source:USER_INFO}
   # If you have message that is bigger than 1 MB to produce, increase this value.
   max.request.size: ${kafka-producer.max.request.size:1048576}

@@ -21,6 +21,7 @@ initialTables:
 query: ${kafka-ksqldb.query:SELECT * from TEST_STREAM EMIT CHANGES};
 # stream query properties
 properties:
+  # Auto offset reset. Default to earliest
   auto.offset.reset: ${kafka-ksqldb.auto.offset.reset:earliest}
 
 # Backend API host

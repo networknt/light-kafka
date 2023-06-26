@@ -1,12 +1,17 @@
 # Generic Kafka Consumer Configuration
 properties:
+  # Kafka bootstrap servers. Default to localhost:9092
   bootstrap.servers: ${kafka-consumer.bootstrap.servers:localhost:9092}
   # Consumer will use the schema for deserialization from byte array
-  key.deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
-  value.deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+  # Kafka key deserializer. Default to ByteArrayDeserializer
+  key.deserializer: ${kafka-consumer.key.deserializer:org.apache.kafka.common.serialization.ByteArrayDeserializer}
+  # Kafka value deserializer. Default to ByteArrayDeserializer
+  value.deserializer: ${kafka-consumer.value.deserializer:org.apache.kafka.common.serialization.ByteArrayDeserializer}
   # As the control pane or API to access admin endpoint for commit, this value should be false.
-  enable.auto.commit: false
+  enable.auto.commit: ${kafka-consumer.enable.auto.commit:false}
+  # Kafka auto offset reset. Default to earliest
   auto.offset.reset: ${kafka-consumer.auto.offset.reset:earliest}
+  # A unique application id for the Kafka consumer app. You need to replace it or overwrite it in your code.
   group.id: ${kafka-consumer.group.id:group1}
   # Schema registry url
   schema.registry.url: ${kafka-consumer.schema.registry.url:http://localhost:8081}
@@ -17,16 +22,21 @@ properties:
   # Schema registry client truststore password
   # schema.registry.ssl.truststore.password: ${kafka-consumer.schema.registry.ssl.truststore.password:password}
   # security configuration for enterprise deployment
+  # Security protocol type. Default to SASL_SSL
   # security.protocol: ${kafka-consumer.security.protocol:SASL_SSL}
+  # SASL mechanism. Default to PLAIN
   # sasl.mechanism: ${kafka-consumer.sasl.mechanism:PLAIN}
+  # SASL JAAS config
   # sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-consumer.username:username}\" password=\"${kafka-consumer.password:password}\";"
   # ssl.truststore.location: ${kafka-consumer.ssl.truststore.location:/truststore/kafka.server.truststore.jks}
   # ssl.truststore.password: ${kafka-consumer.ssl.truststore.password:changeme}
+  # SSL endpoint identification algorithm.
   # ssl.endpoint.identification.algorithm: ${kafka-consumer.ssl.endpoint.identification.algorithm:algo-name}
   # Apache Kafka 2.3 clients or later will then read from followers that have matching broker.rack as the specified client.rack ID.
   # client.rack: ${kafka-consumer.client.rack:rack-name}
   # basic authentication user:pass for the schema registry
   # basic.auth.user.info: ${kafka-consumer.username:username}:${kafka-consumer.password:password}
+  # basic authentication credentials source. Default to USER_INFO
   # basic.auth.credentials.source: ${kafka-consumer.basic.auth.credentials.source:USER_INFO}
   # max fetch size from Kafka cluster. Default 50mb is too big for cache consumption on the sidecar
   fetch.max.bytes: ${kafka-consumer.fetch.max.bytes:102400}
