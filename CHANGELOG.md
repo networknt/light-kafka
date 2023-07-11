@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.23](https://github.com/networknt/light-kafka/tree/2.1.23) (2023-07-11)
+
+
+**Merged pull requests:**
+
+
+- fixes \#182 update Kafka component config file with comments [\#183](https://github.com/networknt/light-kafka/pull/183) ([stevehu](https://github.com/stevehu))
 ## [2.1.22](https://github.com/networknt/light-kafka/tree/2.1.22) (2023-06-22)
 
 
