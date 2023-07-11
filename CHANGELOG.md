@@ -7,6 +7,8 @@
 
 
 - fixes \#182 update Kafka component config file with comments [\#183](https://github.com/networknt/light-kafka/pull/183) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.1.22](https://github.com/networknt/light-kafka/tree/2.1.22) (2023-06-22)
 
 
