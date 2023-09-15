@@ -853,8 +853,8 @@ public class KafkaConsumerManager {
         partitionOffset = new ConsumerSeekRequest.PartitionOffset(topic, partition, offset, null);
         topicPartitionMap.put(topic + ":" + partition, partitionOffset);
       } else {
-        // found the record in the map, set the offset if the current offset is smaller.
-        if(partitionOffset.getOffset() < offset) {
+        // found the record in the map, set the offset if the next offset is smaller than current offset.
+        if(partitionOffset.getOffset() > offset) {
           partitionOffset.setOffset(offset);
         }
       }
