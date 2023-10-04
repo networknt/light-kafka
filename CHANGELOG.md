@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.27](https://github.com/networknt/light-kafka/tree/2.1.27) (2023-10-04)
+
+
+**Merged pull requests:**
+
+
+- fixed the bug in rollback for offset check [\#184](https://github.com/networknt/light-kafka/pull/184) ([Debashisa](https://github.com/Debashisa))
 ## [2.1.26](https://github.com/networknt/light-kafka/tree/2.1.26) (2023-08-17)
 
 
