@@ -43,6 +43,6 @@ public interface LightProducer {
         masks.add("basic.auth.user.info");
         masks.add("sasl.jaas.config");
         masks.add("schema.registry.ssl.truststore.password");
-        ModuleRegistry.registerModule(LightProducer.class.getName(), Config.getInstance().getJsonMapConfigNoCache(KafkaProducerConfig.CONFIG_NAME), masks);
+        ModuleRegistry.registerModule(KafkaProducerConfig.CONFIG_NAME, LightProducer.class.getName(), Config.getInstance().getJsonMapConfigNoCache(KafkaProducerConfig.CONFIG_NAME), masks);
     }
 }

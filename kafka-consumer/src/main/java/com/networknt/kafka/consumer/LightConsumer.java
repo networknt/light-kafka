@@ -21,6 +21,6 @@ public interface LightConsumer {
         masks.add("basic.auth.user.info");
         masks.add("sasl.jaas.config");
         masks.add("schema.registry.ssl.truststore.password");
-        ModuleRegistry.registerModule(LightConsumer.class.getName(), Config.getInstance().getJsonMapConfigNoCache(KafkaConsumerConfig.CONFIG_NAME), masks);
+        ModuleRegistry.registerModule(KafkaConsumerConfig.CONFIG_NAME, LightConsumer.class.getName(), Config.getInstance().getJsonMapConfigNoCache(KafkaConsumerConfig.CONFIG_NAME), masks);
     }
 }
