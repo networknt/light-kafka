@@ -7,6 +7,8 @@
 
 
 - fixes \#186 refactor module registry to add config name [\#187](https://github.com/networknt/light-kafka/pull/187) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.1.28](https://github.com/networknt/light-kafka/tree/2.1.28) (2023-10-24)
 
 
