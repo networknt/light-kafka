@@ -1,12 +1,12 @@
 package com.networknt.kafka.producer;
 
-import com.networknt.client.ClientRequestCarrier;
 import com.networknt.config.Config;
 import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.httpstring.HttpStringConstants;
 import com.networknt.kafka.common.KafkaProducerConfig;
 import com.networknt.kafka.common.TransactionalKafkaException;
 import com.networknt.kafka.common.FlinkKafkaProducer;
+import com.networknt.server.ServerConfig;
 
 import com.networknt.utility.Constants;
 import io.opentracing.Tracer;
@@ -23,7 +23,6 @@ import org.apache.kafka.common.errors.InvalidTxnStateException;
 import org.apache.kafka.common.errors.OutOfOrderSequenceException;
 import org.apache.kafka.common.errors.ProducerFencedException;
 import org.apache.kafka.common.header.Headers;
-import org.apache.kafka.common.header.internals.RecordHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +39,9 @@ public class TransactionalProducer implements Runnable, QueuedLightProducer {
     static final KafkaProducerConfig config = (KafkaProducerConfig) Config.getInstance().getJsonObjectConfig(KafkaProducerConfig.CONFIG_NAME, KafkaProducerConfig.class);
     static {
         if(config.isInjectCallerId()) {
-            Map<String, Object> serverConfig = Config.getInstance().getJsonMapConfigNoCache("server");
+            ServerConfig serverConfig = ServerConfig.getInstance();
             if(serverConfig != null) {
-                callerId = (String)serverConfig.get("serviceId");
+                callerId = serverConfig.getServiceId();
             }
         }
     }
