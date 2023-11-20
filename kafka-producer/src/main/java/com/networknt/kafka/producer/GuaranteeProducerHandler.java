@@ -3,6 +3,7 @@ package com.networknt.kafka.producer;
 import com.networknt.config.Config;
 import com.networknt.handler.LightHttpHandler;
 import com.networknt.kafka.common.KafkaProducerConfig;
+import com.networknt.server.ServerConfig;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -19,9 +20,9 @@ public class GuaranteeProducerHandler implements LightHttpHandler {
     static final KafkaProducerConfig config = (KafkaProducerConfig) Config.getInstance().getJsonObjectConfig(KafkaProducerConfig.CONFIG_NAME, KafkaProducerConfig.class);
     static {
         if(config.isInjectCallerId()) {
-            Map<String, Object> serverConfig = Config.getInstance().getJsonMapConfigNoCache("server");
+            ServerConfig serverConfig = ServerConfig.getInstance();
             if(serverConfig != null) {
-                callerId = (String)serverConfig.get("serviceId");
+                callerId = serverConfig.getServiceId();
             }
         }
     }
