@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.30](https://github.com/networknt/light-kafka/tree/2.1.30) (2023-11-20)
+
+
+**Merged pull requests:**
+
+
+- fixes \#188 update to ServerConfig from HashMap [\#189](https://github.com/networknt/light-kafka/pull/189) ([stevehu](https://github.com/stevehu))
 ## [2.1.29](https://github.com/networknt/light-kafka/tree/2.1.29) (2023-11-19)
 
 
