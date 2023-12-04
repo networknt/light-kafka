@@ -140,6 +140,8 @@ public class SidecarProducer implements NativeLightProducer {
                     } else {
                         schemaCache.put(topicName + "k" + request.getKeySchemaVersion().get(), keySchema);
                     }
+                } else {
+                    logger.error("Could not put key schema into the cache. It means that neither keySchemaId nor keySchemaVersion is supplied and Kafka Schema Registry will be overloaded.");
                 }
             }
         }
@@ -184,6 +186,8 @@ public class SidecarProducer implements NativeLightProducer {
                     } else {
                         schemaCache.put(topicName + "v" + request.getValueSchemaVersion().get(), valueSchema);
                     }
+                } else {
+                    logger.error("Could not put value schema into the cache. It means that neither valueSchemaId nor valueSchemaVersion is supplied and Kafka Schema Registry will be overloaded.");
                 }
             }
         }
