@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.6.46](https://github.com/networknt/light-kafka/tree/1.6.46) (2023-12-30)
+
+
+**Merged pull requests:**
+
+
+- fixes \#173 upgade 1.6.x dependencies to resolve security warnnings [\#174](https://github.com/networknt/light-kafka/pull/174) ([stevehu](https://github.com/stevehu))
 ## [1.6.45](https://github.com/networknt/light-kafka/tree/1.6.45) (2023-03-18)
 
 
