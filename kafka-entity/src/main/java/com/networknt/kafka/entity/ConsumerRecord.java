@@ -23,6 +23,7 @@ public class ConsumerRecord<K, V> {
   V value;
   int partition;
   long offset;
+  long timestamp;
   Map<String, String> headers;
 
   ConsumerRecord() {
@@ -35,6 +36,16 @@ public class ConsumerRecord<K, V> {
     this.headers = headers;
     this.partition = partition;
     this.offset = offset;
+  }
+
+  public ConsumerRecord(String topic, K key, V value, Map<String, String> headers, int partition, long offset, long timestamp) {
+    this.topic = topic;
+    this.key = key;
+    this.value = value;
+    this.headers = headers;
+    this.partition = partition;
+    this.offset = offset;
+    this.timestamp = timestamp;
   }
 
   public String getTopic() {
@@ -59,8 +70,17 @@ public class ConsumerRecord<K, V> {
     return offset;
   }
 
+  public long getTimestamp() {
+    return timestamp;
+  }
+
   public static <K, V> ConsumerRecord<K, V> create(
       String topic, K key, V value, Map<String, String> headers, int partition, long offset) {
     return new ConsumerRecord<>(topic, key, value, headers, partition, offset);
   }
+  public static <K, V> ConsumerRecord<K, V> create(
+          String topic, K key, V value, Map<String, String> headers, int partition, long offset, long timestamp) {
+    return new ConsumerRecord<>(topic, key, value, headers, partition, offset, timestamp);
+  }
+
 }
