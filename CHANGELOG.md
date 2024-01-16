@@ -1,11 +1,12 @@
 # Change Log
 
-## [2.1.31](https://github.com/networknt/light-kafka/tree/2.1.31) (2024-01-15)
+## [2.1.31](https://github.com/networknt/light-kafka/tree/2.1.31) (2024-01-16)
 
 
 **Merged pull requests:**
 
 
+- fixes \#193 add timestamp to the CosumerRecord class [\#194](https://github.com/networknt/light-kafka/pull/194) ([stevehu](https://github.com/stevehu))
 - fixes \#191 Output an error message in the log if SidecarProducer cann… [\#192](https://github.com/networknt/light-kafka/pull/192) ([stevehu](https://github.com/stevehu))
 
 
