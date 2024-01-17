@@ -27,6 +27,7 @@ public class KafkaConsumerConfig {
     private String auditTopic;
     private boolean useNoWrappingAvro;
     private boolean backendConnectionReset;
+    private int batchRollbackThreshold;
 
     private Map<String, Object> properties;
 
@@ -205,5 +206,13 @@ public class KafkaConsumerConfig {
     public boolean isBackendConnectionReset() { return backendConnectionReset; }
 
     public void setBackendConnectionReset(boolean backendConnectionReset) { this.backendConnectionReset = backendConnectionReset; }
+
+    public int getBatchRollbackThreshold() {
+        return batchRollbackThreshold;
+    }
+    public void setBatchRollbackThreshold(int batchRollbackThreshold) {
+        this.batchRollbackThreshold = batchRollbackThreshold;
+    }
+
 
 }
