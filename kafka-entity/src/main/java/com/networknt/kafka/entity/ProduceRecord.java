@@ -3,8 +3,9 @@ package com.networknt.kafka.entity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.kafka.common.header.Headers;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -22,7 +23,7 @@ public class ProduceRecord {
     Optional<String> correlationId;
 
     @JsonProperty("headers")
-    Optional<Headers> headers;
+    Optional<List<Map<String, Object>>> headers;
     @JsonProperty("timestamp")
     Optional<Long> timestamp;
 
@@ -37,7 +38,7 @@ public class ProduceRecord {
         this.correlationId = correlationId;
     }
 
-    public ProduceRecord(Optional<Integer> partition, Optional<JsonNode> key, Optional<JsonNode> value, Optional<String> traceabilityId, Optional<String> correlationId, Optional<Headers> headers, Optional<Long> timestamp) {
+    public ProduceRecord(Optional<Integer> partition, Optional<JsonNode> key, Optional<JsonNode> value, Optional<String> traceabilityId, Optional<String> correlationId, Optional<List<Map<String, Object>>> headers, Optional<Long> timestamp) {
         this.key = key;
         this.value = value;
         this.partition = partition;
@@ -59,7 +60,7 @@ public class ProduceRecord {
 
 
     public static ProduceRecord create(
-            Integer partition, JsonNode key, JsonNode value, String traceabilityId, String correlationId , Headers headers, Long timestamp) {
+            Integer partition, JsonNode key, JsonNode value, String traceabilityId, String correlationId , List<Map<String, Object>> headers, Long timestamp) {
         return new ProduceRecord(
                 Optional.ofNullable(partition), Optional.ofNullable(key), Optional.ofNullable(value), Optional.ofNullable(traceabilityId), Optional.ofNullable(correlationId), Optional.ofNullable(headers), Optional.ofNullable(timestamp));
     }
@@ -70,22 +71,13 @@ public class ProduceRecord {
             @JsonProperty("key") JsonNode key,
             @JsonProperty("value") JsonNode value,
             @JsonProperty("traceabilityId") String traceabilityId,
-            @JsonProperty("correlationId") String correlationId) {
-        return create(partition, key, value, traceabilityId, correlationId);
-    }
-
-
-    @JsonCreator
-    static ProduceRecord fromJson(
-            @JsonProperty("partition") Integer partition,
-            @JsonProperty("key") JsonNode key,
-            @JsonProperty("value") JsonNode value,
-            @JsonProperty("traceabilityId") String traceabilityId,
             @JsonProperty("correlationId") String correlationId,
-            @JsonProperty("headers") Headers headers,
+            @JsonProperty("headers") List<Map<String, Object>> headers,
             @JsonProperty("timestamp") Long timestamp) {
         return create(partition, key, value, traceabilityId, correlationId, headers, timestamp);
     }
+
+
 
     public Optional<JsonNode> getKey() {
         return key;
@@ -127,11 +119,11 @@ public class ProduceRecord {
         this.correlationId = correlationId;
     }
 
-    public Optional<Headers> getHeaders() {
+    public Optional<List<Map<String, Object>>> getHeaders() {
         return headers;
     }
 
-    public void setHeaders(Optional<Headers> headers) {
+    public void setHeaders(Optional<List<Map<String, Object>>> headers) {
         this.headers = headers;
     }
 
