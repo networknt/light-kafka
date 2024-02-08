@@ -8,14 +8,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class KsqlDbPullQueryRequest  {
 
-    
-    
+
+
     public enum OffsetEnum {
-        
+
         EARLIEST ("earliest"),
-        
+
         LATEST ("latest");
-        
+
 
         private final String value;
 

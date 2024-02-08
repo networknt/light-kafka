@@ -25,7 +25,7 @@ public final class TopicPartition {
   private final String topic;
 
   private final Integer partition;
-    
+
   public TopicPartition(
       @JsonProperty("topic") String topic,
       @JsonProperty("partition") Integer partition

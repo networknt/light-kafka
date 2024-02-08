@@ -49,6 +49,3 @@ public interface StateStoreValue {
         return headers;
     }
 }
-
-
-

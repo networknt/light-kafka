@@ -478,13 +478,3 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
     }
   }
 }
-
-
-
-
-
-
-
-
-
-

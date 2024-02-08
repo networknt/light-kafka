@@ -99,4 +99,3 @@ iteratorBackoffMs: ${kafka-consumer.iteratorBackoffMs:50}
 #keep alive time out occurs and sidecar consumer does not move forward. Hence we are adding this property so that we can explicitly close the connection
 #when we receive the response and not wait for FinAck.
 backendConnectionReset: ${kafka-consumer.backendConnectionReset:false}
-
