@@ -597,4 +597,3 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
     return headerMap;
   }
 }
-

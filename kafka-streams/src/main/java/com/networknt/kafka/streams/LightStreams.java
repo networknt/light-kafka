@@ -40,7 +40,7 @@ public interface LightStreams {
         masks.add("basic.auth.user.info");
         masks.add("sasl.jaas.config");
         masks.add("schema.registry.ssl.truststore.password");
-        ModuleRegistry.registerModule(KafkaStreamsConfig.CONFIG_NAME, LightStreams.class.getName(), Config.getInstance().getJsonMapConfigNoCache(KafkaStreamsConfig.CONFIG_NAME), masks);
+        ModuleRegistry.registerModule(KafkaStreamsConfig.CONFIG_NAME, LightStreams.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(KafkaStreamsConfig.CONFIG_NAME), masks);
     }
 
     /**

@@ -88,4 +88,3 @@ public final class CompletableFutures {
                 .thenCompose(wrapped -> wrapped);
     }
 }
-
