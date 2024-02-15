@@ -23,7 +23,7 @@ public class ProduceRecord {
     Optional<String> correlationId;
 
     @JsonProperty("headers")
-    Optional<List<Map<String, Object>>> headers;
+    Optional<Map<String, Object>> headers;
     @JsonProperty("timestamp")
     Optional<Long> timestamp;
 
@@ -38,7 +38,7 @@ public class ProduceRecord {
         this.correlationId = correlationId;
     }
 
-    public ProduceRecord(Optional<Integer> partition, Optional<JsonNode> key, Optional<JsonNode> value, Optional<String> traceabilityId, Optional<String> correlationId, Optional<List<Map<String, Object>>> headers, Optional<Long> timestamp) {
+    public ProduceRecord(Optional<Integer> partition, Optional<JsonNode> key, Optional<JsonNode> value, Optional<String> traceabilityId, Optional<String> correlationId, Optional<Map<String, Object>> headers, Optional<Long> timestamp) {
         this.key = key;
         this.value = value;
         this.partition = partition;
@@ -60,7 +60,7 @@ public class ProduceRecord {
 
 
     public static ProduceRecord create(
-            Integer partition, JsonNode key, JsonNode value, String traceabilityId, String correlationId , List<Map<String, Object>> headers, Long timestamp) {
+            Integer partition, JsonNode key, JsonNode value, String traceabilityId, String correlationId , Map<String, Object> headers, Long timestamp) {
         return new ProduceRecord(
                 Optional.ofNullable(partition), Optional.ofNullable(key), Optional.ofNullable(value), Optional.ofNullable(traceabilityId), Optional.ofNullable(correlationId), Optional.ofNullable(headers), Optional.ofNullable(timestamp));
     }
@@ -72,7 +72,7 @@ public class ProduceRecord {
             @JsonProperty("value") JsonNode value,
             @JsonProperty("traceabilityId") String traceabilityId,
             @JsonProperty("correlationId") String correlationId,
-            @JsonProperty("headers") List<Map<String, Object>> headers,
+            @JsonProperty("headers") Map<String, Object> headers,
             @JsonProperty("timestamp") Long timestamp) {
         return create(partition, key, value, traceabilityId, correlationId, headers, timestamp);
     }
@@ -119,11 +119,11 @@ public class ProduceRecord {
         this.correlationId = correlationId;
     }
 
-    public Optional<List<Map<String, Object>>> getHeaders() {
+    public Optional<Map<String, Object>> getHeaders() {
         return headers;
     }
 
-    public void setHeaders(Optional<List<Map<String, Object>>> headers) {
+    public void setHeaders(Optional<Map<String, Object>> headers) {
         this.headers = headers;
     }
 
