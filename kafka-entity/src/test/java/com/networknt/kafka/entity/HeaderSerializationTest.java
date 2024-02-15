@@ -28,12 +28,10 @@ public class HeaderSerializationTest {
         mapper = new ObjectMapper();
         Map headers = new HashMap();
         headers.put("timestamp", Instant.now().toString());
-        List<Map<String,Object>> headersList= new ArrayList();
-        headersList.add(headers);
         this.produceRecord = new ProduceRecord(Optional.of(1),Optional.of(mapper.readTree(mapper.writeValueAsString("abc"))),
-                Optional.of(mapper.readTree(mapper.writeValueAsString("123"))), Optional.of("traceabilityId"), Optional.of("correlationId"), Optional.of(headersList), Optional.of(Instant.now().getEpochSecond()));
+                Optional.of(mapper.readTree(mapper.writeValueAsString("123"))), Optional.of("traceabilityId"), Optional.of("correlationId"), Optional.of(headers), Optional.of(Instant.now().getEpochSecond()));
         this.fromJsonRead5Params= ProduceRecord.fromJson(1, mapper.readTree(mapper.writeValueAsString("abc")), mapper.readTree("{\"number\":123}"), "trace123","corr123", null, null);
-        this.fromJsonRead7Params= ProduceRecord.fromJson(1, mapper.readTree(mapper.writeValueAsString("abc")), mapper.readTree("{\"number\":123}"), "trace123","corr123", headersList, Instant.now().getEpochSecond());
+        this.fromJsonRead7Params= ProduceRecord.fromJson(1, mapper.readTree(mapper.writeValueAsString("abc")), mapper.readTree("{\"number\":123}"), "trace123","corr123", headers, Instant.now().getEpochSecond());
         fromJsonObject = mapper.readValue(produceString, ProduceRecord.class);
     }
 
