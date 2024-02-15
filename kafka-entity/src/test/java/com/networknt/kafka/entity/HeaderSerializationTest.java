@@ -21,7 +21,7 @@ public class HeaderSerializationTest {
 
     ProduceRecord fromJsonObject;
 
-    String produceString= "{\"partition\": 1,\"key\": \"abc\", \"value\": {\"def\": 123},\"traceabilityId\": \"trace123\",\"correlationId\": \"corr123\",\"headers\": [{\"timestamp\": 123456899}],\"timestamp\": 1234567899}";
+    String produceString= "{\"partition\": 1,\"key\": \"abc\", \"value\": {\"def\": 123},\"traceabilityId\": \"trace123\",\"correlationId\": \"corr123\",\"headers\": {\"timestamp\": 123456899},\"timestamp\": 1234567899}";
 
     @BeforeEach
     public void initialize() throws JsonProcessingException {
