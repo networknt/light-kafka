@@ -100,7 +100,7 @@ public class SchemaRecordSerializer {
         try {
             record = AvroSchemaUtils.toObject(data, avroSchema);
         } catch (AvroTypeException | IOException e) {
-            logger.error("Exception for data at index: " + index +" data : "+ data.toString() + " with schemaId: " + schema.getSchemaId());
+            logger.error("Exception for data at index: " + index +" with schemaId: " + schema.getSchemaId());
             Status status = new Status(SERIALIZE_SCHEMA_EXCEPTION, "avro , index in batch : "+ index, e.getMessage());
             throw new FrameworkException(status);
         }
@@ -113,7 +113,7 @@ public class SchemaRecordSerializer {
         try {
             record = JsonSchemaUtils.toObject(data, jsonSchema);
         } catch (IOException | ValidationException e) {
-            logger.error("Exception for data at index: " + index +" data : "+ data.toString() + " with schemaId: " + schema.getSchemaId());
+            logger.error("Exception for data at index: " + index +" with schemaId: " + schema.getSchemaId());
             Status status = new Status(SERIALIZE_SCHEMA_EXCEPTION, "jsonschema , index in batch : "+ index, e.getMessage());
             throw new FrameworkException(status);
         }
@@ -127,7 +127,7 @@ public class SchemaRecordSerializer {
         try {
             record = (Message) ProtobufSchemaUtils.toObject(data, protobufSchema);
         } catch (IOException e) {
-            logger.error("Exception for data: " + data.toString() + " with schemaId: " + schema.getSchemaId());
+            logger.error("Exception for data with schemaId: " + schema.getSchemaId());
             Status status = new Status(SERIALIZE_SCHEMA_EXCEPTION, "protobuf", e.getMessage());
             throw new FrameworkException(status);
         }
