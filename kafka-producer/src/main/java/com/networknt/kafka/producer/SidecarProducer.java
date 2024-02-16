@@ -101,7 +101,8 @@ public class SidecarProducer implements NativeLightProducer {
             String serviceId,
             Optional<Integer> partition,
             ProduceRequest request,
-            Headers headers, List<AuditRecord> auditRecords) {
+            Headers headers, List<AuditRecord> auditRecords,
+            boolean isReplay) {
         // get key schema based on different scenarios.
         long startSchema = System.currentTimeMillis();
         Optional<RegisteredSchema> keySchema = Optional.empty();
@@ -117,6 +118,9 @@ public class SidecarProducer implements NativeLightProducer {
                 // default to topic + isKey
                 keySchema = schemaCache.get(topicName + "k" + request.getKeySchemaVersion().get());
             }
+        }else if (isReplay) {
+            //get the schema with topic name and v- value type
+            keySchema = schemaCache.get(topicName + "k");
         }
         // reset the KeySchema as the cache will return null if the entry doesn't exist.
         if(keySchema == null) keySchema = Optional.empty();
@@ -140,6 +144,8 @@ public class SidecarProducer implements NativeLightProducer {
                     } else {
                         schemaCache.put(topicName + "k" + request.getKeySchemaVersion().get(), keySchema);
                     }
+                } else if(isReplay){
+                    schemaCache.put(topicName + "k" , keySchema);
                 } else {
                     logger.error("Could not put key schema into the cache. It means that neither keySchemaId nor keySchemaVersion is supplied and Kafka Schema Registry will be overloaded.");
                 }
@@ -163,6 +169,9 @@ public class SidecarProducer implements NativeLightProducer {
                 // default to topic + isKey
                 valueSchema = schemaCache.get(topicName + "v" + request.getValueSchemaVersion().get());
             }
+        }else if (isReplay) {
+            //get the schema with topic name and v- value type
+            valueSchema = schemaCache.get(topicName + "v");
         }
         // reset the valueSchema as the cache will return null if the entry doesn't exist.
         if(valueSchema == null) valueSchema = Optional.empty();
@@ -186,7 +195,9 @@ public class SidecarProducer implements NativeLightProducer {
                     } else {
                         schemaCache.put(topicName + "v" + request.getValueSchemaVersion().get(), valueSchema);
                     }
-                } else {
+                } else if(isReplay){
+                        schemaCache.put(topicName + "v" , valueSchema);
+                }else {
                     logger.error("Could not put value schema into the cache. It means that neither valueSchemaId nor valueSchemaVersion is supplied and Kafka Schema Registry will be overloaded.");
                 }
             }
@@ -213,6 +224,15 @@ public class SidecarProducer implements NativeLightProducer {
             logger.debug("Producing the entire batch to Kafka takes " + (System.currentTimeMillis() - startProduce));
         }
         return produceResultsToResponse(keySchema, valueSchema, resultFutures);
+    }
+
+    public final CompletableFuture<ProduceResponse> produceWithSchema(
+            String topicName,
+            String serviceId,
+            Optional<Integer> partition,
+            ProduceRequest request,
+            Headers headers, List<AuditRecord> auditRecords) {
+        return produceWithSchema(topicName, serviceId, partition, request, headers, auditRecords, false);
     }
 
     private List<SerializedKeyAndValue> serialize(
