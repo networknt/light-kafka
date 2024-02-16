@@ -215,6 +215,17 @@ public class SidecarProducer implements NativeLightProducer {
         return produceResultsToResponse(keySchema, valueSchema, resultFutures);
     }
 
+    public final CompletableFuture<ProduceResponse> produceWithSchema(
+            String topicName,
+            String serviceId,
+            Optional<Integer> partition,
+            ProduceRequest request,
+            Headers headers, List<AuditRecord> auditRecords, boolean replayFlag){
+
+        this.produceWithSchema();
+
+    }
+
     private List<SerializedKeyAndValue> serialize(
             Optional<EmbeddedFormat> keyFormat,
             Optional<EmbeddedFormat> valueFormat,
