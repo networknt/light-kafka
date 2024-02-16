@@ -101,7 +101,8 @@ public class SidecarProducer implements NativeLightProducer {
             String serviceId,
             Optional<Integer> partition,
             ProduceRequest request,
-            Headers headers, List<AuditRecord> auditRecords) {
+            Headers headers, List<AuditRecord> auditRecords,
+            boolean isReplay) {
         // get key schema based on different scenarios.
         long startSchema = System.currentTimeMillis();
         Optional<RegisteredSchema> keySchema = Optional.empty();
@@ -220,10 +221,8 @@ public class SidecarProducer implements NativeLightProducer {
             String serviceId,
             Optional<Integer> partition,
             ProduceRequest request,
-            Headers headers, List<AuditRecord> auditRecords, boolean replayFlag){
-
-        this.produceWithSchema();
-
+            Headers headers, List<AuditRecord> auditRecords) {
+        return produceWithSchema(topicName, serviceId, partition, request, headers, auditRecords, false);
     }
 
     private List<SerializedKeyAndValue> serialize(
