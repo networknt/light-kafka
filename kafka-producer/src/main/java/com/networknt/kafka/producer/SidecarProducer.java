@@ -275,7 +275,9 @@ public class SidecarProducer implements NativeLightProducer {
                                                             record.getValue().orElse(NullNode.getInstance()),
                                                             /* isKey= */ false) :
                                             noSchemaRecordSerializer
-                                                    .serialize(atomicIntegerNew, valueFormat.orElse(EmbeddedFormat.valueOf(config.getValueFormat().toUpperCase())), record.getValue().orElse(NullNode.getInstance())));
+                                                    .serialize(atomicIntegerNew, valueFormat.orElse(EmbeddedFormat.valueOf(config.getValueFormat().toUpperCase())), record.getValue().orElse(NullNode.getInstance())),
+                                    record.getHeaders(),
+                                    record.getTimestamp());
                         })
                 .collect(Collectors.toList());
     }
@@ -313,7 +315,8 @@ public class SidecarProducer implements NativeLightProducer {
             String topicName, String serviceId, List<SerializedKeyAndValue> serialized, Headers headers, List<AuditRecord> auditRecords) {
         return serialized.stream()
                 .map(
-                        record -> produce(
+                        record ->
+                                produce(
                                 topicName,
                                 record.getPartitionId(),
                                 record.getTraceabilityId(),
@@ -323,7 +326,8 @@ public class SidecarProducer implements NativeLightProducer {
                                 auditRecords,
                                 record.getKey(),
                                 record.getValue(),
-                                /* timestamp= */ Instant.now()))
+                                record.getHeaders(),
+                                /* timestamp= */ (record.getTimestamp().isPresent() && record.getTimestamp().get()>0) ? Instant.ofEpochMilli(record.getTimestamp().get()) : Instant.now()))
                 .collect(Collectors.toList());
     }
 
@@ -337,9 +341,13 @@ public class SidecarProducer implements NativeLightProducer {
             List<AuditRecord> auditRecords,
             Optional<ByteString> key,
             Optional<ByteString> value,
+            Optional<Map<String,String>> recordHeaders,
             Instant timestamp
     ) {
         // populate the headers with the traceabilityId if it is not empty.
+        if(recordHeaders.isPresent()){
+            recordHeaders.get().entrySet().forEach(entry -> headers.add(entry.getKey(), entry.getValue().getBytes(StandardCharsets.UTF_8)));
+        }
         if(traceabilityId.isPresent()) {
             headers.remove(Constants.TRACEABILITY_ID_STRING); // remove the entry populated by the previous record as the headers is shard.
             headers.add(Constants.TRACEABILITY_ID_STRING, traceabilityId.get().getBytes(StandardCharsets.UTF_8));
