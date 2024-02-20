@@ -61,28 +61,28 @@ public class NoSchemaRecordSerializer {
 
     private static ByteString serializeBinary(int index, JsonNode data) {
         if (!data.isTextual()) {
-            throw new RuntimeException(String.format("data = %s is not a base64 string at index = %d.", data, index));
+            throw new RuntimeException(String.format("data is not a base64 string at index = %d.", index));
         }
         byte[] serialized;
         try {
             serialized = BaseEncoding.base64().decode(data.asText());
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(
-                    String.format("data = %s is not a valid base64 string at index = %d.", data, index), e);
+                    String.format("data is not a valid base64 string at index = %d.", index), e);
         }
         return ByteString.copyFrom(serialized);
     }
 
     private static ByteString serializeString(int index, JsonNode data) {
         if (!data.isTextual()) {
-            throw new RuntimeException(String.format("data = %s is not a string at index = %d.", data, index));
+            throw new RuntimeException(String.format("data is not a string at index = %d.", index));
         }
         byte[] serialized;
         try {
             serialized = data.asText().getBytes(StandardCharsets.UTF_8);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(
-                    String.format("data = %s is not a valid string at index = %d.", data, index), e);
+                    String.format("data is not a valid string at index = %d.", index), e);
         }
         return ByteString.copyFrom(serialized);
     }
@@ -93,7 +93,7 @@ public class NoSchemaRecordSerializer {
         }
         catch(Exception e){
             throw new RuntimeException(
-                    String.format("data = %s is not a valid json at index = %d.", data, index), e);
+                    String.format("data is not a valid json at index = %d.", index), e);
         }
     }
 
