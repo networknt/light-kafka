@@ -8,6 +8,7 @@ import com.networknt.kafka.common.KafkaProducerConfig;
 import com.networknt.kafka.entity.*;
 import com.networknt.status.Status;
 import com.networknt.utility.Constants;
+import com.networknt.utility.ObjectUtils;
 import com.networknt.utility.Util;
 import io.confluent.kafka.schemaregistry.avro.AvroSchemaProvider;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
@@ -344,19 +345,37 @@ public class SidecarProducer implements NativeLightProducer {
             Optional<Map<String,String>> recordHeaders,
             Instant timestamp
     ) {
-        // populate the headers with the traceabilityId if it is not empty.
-        if(recordHeaders.isPresent()){
-            recordHeaders.get().entrySet().forEach(entry -> headers.add(entry.getKey(), entry.getValue().getBytes(StandardCharsets.UTF_8)));
-        }
+
+        headers.remove(Constants.TRACEABILITY_ID_STRING); // remove the entry populated by the previous record as the headers is shared.
+        headers.remove(Constants.CORRELATION_ID_STRING); // remove the entry populated by the previous record as the headers is shared.
+
         if(traceabilityId.isPresent()) {
-            headers.remove(Constants.TRACEABILITY_ID_STRING); // remove the entry populated by the previous record as the headers is shard.
             headers.add(Constants.TRACEABILITY_ID_STRING, traceabilityId.get().getBytes(StandardCharsets.UTF_8));
-        } else {
-            headers.remove(Constants.TRACEABILITY_ID_STRING); // remove the entry populated by the previous record as the headers is shard.
         }
+
+        //Overwrite traceabilityId from header if present
+        if(recordHeaders.isPresent() && !recordHeaders.get().isEmpty() && recordHeaders.get().containsKey(Constants.TRACEABILITY_ID_STRING) && recordHeaders.get().get(Constants.TRACEABILITY_ID_STRING).length()>0){
+            headers.remove(Constants.TRACEABILITY_ID_STRING);
+            headers.add(Constants.TRACEABILITY_ID_STRING, recordHeaders.get().get(Constants.TRACEABILITY_ID_STRING).getBytes(StandardCharsets.UTF_8));
+        }
+
         // populate the headers with the correlationId. The correlationId here will have a value as it is created in the caller if necessary.
-        headers.remove(Constants.CORRELATION_ID_STRING); // remove the entry populated by the previous record as the headers is shard.
         headers.add(Constants.CORRELATION_ID_STRING, correlationId.get().getBytes(StandardCharsets.UTF_8));
+        if(recordHeaders.isPresent() && !recordHeaders.get().isEmpty() && recordHeaders.get().containsKey(Constants.CORRELATION_ID_STRING) && recordHeaders.get().get(Constants.CORRELATION_ID_STRING).length()>0){
+            headers.remove(Constants.CORRELATION_ID_STRING);
+            headers.add(Constants.CORRELATION_ID_STRING, recordHeaders.get().get(Constants.CORRELATION_ID_STRING).getBytes(StandardCharsets.UTF_8));
+        }
+
+
+        // populate the headers with any other header other than traceabilityId or correlationId
+        if(recordHeaders.isPresent() && !recordHeaders.get().isEmpty()){
+            recordHeaders.get().entrySet().removeIf(entry -> entry.getKey().equalsIgnoreCase(Constants.TRACEABILITY_ID_STRING) || entry.getKey().equalsIgnoreCase(Constants.CORRELATION_ID_STRING));
+            recordHeaders.get().entrySet().forEach(eachEntry -> headers.add(eachEntry.getKey(), eachEntry.getValue().getBytes(StandardCharsets.UTF_8)));
+
+        }
+
+
+
         if(traceabilityId.isPresent()) {
             logger.info("Associate traceability Id " + traceabilityId.get() + " with correlation Id " + correlationId.get());
         }
