@@ -880,7 +880,7 @@ public class KafkaConsumerManager {
     Map<String, String> recordHeaders = recordProcessedResult.getRecord().getHeaders();
     if (recordHeaders != null && recordHeaders.size() > 0) {
       recordHeaders.keySet().stream().forEach(h -> {
-        if (recordHeaders.get(h) != null) {
+        if (recordHeaders.get(h) != null && !(h.equalsIgnoreCase(Constants.TRACEABILITY_ID_STRING) || h.equalsIgnoreCase(Constants.CORRELATION_ID_STRING))) {
           headers.add(h, recordHeaders.get(h).getBytes(StandardCharsets.UTF_8));
         }
       });
