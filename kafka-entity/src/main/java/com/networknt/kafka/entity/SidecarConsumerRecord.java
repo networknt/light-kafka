@@ -23,6 +23,7 @@ public class SidecarConsumerRecord {
     private final Integer partition;
 
     private final Long offset;
+    private final Long timestamp;
 
     @JsonCreator
     private SidecarConsumerRecord(
@@ -31,13 +32,15 @@ public class SidecarConsumerRecord {
             @JsonProperty("value") Object value,
             @JsonProperty("headers") Map<String, String> headers,
             @JsonProperty("partition") Integer partition,
-            @JsonProperty("offset") Long offset) {
+            @JsonProperty("offset") Long offset,
+            @JsonProperty("timestamp") Long timestamp) {
         this.topic = topic;
         this.key = key;
         this.value = value;
         this.headers = headers;
         this.partition = partition;
         this.offset = offset;
+        this.timestamp=timestamp;
     }
 
     @JsonProperty
@@ -91,6 +94,10 @@ public class SidecarConsumerRecord {
     public Long getOffset() {
         return offset;
     }
+    @JsonProperty
+    public Long getTimestamp() {
+        return timestamp;
+    }
 
     public static SidecarConsumerRecord fromConsumerRecord(
             ConsumerRecord<Object, Object> record) {
@@ -137,7 +144,8 @@ public class SidecarConsumerRecord {
                 v,
                 record.getHeaders(),
                 record.getPartition(),
-                record.getOffset());
+                record.getOffset(),
+                record.getTimestamp());
     }
 
     public ConsumerRecord<Object, Object> toConsumerRecord() {
@@ -188,7 +196,8 @@ public class SidecarConsumerRecord {
                 v,
                 headers,
                 partition,
-                offset);
+                offset,
+                timestamp);
     }
 
     @Override
@@ -210,7 +219,7 @@ public class SidecarConsumerRecord {
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(topic, key, value, headers, partition, offset);
+        int result = Objects.hash(topic, key, value, headers, partition, offset, timestamp);
         return result;
     }
 
@@ -223,6 +232,7 @@ public class SidecarConsumerRecord {
                 .add("headers" + JsonMapper.toJson(headers))
                 .add("partition=" + partition)
                 .add("offset=" + offset)
+                .add("timestamp=" + timestamp)
                 .toString();
     }
 

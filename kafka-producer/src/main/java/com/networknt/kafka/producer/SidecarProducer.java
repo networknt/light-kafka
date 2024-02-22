@@ -26,6 +26,7 @@ import org.apache.kafka.common.errors.AuthenticationException;
 import org.apache.kafka.common.errors.AuthorizationException;
 import org.apache.kafka.common.errors.RetriableException;
 import org.apache.kafka.common.header.Headers;
+import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -328,7 +329,7 @@ public class SidecarProducer implements NativeLightProducer {
                                 record.getKey(),
                                 record.getValue(),
                                 record.getHeaders(),
-                                /* timestamp= */ (record.getTimestamp().isPresent() && record.getTimestamp().get()>0) ? Instant.ofEpochMilli(record.getTimestamp().get()) : Instant.now()))
+                                /* timestamp= */ (!ObjectUtils.isEmpty(record.getTimestamp()) && record.getTimestamp().isPresent() && record.getTimestamp().get()>0) ? Instant.ofEpochMilli(record.getTimestamp().get()) : Instant.now()))
                 .collect(Collectors.toList());
     }
 
@@ -346,35 +347,25 @@ public class SidecarProducer implements NativeLightProducer {
             Instant timestamp
     ) {
 
-        headers.remove(Constants.TRACEABILITY_ID_STRING); // remove the entry populated by the previous record as the headers is shared.
-        headers.remove(Constants.CORRELATION_ID_STRING); // remove the entry populated by the previous record as the headers is shared.
+        Headers newHeaders= new RecordHeaders();
 
-        if(traceabilityId.isPresent()) {
-            headers.add(Constants.TRACEABILITY_ID_STRING, traceabilityId.get().getBytes(StandardCharsets.UTF_8));
+        headers.forEach(header -> {
+            if(!(header.key().equalsIgnoreCase(Constants.TRACEABILITY_ID_STRING) || header.key().equalsIgnoreCase(Constants.CORRELATION_ID_STRING))) {
+                newHeaders.add(header);
+            }
+        });
+
+        if(traceabilityId.isPresent()){
+            newHeaders.add(Constants.TRACEABILITY_ID_STRING, traceabilityId.get().getBytes(StandardCharsets.UTF_8));
         }
 
-        //Overwrite traceabilityId from header if present
-        if(recordHeaders.isPresent() && !recordHeaders.get().isEmpty() && recordHeaders.get().containsKey(Constants.TRACEABILITY_ID_STRING) && recordHeaders.get().get(Constants.TRACEABILITY_ID_STRING).length()>0){
-            headers.remove(Constants.TRACEABILITY_ID_STRING);
-            headers.add(Constants.TRACEABILITY_ID_STRING, recordHeaders.get().get(Constants.TRACEABILITY_ID_STRING).getBytes(StandardCharsets.UTF_8));
+        if(correlationId.isPresent()){
+            newHeaders.add(Constants.CORRELATION_ID_STRING, correlationId.get().getBytes(StandardCharsets.UTF_8));
         }
-
-        // populate the headers with the correlationId. The correlationId here will have a value as it is created in the caller if necessary.
-        headers.add(Constants.CORRELATION_ID_STRING, correlationId.get().getBytes(StandardCharsets.UTF_8));
-        if(recordHeaders.isPresent() && !recordHeaders.get().isEmpty() && recordHeaders.get().containsKey(Constants.CORRELATION_ID_STRING) && recordHeaders.get().get(Constants.CORRELATION_ID_STRING).length()>0){
-            headers.remove(Constants.CORRELATION_ID_STRING);
-            headers.add(Constants.CORRELATION_ID_STRING, recordHeaders.get().get(Constants.CORRELATION_ID_STRING).getBytes(StandardCharsets.UTF_8));
-        }
-
-
-        // populate the headers with any other header other than traceabilityId or correlationId
-        if(recordHeaders.isPresent() && !recordHeaders.get().isEmpty()){
+        if(recordHeaders.isPresent() && !recordHeaders.get().isEmpty()) {
             recordHeaders.get().entrySet().removeIf(entry -> entry.getKey().equalsIgnoreCase(Constants.TRACEABILITY_ID_STRING) || entry.getKey().equalsIgnoreCase(Constants.CORRELATION_ID_STRING));
-            recordHeaders.get().entrySet().forEach(eachEntry -> headers.add(eachEntry.getKey(), eachEntry.getValue().getBytes(StandardCharsets.UTF_8)));
-
+            recordHeaders.get().entrySet().forEach(eachEntry -> newHeaders.add(eachEntry.getKey(), eachEntry.getValue().getBytes(StandardCharsets.UTF_8)));
         }
-
-
 
         if(traceabilityId.isPresent()) {
             logger.info("Associate traceability Id " + traceabilityId.get() + " with correlation Id " + correlationId.get());
@@ -388,7 +379,7 @@ public class SidecarProducer implements NativeLightProducer {
                         timestamp.toEpochMilli(),
                         key.map(ByteString::toByteArray).orElse(null),
                         value.map(ByteString::toByteArray).orElse(null),
-                        headers),
+                        newHeaders),
                 (metadata, exception) -> {
                     if (exception != null) {
                         // we cannot call the writeAuditLog in the callback function. It needs to be processed with another thread.

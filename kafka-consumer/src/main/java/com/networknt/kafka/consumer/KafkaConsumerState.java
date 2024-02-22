@@ -178,7 +178,8 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
                     (ClientValueT)value,
                     record.headers() != null ? convertHeaders(record.headers()) : null,
                     record.partition(),
-                    record.offset()),
+                    record.offset(),
+                    record.timestamp()),
             keySize + valueSize);
 
   }
