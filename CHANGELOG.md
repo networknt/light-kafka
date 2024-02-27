@@ -1,5 +1,24 @@
 # Change Log
 
+## [2.1.32](https://github.com/networknt/light-kafka/tree/2.1.32) (2024-02-27)
+
+
+**Merged pull requests:**
+
+
+- I2392 [\#209](https://github.com/networknt/light-kafka/pull/209) ([Debashisa](https://github.com/Debashisa))
+- I2392 [\#208](https://github.com/networknt/light-kafka/pull/208) ([Debashisa](https://github.com/Debashisa))
+- updated code to serialize headers and timestamp as part of records [\#207](https://github.com/networknt/light-kafka/pull/207) ([Debashisa](https://github.com/Debashisa))
+- I2400 [\#206](https://github.com/networknt/light-kafka/pull/206) ([stevehu](https://github.com/stevehu))
+- syncing consumer reocrd header type with producer record header type [\#205](https://github.com/networknt/light-kafka/pull/205) ([Debashisa](https://github.com/Debashisa))
+- fixed test case [\#204](https://github.com/networknt/light-kafka/pull/204) ([Debashisa](https://github.com/Debashisa))
+- I2428 [\#203](https://github.com/networknt/light-kafka/pull/203) ([Debashisa](https://github.com/Debashisa))
+- I2365 [\#202](https://github.com/networknt/light-kafka/pull/202) ([Debashisa](https://github.com/Debashisa))
+- [pre-commit.ci] pre-commit autoupdate [\#201](https://github.com/networknt/light-kafka/pull/201) ([pre-commit-ci](https://github.com/apps/pre-commit-ci))
+- fixes \#199 add pre-commit hook and apply it [\#200](https://github.com/networknt/light-kafka/pull/200) ([stevehu](https://github.com/stevehu))
+- fixes \#197 Use NoneDecryptedInstance to load the config for registerM… [\#198](https://github.com/networknt/light-kafka/pull/198) ([stevehu](https://github.com/stevehu))
+- added the headers and timestamp on producer record [\#196](https://github.com/networknt/light-kafka/pull/196) ([Debashisa](https://github.com/Debashisa))
+- added code for batchRollbackThreshold [\#195](https://github.com/networknt/light-kafka/pull/195) ([Debashisa](https://github.com/Debashisa))
 ## [2.1.31](https://github.com/networknt/light-kafka/tree/2.1.31) (2024-01-16)
 
 
