@@ -19,6 +19,8 @@
 - fixes \#197 Use NoneDecryptedInstance to load the config for registerM… [\#198](https://github.com/networknt/light-kafka/pull/198) ([stevehu](https://github.com/stevehu))
 - added the headers and timestamp on producer record [\#196](https://github.com/networknt/light-kafka/pull/196) ([Debashisa](https://github.com/Debashisa))
 - added code for batchRollbackThreshold [\#195](https://github.com/networknt/light-kafka/pull/195) ([Debashisa](https://github.com/Debashisa))
+
+
 ## [2.1.31](https://github.com/networknt/light-kafka/tree/2.1.31) (2024-01-16)
 
 
