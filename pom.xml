@@ -103,7 +103,7 @@
         <version.confluent>7.5.1</version.confluent>
         <version.logback>1.4.14</version.logback>
         <version.junit>5.6.0</version.junit>
-        <version.undertow>2.3.10.Final</version.undertow>
+        <version.undertow>2.3.12.Final</version.undertow>
         <version.avro>1.11.3</version.avro>
         <version.schemaConverter>0.2.9</version.schemaConverter>
         <version.hamcrest>2.2</version.hamcrest>
