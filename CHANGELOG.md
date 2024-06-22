@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.1.34](https://github.com/networknt/light-kafka/tree/2.1.34) (2024-06-22)
+
+
+**Merged pull requests:**
+
+
+- [pre-commit.ci] pre-commit autoupdate [\#212](https://github.com/networknt/light-kafka/pull/212) ([pre-commit-ci](https://github.com/apps/pre-commit-ci))
+
+
 ## [2.1.33](https://github.com/networknt/light-kafka/tree/2.1.33) (2024-03-31)
 
 
