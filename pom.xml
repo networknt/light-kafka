@@ -104,7 +104,7 @@
         <version.logback>1.5.6</version.logback>
         <version.junit>5.6.0</version.junit>
         <version.undertow>2.3.15.Final</version.undertow>
-        <version.avro>1.11.3</version.avro>
+        <version.avro>1.12.0</version.avro>
         <version.schemaConverter>0.2.9</version.schemaConverter>
         <version.hamcrest>2.2</version.hamcrest>
         <version.mockito>1.10.19</version.mockito>
