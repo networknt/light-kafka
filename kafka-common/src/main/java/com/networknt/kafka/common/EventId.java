@@ -14,11 +14,13 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class EventId extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 8281982261514519569L;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventId\",\"namespace\":\"com.networknt.kafka.common\",\"fields\":[{\"name\":\"id\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"a unique identifier\"},{\"name\":\"nonce\",\"type\":\"long\",\"doc\":\"the number of the transactions for the user\"},{\"name\":\"derived\",\"type\":\"boolean\",\"doc\":\"indicate if the event is derived from event processor\",\"default\":false}]}");
+  private static final long serialVersionUID = 9202162471808911057L;
+
+
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventId\",\"namespace\":\"com.networknt.kafka.common\",\"fields\":[{\"name\":\"id\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"a unique identifier\"},{\"name\":\"nonce\",\"type\":\"long\",\"doc\":\"the number of the transactions for the user\"},{\"name\":\"timestamp\",\"type\":\"long\",\"doc\":\"time the event is recorded\",\"default\":0},{\"name\":\"derived\",\"type\":\"boolean\",\"doc\":\"indicate if the event is derived from event processor\",\"default\":false}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
-  private static SpecificData MODEL$ = new SpecificData();
+  private static final SpecificData MODEL$ = new SpecificData();
 
   private static final BinaryMessageEncoder<EventId> ENCODER =
       new BinaryMessageEncoder<EventId>(MODEL$, SCHEMA$);
@@ -72,11 +74,13 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
   }
 
   /** a unique identifier */
-   private java.lang.String id;
+  private java.lang.String id;
   /** the number of the transactions for the user */
-   private long nonce;
+  private long nonce;
+  /** time the event is recorded */
+  private long timestamp;
   /** indicate if the event is derived from event processor */
-   private boolean derived;
+  private boolean derived;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -89,11 +93,13 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
    * All-args constructor.
    * @param id a unique identifier
    * @param nonce the number of the transactions for the user
+   * @param timestamp time the event is recorded
    * @param derived indicate if the event is derived from event processor
    */
-  public EventId(java.lang.String id, java.lang.Long nonce, java.lang.Boolean derived) {
+  public EventId(java.lang.String id, java.lang.Long nonce, java.lang.Long timestamp, java.lang.Boolean derived) {
     this.id = id;
     this.nonce = nonce;
+    this.timestamp = timestamp;
     this.derived = derived;
   }
 
@@ -104,8 +110,9 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
     switch (field$) {
     case 0: return id;
     case 1: return nonce;
-    case 2: return derived;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
+    case 2: return timestamp;
+    case 3: return derived;
+    default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
 
@@ -115,8 +122,9 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
     switch (field$) {
     case 0: id = value$ != null ? value$.toString() : null; break;
     case 1: nonce = (java.lang.Long)value$; break;
-    case 2: derived = (java.lang.Boolean)value$; break;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
+    case 2: timestamp = (java.lang.Long)value$; break;
+    case 3: derived = (java.lang.Boolean)value$; break;
+    default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
 
@@ -154,6 +162,24 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
    */
   public void setNonce(long value) {
     this.nonce = value;
+  }
+
+  /**
+   * Gets the value of the 'timestamp' field.
+   * @return time the event is recorded
+   */
+  public long getTimestamp() {
+    return timestamp;
+  }
+
+
+  /**
+   * Sets the value of the 'timestamp' field.
+   * time the event is recorded
+   * @param value the value to set.
+   */
+  public void setTimestamp(long value) {
+    this.timestamp = value;
   }
 
   /**
@@ -219,12 +245,14 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
     private java.lang.String id;
     /** the number of the transactions for the user */
     private long nonce;
+    /** time the event is recorded */
+    private long timestamp;
     /** indicate if the event is derived from event processor */
     private boolean derived;
 
     /** Creates a new Builder */
     private Builder() {
-      super(SCHEMA$);
+      super(SCHEMA$, MODEL$);
     }
 
     /**
@@ -241,9 +269,13 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
         this.nonce = data().deepCopy(fields()[1].schema(), other.nonce);
         fieldSetFlags()[1] = other.fieldSetFlags()[1];
       }
-      if (isValidValue(fields()[2], other.derived)) {
-        this.derived = data().deepCopy(fields()[2].schema(), other.derived);
+      if (isValidValue(fields()[2], other.timestamp)) {
+        this.timestamp = data().deepCopy(fields()[2].schema(), other.timestamp);
         fieldSetFlags()[2] = other.fieldSetFlags()[2];
+      }
+      if (isValidValue(fields()[3], other.derived)) {
+        this.derived = data().deepCopy(fields()[3].schema(), other.derived);
+        fieldSetFlags()[3] = other.fieldSetFlags()[3];
       }
     }
 
@@ -252,7 +284,7 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
      * @param other The existing instance to copy.
      */
     private Builder(com.networknt.kafka.common.EventId other) {
-      super(SCHEMA$);
+      super(SCHEMA$, MODEL$);
       if (isValidValue(fields()[0], other.id)) {
         this.id = data().deepCopy(fields()[0].schema(), other.id);
         fieldSetFlags()[0] = true;
@@ -261,9 +293,13 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
         this.nonce = data().deepCopy(fields()[1].schema(), other.nonce);
         fieldSetFlags()[1] = true;
       }
-      if (isValidValue(fields()[2], other.derived)) {
-        this.derived = data().deepCopy(fields()[2].schema(), other.derived);
+      if (isValidValue(fields()[2], other.timestamp)) {
+        this.timestamp = data().deepCopy(fields()[2].schema(), other.timestamp);
         fieldSetFlags()[2] = true;
+      }
+      if (isValidValue(fields()[3], other.derived)) {
+        this.derived = data().deepCopy(fields()[3].schema(), other.derived);
+        fieldSetFlags()[3] = true;
       }
     }
 
@@ -355,6 +391,49 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
     }
 
     /**
+      * Gets the value of the 'timestamp' field.
+      * time the event is recorded
+      * @return The value.
+      */
+    public long getTimestamp() {
+      return timestamp;
+    }
+
+
+    /**
+      * Sets the value of the 'timestamp' field.
+      * time the event is recorded
+      * @param value The value of 'timestamp'.
+      * @return This builder.
+      */
+    public com.networknt.kafka.common.EventId.Builder setTimestamp(long value) {
+      validate(fields()[2], value);
+      this.timestamp = value;
+      fieldSetFlags()[2] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'timestamp' field has been set.
+      * time the event is recorded
+      * @return True if the 'timestamp' field has been set, false otherwise.
+      */
+    public boolean hasTimestamp() {
+      return fieldSetFlags()[2];
+    }
+
+
+    /**
+      * Clears the value of the 'timestamp' field.
+      * time the event is recorded
+      * @return This builder.
+      */
+    public com.networknt.kafka.common.EventId.Builder clearTimestamp() {
+      fieldSetFlags()[2] = false;
+      return this;
+    }
+
+    /**
       * Gets the value of the 'derived' field.
       * indicate if the event is derived from event processor
       * @return The value.
@@ -371,9 +450,9 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       * @return This builder.
       */
     public com.networknt.kafka.common.EventId.Builder setDerived(boolean value) {
-      validate(fields()[2], value);
+      validate(fields()[3], value);
       this.derived = value;
-      fieldSetFlags()[2] = true;
+      fieldSetFlags()[3] = true;
       return this;
     }
 
@@ -383,7 +462,7 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       * @return True if the 'derived' field has been set, false otherwise.
       */
     public boolean hasDerived() {
-      return fieldSetFlags()[2];
+      return fieldSetFlags()[3];
     }
 
 
@@ -393,7 +472,7 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       * @return This builder.
       */
     public com.networknt.kafka.common.EventId.Builder clearDerived() {
-      fieldSetFlags()[2] = false;
+      fieldSetFlags()[3] = false;
       return this;
     }
 
@@ -404,7 +483,8 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
         EventId record = new EventId();
         record.id = fieldSetFlags()[0] ? this.id : (java.lang.String) defaultValue(fields()[0]);
         record.nonce = fieldSetFlags()[1] ? this.nonce : (java.lang.Long) defaultValue(fields()[1]);
-        record.derived = fieldSetFlags()[2] ? this.derived : (java.lang.Boolean) defaultValue(fields()[2]);
+        record.timestamp = fieldSetFlags()[2] ? this.timestamp : (java.lang.Long) defaultValue(fields()[2]);
+        record.derived = fieldSetFlags()[3] ? this.derived : (java.lang.Boolean) defaultValue(fields()[3]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;
@@ -441,6 +521,8 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
 
     out.writeLong(this.nonce);
 
+    out.writeLong(this.timestamp);
+
     out.writeBoolean(this.derived);
 
   }
@@ -454,10 +536,12 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
 
       this.nonce = in.readLong();
 
+      this.timestamp = in.readLong();
+
       this.derived = in.readBoolean();
 
     } else {
-      for (int i = 0; i < 3; i++) {
+      for (int i = 0; i < 4; i++) {
         switch (fieldOrder[i].pos()) {
         case 0:
           this.id = in.readString();
@@ -468,6 +552,10 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
           break;
 
         case 2:
+          this.timestamp = in.readLong();
+          break;
+
+        case 3:
           this.derived = in.readBoolean();
           break;
 
@@ -478,3 +566,13 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
