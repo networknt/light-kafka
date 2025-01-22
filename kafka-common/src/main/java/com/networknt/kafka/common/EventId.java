@@ -5,7 +5,6 @@
  */
 package com.networknt.kafka.common;
 
-import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
 import org.apache.avro.util.Utf8;
 import org.apache.avro.message.BinaryMessageEncoder;
@@ -14,19 +13,19 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class EventId extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 9202162471808911057L;
+  private static final long serialVersionUID = -1405236215870335809L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventId\",\"namespace\":\"com.networknt.kafka.common\",\"fields\":[{\"name\":\"id\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"a unique identifier\"},{\"name\":\"nonce\",\"type\":\"long\",\"doc\":\"the number of the transactions for the user\"},{\"name\":\"timestamp\",\"type\":\"long\",\"doc\":\"time the event is recorded\",\"default\":0},{\"name\":\"derived\",\"type\":\"boolean\",\"doc\":\"indicate if the event is derived from event processor\",\"default\":false}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"EventId\",\"namespace\":\"com.networknt.kafka.common\",\"fields\":[{\"name\":\"id\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"a unique identifier for the event\"},{\"name\":\"userId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"the user who creates the event\"},{\"name\":\"hostId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"the host which is the event is created\"},{\"name\":\"nonce\",\"type\":\"long\",\"doc\":\"the number of the transactions for the user\"},{\"name\":\"timestamp\",\"type\":\"long\",\"doc\":\"time the event is recorded\",\"default\":0},{\"name\":\"derived\",\"type\":\"boolean\",\"doc\":\"indicate if the event is derived from event processor\",\"default\":false}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
 
   private static final BinaryMessageEncoder<EventId> ENCODER =
-      new BinaryMessageEncoder<EventId>(MODEL$, SCHEMA$);
+      new BinaryMessageEncoder<>(MODEL$, SCHEMA$);
 
   private static final BinaryMessageDecoder<EventId> DECODER =
-      new BinaryMessageDecoder<EventId>(MODEL$, SCHEMA$);
+      new BinaryMessageDecoder<>(MODEL$, SCHEMA$);
 
   /**
    * Return the BinaryMessageEncoder instance used by this class.
@@ -50,7 +49,7 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
    * @return a BinaryMessageDecoder instance for this class backed by the given SchemaStore
    */
   public static BinaryMessageDecoder<EventId> createDecoder(SchemaStore resolver) {
-    return new BinaryMessageDecoder<EventId>(MODEL$, SCHEMA$, resolver);
+    return new BinaryMessageDecoder<>(MODEL$, SCHEMA$, resolver);
   }
 
   /**
@@ -73,8 +72,12 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
     return DECODER.decode(b);
   }
 
-  /** a unique identifier */
+  /** a unique identifier for the event */
   private java.lang.String id;
+  /** the user who creates the event */
+  private java.lang.String userId;
+  /** the host which is the event is created */
+  private java.lang.String hostId;
   /** the number of the transactions for the user */
   private long nonce;
   /** time the event is recorded */
@@ -91,46 +94,60 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
 
   /**
    * All-args constructor.
-   * @param id a unique identifier
+   * @param id a unique identifier for the event
+   * @param userId the user who creates the event
+   * @param hostId the host which is the event is created
    * @param nonce the number of the transactions for the user
    * @param timestamp time the event is recorded
    * @param derived indicate if the event is derived from event processor
    */
-  public EventId(java.lang.String id, java.lang.Long nonce, java.lang.Long timestamp, java.lang.Boolean derived) {
+  public EventId(java.lang.String id, java.lang.String userId, java.lang.String hostId, java.lang.Long nonce, java.lang.Long timestamp, java.lang.Boolean derived) {
     this.id = id;
+    this.userId = userId;
+    this.hostId = hostId;
     this.nonce = nonce;
     this.timestamp = timestamp;
     this.derived = derived;
   }
 
+  @Override
   public org.apache.avro.specific.SpecificData getSpecificData() { return MODEL$; }
+
+  @Override
   public org.apache.avro.Schema getSchema() { return SCHEMA$; }
+
   // Used by DatumWriter.  Applications should not call.
+  @Override
   public java.lang.Object get(int field$) {
     switch (field$) {
     case 0: return id;
-    case 1: return nonce;
-    case 2: return timestamp;
-    case 3: return derived;
+    case 1: return userId;
+    case 2: return hostId;
+    case 3: return nonce;
+    case 4: return timestamp;
+    case 5: return derived;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
 
   // Used by DatumReader.  Applications should not call.
+  @Override
   @SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
     case 0: id = value$ != null ? value$.toString() : null; break;
-    case 1: nonce = (java.lang.Long)value$; break;
-    case 2: timestamp = (java.lang.Long)value$; break;
-    case 3: derived = (java.lang.Boolean)value$; break;
+    case 1: userId = value$ != null ? value$.toString() : null; break;
+    case 2: hostId = value$ != null ? value$.toString() : null; break;
+    case 3: nonce = (java.lang.Long)value$; break;
+    case 4: timestamp = (java.lang.Long)value$; break;
+    case 5: derived = (java.lang.Boolean)value$; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
 
   /**
    * Gets the value of the 'id' field.
-   * @return a unique identifier
+   * @return a unique identifier for the event
    */
   public java.lang.String getId() {
     return id;
@@ -139,11 +156,47 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
 
   /**
    * Sets the value of the 'id' field.
-   * a unique identifier
+   * a unique identifier for the event
    * @param value the value to set.
    */
   public void setId(java.lang.String value) {
     this.id = value;
+  }
+
+  /**
+   * Gets the value of the 'userId' field.
+   * @return the user who creates the event
+   */
+  public java.lang.String getUserId() {
+    return userId;
+  }
+
+
+  /**
+   * Sets the value of the 'userId' field.
+   * the user who creates the event
+   * @param value the value to set.
+   */
+  public void setUserId(java.lang.String value) {
+    this.userId = value;
+  }
+
+  /**
+   * Gets the value of the 'hostId' field.
+   * @return the host which is the event is created
+   */
+  public java.lang.String getHostId() {
+    return hostId;
+  }
+
+
+  /**
+   * Sets the value of the 'hostId' field.
+   * the host which is the event is created
+   * @param value the value to set.
+   */
+  public void setHostId(java.lang.String value) {
+    this.hostId = value;
   }
 
   /**
@@ -241,8 +294,12 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
   public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<EventId>
     implements org.apache.avro.data.RecordBuilder<EventId> {
 
-    /** a unique identifier */
+    /** a unique identifier for the event */
     private java.lang.String id;
+    /** the user who creates the event */
+    private java.lang.String userId;
+    /** the host which is the event is created */
+    private java.lang.String hostId;
     /** the number of the transactions for the user */
     private long nonce;
     /** time the event is recorded */
@@ -265,17 +322,25 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
         this.id = data().deepCopy(fields()[0].schema(), other.id);
         fieldSetFlags()[0] = other.fieldSetFlags()[0];
       }
-      if (isValidValue(fields()[1], other.nonce)) {
-        this.nonce = data().deepCopy(fields()[1].schema(), other.nonce);
+      if (isValidValue(fields()[1], other.userId)) {
+        this.userId = data().deepCopy(fields()[1].schema(), other.userId);
         fieldSetFlags()[1] = other.fieldSetFlags()[1];
       }
-      if (isValidValue(fields()[2], other.timestamp)) {
-        this.timestamp = data().deepCopy(fields()[2].schema(), other.timestamp);
+      if (isValidValue(fields()[2], other.hostId)) {
+        this.hostId = data().deepCopy(fields()[2].schema(), other.hostId);
         fieldSetFlags()[2] = other.fieldSetFlags()[2];
       }
-      if (isValidValue(fields()[3], other.derived)) {
-        this.derived = data().deepCopy(fields()[3].schema(), other.derived);
+      if (isValidValue(fields()[3], other.nonce)) {
+        this.nonce = data().deepCopy(fields()[3].schema(), other.nonce);
         fieldSetFlags()[3] = other.fieldSetFlags()[3];
+      }
+      if (isValidValue(fields()[4], other.timestamp)) {
+        this.timestamp = data().deepCopy(fields()[4].schema(), other.timestamp);
+        fieldSetFlags()[4] = other.fieldSetFlags()[4];
+      }
+      if (isValidValue(fields()[5], other.derived)) {
+        this.derived = data().deepCopy(fields()[5].schema(), other.derived);
+        fieldSetFlags()[5] = other.fieldSetFlags()[5];
       }
     }
 
@@ -289,23 +354,31 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
         this.id = data().deepCopy(fields()[0].schema(), other.id);
         fieldSetFlags()[0] = true;
       }
-      if (isValidValue(fields()[1], other.nonce)) {
-        this.nonce = data().deepCopy(fields()[1].schema(), other.nonce);
+      if (isValidValue(fields()[1], other.userId)) {
+        this.userId = data().deepCopy(fields()[1].schema(), other.userId);
         fieldSetFlags()[1] = true;
       }
-      if (isValidValue(fields()[2], other.timestamp)) {
-        this.timestamp = data().deepCopy(fields()[2].schema(), other.timestamp);
+      if (isValidValue(fields()[2], other.hostId)) {
+        this.hostId = data().deepCopy(fields()[2].schema(), other.hostId);
         fieldSetFlags()[2] = true;
       }
-      if (isValidValue(fields()[3], other.derived)) {
-        this.derived = data().deepCopy(fields()[3].schema(), other.derived);
+      if (isValidValue(fields()[3], other.nonce)) {
+        this.nonce = data().deepCopy(fields()[3].schema(), other.nonce);
         fieldSetFlags()[3] = true;
+      }
+      if (isValidValue(fields()[4], other.timestamp)) {
+        this.timestamp = data().deepCopy(fields()[4].schema(), other.timestamp);
+        fieldSetFlags()[4] = true;
+      }
+      if (isValidValue(fields()[5], other.derived)) {
+        this.derived = data().deepCopy(fields()[5].schema(), other.derived);
+        fieldSetFlags()[5] = true;
       }
     }
 
     /**
       * Gets the value of the 'id' field.
-      * a unique identifier
+      * a unique identifier for the event
       * @return The value.
       */
     public java.lang.String getId() {
@@ -315,7 +388,7 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
 
     /**
       * Sets the value of the 'id' field.
-      * a unique identifier
+      * a unique identifier for the event
       * @param value The value of 'id'.
       * @return This builder.
       */
@@ -328,7 +401,7 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
 
     /**
       * Checks whether the 'id' field has been set.
-      * a unique identifier
+      * a unique identifier for the event
       * @return True if the 'id' field has been set, false otherwise.
       */
     public boolean hasId() {
@@ -338,12 +411,100 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
 
     /**
       * Clears the value of the 'id' field.
-      * a unique identifier
+      * a unique identifier for the event
       * @return This builder.
       */
     public com.networknt.kafka.common.EventId.Builder clearId() {
       id = null;
       fieldSetFlags()[0] = false;
+      return this;
+    }
+
+    /**
+      * Gets the value of the 'userId' field.
+      * the user who creates the event
+      * @return The value.
+      */
+    public java.lang.String getUserId() {
+      return userId;
+    }
+
+
+    /**
+      * Sets the value of the 'userId' field.
+      * the user who creates the event
+      * @param value The value of 'userId'.
+      * @return This builder.
+      */
+    public com.networknt.kafka.common.EventId.Builder setUserId(java.lang.String value) {
+      validate(fields()[1], value);
+      this.userId = value;
+      fieldSetFlags()[1] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'userId' field has been set.
+      * the user who creates the event
+      * @return True if the 'userId' field has been set, false otherwise.
+      */
+    public boolean hasUserId() {
+      return fieldSetFlags()[1];
+    }
+
+
+    /**
+      * Clears the value of the 'userId' field.
+      * the user who creates the event
+      * @return This builder.
+      */
+    public com.networknt.kafka.common.EventId.Builder clearUserId() {
+      userId = null;
+      fieldSetFlags()[1] = false;
+      return this;
+    }
+
+    /**
+      * Gets the value of the 'hostId' field.
+      * the host which is the event is created
+      * @return The value.
+      */
+    public java.lang.String getHostId() {
+      return hostId;
+    }
+
+
+    /**
+      * Sets the value of the 'hostId' field.
+      * the host which is the event is created
+      * @param value The value of 'hostId'.
+      * @return This builder.
+      */
+    public com.networknt.kafka.common.EventId.Builder setHostId(java.lang.String value) {
+      validate(fields()[2], value);
+      this.hostId = value;
+      fieldSetFlags()[2] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'hostId' field has been set.
+      * the host which is the event is created
+      * @return True if the 'hostId' field has been set, false otherwise.
+      */
+    public boolean hasHostId() {
+      return fieldSetFlags()[2];
+    }
+
+
+    /**
+      * Clears the value of the 'hostId' field.
+      * the host which is the event is created
+      * @return This builder.
+      */
+    public com.networknt.kafka.common.EventId.Builder clearHostId() {
+      hostId = null;
+      fieldSetFlags()[2] = false;
       return this;
     }
 
@@ -364,9 +525,9 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       * @return This builder.
       */
     public com.networknt.kafka.common.EventId.Builder setNonce(long value) {
-      validate(fields()[1], value);
+      validate(fields()[3], value);
       this.nonce = value;
-      fieldSetFlags()[1] = true;
+      fieldSetFlags()[3] = true;
       return this;
     }
 
@@ -376,7 +537,7 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       * @return True if the 'nonce' field has been set, false otherwise.
       */
     public boolean hasNonce() {
-      return fieldSetFlags()[1];
+      return fieldSetFlags()[3];
     }
 
 
@@ -386,7 +547,7 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       * @return This builder.
       */
     public com.networknt.kafka.common.EventId.Builder clearNonce() {
-      fieldSetFlags()[1] = false;
+      fieldSetFlags()[3] = false;
       return this;
     }
 
@@ -407,9 +568,9 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       * @return This builder.
       */
     public com.networknt.kafka.common.EventId.Builder setTimestamp(long value) {
-      validate(fields()[2], value);
+      validate(fields()[4], value);
       this.timestamp = value;
-      fieldSetFlags()[2] = true;
+      fieldSetFlags()[4] = true;
       return this;
     }
 
@@ -419,7 +580,7 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       * @return True if the 'timestamp' field has been set, false otherwise.
       */
     public boolean hasTimestamp() {
-      return fieldSetFlags()[2];
+      return fieldSetFlags()[4];
     }
 
 
@@ -429,7 +590,7 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       * @return This builder.
       */
     public com.networknt.kafka.common.EventId.Builder clearTimestamp() {
-      fieldSetFlags()[2] = false;
+      fieldSetFlags()[4] = false;
       return this;
     }
 
@@ -450,9 +611,9 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       * @return This builder.
       */
     public com.networknt.kafka.common.EventId.Builder setDerived(boolean value) {
-      validate(fields()[3], value);
+      validate(fields()[5], value);
       this.derived = value;
-      fieldSetFlags()[3] = true;
+      fieldSetFlags()[5] = true;
       return this;
     }
 
@@ -462,7 +623,7 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       * @return True if the 'derived' field has been set, false otherwise.
       */
     public boolean hasDerived() {
-      return fieldSetFlags()[3];
+      return fieldSetFlags()[5];
     }
 
 
@@ -472,7 +633,7 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       * @return This builder.
       */
     public com.networknt.kafka.common.EventId.Builder clearDerived() {
-      fieldSetFlags()[3] = false;
+      fieldSetFlags()[5] = false;
       return this;
     }
 
@@ -482,9 +643,11 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       try {
         EventId record = new EventId();
         record.id = fieldSetFlags()[0] ? this.id : (java.lang.String) defaultValue(fields()[0]);
-        record.nonce = fieldSetFlags()[1] ? this.nonce : (java.lang.Long) defaultValue(fields()[1]);
-        record.timestamp = fieldSetFlags()[2] ? this.timestamp : (java.lang.Long) defaultValue(fields()[2]);
-        record.derived = fieldSetFlags()[3] ? this.derived : (java.lang.Boolean) defaultValue(fields()[3]);
+        record.userId = fieldSetFlags()[1] ? this.userId : (java.lang.String) defaultValue(fields()[1]);
+        record.hostId = fieldSetFlags()[2] ? this.hostId : (java.lang.String) defaultValue(fields()[2]);
+        record.nonce = fieldSetFlags()[3] ? this.nonce : (java.lang.Long) defaultValue(fields()[3]);
+        record.timestamp = fieldSetFlags()[4] ? this.timestamp : (java.lang.Long) defaultValue(fields()[4]);
+        record.derived = fieldSetFlags()[5] ? this.derived : (java.lang.Boolean) defaultValue(fields()[5]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;
@@ -519,6 +682,10 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
   {
     out.writeString(this.id);
 
+    out.writeString(this.userId);
+
+    out.writeString(this.hostId);
+
     out.writeLong(this.nonce);
 
     out.writeLong(this.timestamp);
@@ -534,6 +701,10 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
     if (fieldOrder == null) {
       this.id = in.readString();
 
+      this.userId = in.readString();
+
+      this.hostId = in.readString();
+
       this.nonce = in.readLong();
 
       this.timestamp = in.readLong();
@@ -541,21 +712,29 @@ public class EventId extends org.apache.avro.specific.SpecificRecordBase impleme
       this.derived = in.readBoolean();
 
     } else {
-      for (int i = 0; i < 4; i++) {
+      for (int i = 0; i < 6; i++) {
         switch (fieldOrder[i].pos()) {
         case 0:
           this.id = in.readString();
           break;
 
         case 1:
-          this.nonce = in.readLong();
+          this.userId = in.readString();
           break;
 
         case 2:
-          this.timestamp = in.readLong();
+          this.hostId = in.readString();
           break;
 
         case 3:
+          this.nonce = in.readLong();
+          break;
+
+        case 4:
+          this.timestamp = in.readLong();
+          break;
+
+        case 5:
           this.derived = in.readBoolean();
           break;
 
