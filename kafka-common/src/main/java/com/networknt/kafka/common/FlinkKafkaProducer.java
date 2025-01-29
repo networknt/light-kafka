@@ -100,6 +100,10 @@ public class FlinkKafkaProducer<K, V> implements Producer<K, V> {
     }
 
     // -------------------------------- Simple proxy method calls --------------------------------
+    @Override
+    public Uuid clientInstanceId(Duration timeout) {
+        return kafkaProducer.clientInstanceId(timeout);
+    }
 
     @Override
     public void initTransactions() {
