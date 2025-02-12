@@ -101,7 +101,7 @@
         <version.slf4j>2.0.16</version.slf4j>
         <version.kafka>3.7.2</version.kafka>
         <version.confluent>7.6.0</version.confluent>
-        <version.logback>1.5.12</version.logback>
+        <version.logback>1.5.16</version.logback>
         <version.junit>5.11.3</version.junit>
         <version.undertow>2.3.18.Final</version.undertow>
         <version.avro>1.12.0</version.avro>
