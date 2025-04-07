@@ -54,7 +54,7 @@ public class SidecarProducer implements NativeLightProducer {
     static private final Logger logger = LoggerFactory.getLogger(SidecarProducer.class);
     public static final KafkaProducerConfig config = (KafkaProducerConfig) Config.getInstance().getJsonObjectConfig(KafkaProducerConfig.CONFIG_NAME, KafkaProducerConfig.class);
     public static Map<String, Optional<RegisteredSchema>> schemaCache = new ConcurrentHashMap<>();
-    private static String FAILED_TO_GET_SCHEMA = "ERR12208";
+    private final static String FAILED_TO_GET_SCHEMA = "ERR12208";
     private SchemaManager schemaManager;
     private SchemaRecordSerializer schemaRecordSerializer;
     private NoSchemaRecordSerializer noSchemaRecordSerializer;
@@ -63,6 +63,7 @@ public class SidecarProducer implements NativeLightProducer {
 
     @Override
     public void open() {
+        if(logger.isTraceEnabled()) logger.trace("config properties: {}", config.getProperties());
         producer = new KafkaProducer<>(config.getProperties());
         Map<String, Object> configs = new HashMap<>();
         configs.putAll(config.getProperties());
