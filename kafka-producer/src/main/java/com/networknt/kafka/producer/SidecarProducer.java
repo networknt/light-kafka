@@ -10,6 +10,7 @@ import com.networknt.status.Status;
 import com.networknt.utility.Constants;
 import com.networknt.utility.ObjectUtils;
 import com.networknt.utility.Util;
+import com.networknt.utility.UuidUtil;
 import io.confluent.kafka.schemaregistry.avro.AvroSchemaProvider;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
@@ -323,7 +324,7 @@ public class SidecarProducer implements NativeLightProducer {
                                 topicName,
                                 record.getPartitionId(),
                                 record.getTraceabilityId(),
-                                record.getCorrelationId().isPresent() ? record.getCorrelationId() : Optional.of(Util.getUUID()),
+                                record.getCorrelationId().isPresent() ? record.getCorrelationId() : Optional.of(UuidUtil.uuidToBase64(UuidUtil.getUUID())),
                                 serviceId,
                                 headers,
                                 auditRecords,

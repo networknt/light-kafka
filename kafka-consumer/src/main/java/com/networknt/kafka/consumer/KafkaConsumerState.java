@@ -21,6 +21,7 @@ import com.networknt.kafka.common.converter.*;
 import com.networknt.kafka.entity.*;
 import com.networknt.utility.Constants;
 import com.networknt.utility.Util;
+import com.networknt.utility.UuidUtil;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
@@ -588,11 +589,11 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
     }
     // add correlationId if it doesn't exist.
     if(headerMap.get(Constants.CORRELATION_ID_STRING) == null) {
-      String cId = Util.getUUID();
+      String cId = UuidUtil.uuidToBase64(UuidUtil.getUUID());
       headerMap.put(Constants.CORRELATION_ID_STRING, cId);
       if(headerMap.get(Constants.TRACEABILITY_ID_STRING) != null) {
         // associate correlateId to the traceabilityId if it is not empty.
-        logger.info("Associate traceability Id " + headerMap.get(Constants.TRACEABILITY_ID_STRING) + " with correlation Id " + cId);
+          logger.info("Associate traceability Id {} with correlation Id {}", headerMap.get(Constants.TRACEABILITY_ID_STRING), cId);
       }
     }
     return headerMap;
