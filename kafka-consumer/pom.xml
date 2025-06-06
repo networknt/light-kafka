@@ -27,6 +27,7 @@
 
     <artifactId>kafka-consumer</artifactId>
     <packaging>jar</packaging>
+    <name>kafka-consumer</name>
     <description>A module that consumes events from a Kafka topic.</description>
 
     <dependencies>

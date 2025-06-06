@@ -27,6 +27,7 @@
 
     <artifactId>kafka-common</artifactId>
     <packaging>jar</packaging>
+    <name>kafka-common</name>
     <description>A common module shared between other kafka modules..</description>
 
     <dependencies>

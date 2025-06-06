@@ -27,6 +27,7 @@
 
     <artifactId>kafka-producer</artifactId>
     <packaging>jar</packaging>
+    <name>kafka-producer</name>
     <description>A module to push events to a Kafka topic.</description>
 
     <dependencies>

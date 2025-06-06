@@ -27,6 +27,7 @@
 
     <artifactId>kafka-entity</artifactId>
     <packaging>jar</packaging>
+    <name>kafka-entity</name>
     <description>The kafka-sidecar entities that will be shared by the kafka-sidecar client.</description>
 
     <dependencies>
