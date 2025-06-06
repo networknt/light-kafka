@@ -21,12 +21,13 @@
     <parent>
         <groupId>com.networknt</groupId>
         <artifactId>light-kafka</artifactId>
-        <version>2.2.2</version>
+        <version>2.2.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>kafka-consumer</artifactId>
     <packaging>jar</packaging>
+    <name>kafka-consumer</name>
     <description>A module that consumes events from a Kafka topic.</description>
 
     <dependencies>

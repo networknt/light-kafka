@@ -21,12 +21,13 @@
     <parent>
         <groupId>com.networknt</groupId>
         <artifactId>light-kafka</artifactId>
-        <version>2.2.2</version>
+        <version>2.2.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>kafka-producer</artifactId>
     <packaging>jar</packaging>
+    <name>kafka-producer</name>
     <description>A module to push events to a Kafka topic.</description>
 
     <dependencies>

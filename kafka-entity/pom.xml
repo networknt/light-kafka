@@ -21,12 +21,13 @@
     <parent>
         <groupId>com.networknt</groupId>
         <artifactId>light-kafka</artifactId>
-        <version>2.2.2</version>
+        <version>2.2.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>kafka-entity</artifactId>
     <packaging>jar</packaging>
+    <name>kafka-entity</name>
     <description>The kafka-sidecar entities that will be shared by the kafka-sidecar client.</description>
 
     <dependencies>
