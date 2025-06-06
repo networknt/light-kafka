@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.2.2](https://github.com/networknt/light-kafka/tree/2.2.2) (2025-06-05)
+
+
+**Merged pull requests:**
+
+
+- fixes \#218 upgrade to kafka 3.9.0 and confluent 7.9.0 [\#219](https://github.com/networknt/light-kafka/pull/219) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.2.1](https://github.com/networknt/light-kafka/tree/2.2.1) (2025-03-22)
 
 
