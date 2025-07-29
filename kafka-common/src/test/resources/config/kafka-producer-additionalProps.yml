@@ -1,0 +1,29 @@
+properties:
+  key.serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+  value.serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+  acks: all
+  bootstrap.servers: localhost:9092
+  buffer.memory: 33554432
+  retries: 3
+  batch.size: 16384
+  linger.ms: 1
+  max.in.flight.requests.per.connection: 5
+  enable.idempotence: true
+  schema.registry.url: http://localhost:8081
+  schema.registry.cache: 100
+  schema.registry.auto.register.schemas: true
+  max.request.size: 1048576
+  additionalProperties:
+    # This property will be loaded
+    myNewProperty: "myNewValue"
+    # This property will not be loaded because the field exists in root properties.
+    schema.registry.url: attemptedOverwrite
+
+topic: portal-event
+keyFormat: jsonschema
+valueFormat: jsonschema
+injectOpenTracing: false
+injectCallerId: false
+auditEnabled: true
+auditTarget: logfile
+auditTopic: sidecar-audit

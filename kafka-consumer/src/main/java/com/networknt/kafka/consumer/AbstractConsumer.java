@@ -1,14 +1,12 @@
 package com.networknt.kafka.consumer;
 
 import com.networknt.config.Config;
-import com.networknt.kafka.common.KafkaConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+import com.networknt.kafka.common.config.KafkaConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class AbstractConsumer implements LightConsumer {
@@ -20,11 +18,11 @@ public abstract class AbstractConsumer implements LightConsumer {
 
     static private Map<String, Object> properties;
 
-    static final KafkaConsumerConfig config = (KafkaConsumerConfig) Config.getInstance().getJsonObjectConfig(KafkaConsumerConfig.CONFIG_NAME, KafkaConsumerConfig.class);
+    static final KafkaConsumerConfig config = KafkaConsumerConfig.load();
 
     @Override
     public void open() {
-        consumer = new KafkaConsumer<>(config.getProperties());
+        consumer = new KafkaConsumer<>(config.getKafkaMapProperties());
     }
 
     @Override

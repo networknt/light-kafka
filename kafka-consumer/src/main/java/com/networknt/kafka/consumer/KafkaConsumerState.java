@@ -16,11 +16,10 @@
 package com.networknt.kafka.consumer;
 
 import com.google.protobuf.ByteString;
-import com.networknt.kafka.common.KafkaConsumerConfig;
+import com.networknt.kafka.common.config.KafkaConsumerConfig;
 import com.networknt.kafka.common.converter.*;
 import com.networknt.kafka.entity.*;
 import com.networknt.utility.Constants;
-import com.networknt.utility.Util;
 import com.networknt.utility.UuidUtil;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.*;
@@ -79,7 +78,7 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
         Duration.ofMillis(config.getInstanceTimeoutMs());
     this.expiration = clock.instant().plus(consumerInstanceTimeout);
     this.consumerInstanceConfig = consumerInstanceConfig;
-    this.avroSchemaConverter = config.isUseNoWrappingAvro() ? new AvroNoWrappingConverter() : new AvroConverter();
+    this.avroSchemaConverter = config.getUseNoWrappingAvro() ? new AvroNoWrappingConverter() : new AvroConverter();
     this.jsonSchemaConverter = new JsonSchemaConverter();
     this.protobufSchemaConverter = new ProtobufConverter();
   }

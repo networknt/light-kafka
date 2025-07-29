@@ -1,0 +1,18 @@
+properties:
+  bootstrap.servers: localhost:9092
+  key.deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+  value.deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+  enable.auto.commit: false
+  auto.offset.reset: earliest
+  group.id: group1
+  schema.registry.url: http://localhost:8081
+  schema.registry.auto.register.schemas: true
+  fetch.max.bytes: 102400
+  max.poll.records: 100
+  additionalProperties:
+    # This property will be loaded
+    myNewProperty: "myNewValue"
+    # This property will not be loaded because the field exists in root properties.
+    schema.registry.url: attemptedOverwrite
+
+cleanUp: false

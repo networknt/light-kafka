@@ -2,17 +2,13 @@ package com.networknt.kafka.producer;
 
 import com.networknt.config.Config;
 import com.networknt.handler.LightHttpHandler;
-import com.networknt.kafka.common.KafkaProducerConfig;
+import com.networknt.kafka.common.config.KafkaProducerConfig;
 import com.networknt.server.ServerConfig;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
-import java.util.Properties;
 
 public class GuaranteeProducerHandler implements LightHttpHandler {
     static private final Logger logger = LoggerFactory.getLogger(GuaranteeProducerHandler.class);
@@ -38,7 +34,7 @@ public class GuaranteeProducerHandler implements LightHttpHandler {
     }
 
     public KafkaProducer<byte[], byte[]> createKafkaProducer() {
-        return new KafkaProducer<>(config.getProperties());
+        return new KafkaProducer<>(config.getKafkaMapProperties());
     }
 
 }

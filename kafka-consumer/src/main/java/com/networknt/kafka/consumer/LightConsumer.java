@@ -1,7 +1,7 @@
 package com.networknt.kafka.consumer;
 
 import com.networknt.config.Config;
-import com.networknt.kafka.common.KafkaConsumerConfig;
+import com.networknt.kafka.common.config.KafkaConsumerConfig;
 import com.networknt.utility.ModuleRegistry;
 
 import java.util.ArrayList;

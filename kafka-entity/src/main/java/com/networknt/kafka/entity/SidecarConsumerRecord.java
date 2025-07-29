@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.protobuf.ByteString;
 import com.networknt.config.Config;
 import com.networknt.config.JsonMapper;
-import com.networknt.kafka.common.KafkaConsumerConfig;
+import com.networknt.kafka.common.config.KafkaConsumerConfig;
 
 import java.util.*;
 

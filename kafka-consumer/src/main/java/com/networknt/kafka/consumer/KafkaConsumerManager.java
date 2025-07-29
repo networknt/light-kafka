@@ -16,17 +16,15 @@
 package com.networknt.kafka.consumer;
 
 import com.networknt.client.Http2Client;
-import com.networknt.client.simplepool.SimpleConnectionHolder;
 import com.networknt.config.Config;
 import com.networknt.config.JsonMapper;
 import com.networknt.exception.FrameworkException;
-import com.networknt.kafka.common.KafkaConsumerConfig;
+import com.networknt.kafka.common.config.KafkaConsumerConfig;
 import com.networknt.kafka.entity.*;
 import com.networknt.status.Status;
 import com.networknt.utility.Constants;
 import com.networknt.utility.ModuleRegistry;
 import com.networknt.utility.StringUtils;
-import io.undertow.UndertowOptions;
 import io.undertow.client.ClientConnection;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
@@ -38,9 +36,7 @@ import org.apache.kafka.common.config.ConfigException;
 import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xnio.OptionMap;
 
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Duration;
@@ -193,7 +189,7 @@ public class KafkaConsumerManager {
       // intentionally name differently in our own configs).
       //Properties props = (Properties) config.getOriginalProperties().clone();
       Properties props = new Properties();
-      props.putAll(config.getProperties());
+      props.putAll(config.getKafkaMapProperties());
       if(group != null) {
         props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, group);
       }

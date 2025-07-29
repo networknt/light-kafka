@@ -1,16 +1,24 @@
 package com.networknt.kafka.common;
 
-import com.networknt.config.Config;
-import org.junit.jupiter.api.Assertions;
+import com.networknt.kafka.common.config.KafkaConsumerConfig;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class KafkaConsumerConfigTest {
     @Test
-    public void testLoadingConfig() {
-        KafkaConsumerConfig config = (KafkaConsumerConfig) Config.getInstance().getJsonObjectConfig(KafkaConsumerConfig.CONFIG_NAME, KafkaConsumerConfig.class);
-        Assertions.assertNotNull(config);
-        Assertions.assertNotNull(config.getGroupId());
+    public void testLoadingDefaultConfigName() {
+        KafkaConsumerConfig config = KafkaConsumerConfig.load();
+        assertNotNull(config);
+        assertNotNull(config.getProperties().getGroupId());
+    }
+
+    @Test
+    public void testLoadingAdditionalProps() {
+        KafkaConsumerConfig config = KafkaConsumerConfig.load("kafka-consumer-additionalProps");
+        assertNotNull(config);
+        final var kafkaProps = config.getKafkaMapProperties();
+        assertTrue(kafkaProps.containsKey("myNewProperty"));
+        assertEquals("http://localhost:8081", kafkaProps.get("schema.registry.url"));
     }
 }
