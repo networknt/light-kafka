@@ -26,7 +26,7 @@ public class KafkaConsumerPropertiesConfig {
     private static final String SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY = "schema.registry.auto.register.schemas";
     private static final String SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY = "schema.registry.ssl.truststore.location";
     private static final String SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY = "schema.registry.ssl.truststore.password";
-    private static final String ADDITIONAL_PROPERTIES_KEY = "additionalProperties";
+    private static final String ADDITIONAL_KAFKA_PROPERTIES_KEY = "additionalKafkaProperties";
     private static final String SECURITY_PROTOCOL_KEY = "security.protocol";
     private static final String SASL_MECHANISM_KEY = "sasl.mechanism";
     private static final String SASL_JAAS_CONFIG_KEY = "sasl.jaas.config";
@@ -266,21 +266,21 @@ public class KafkaConsumerPropertiesConfig {
     private Integer maxPartitionFetchBytes;
 
     @MapField(
-            configFieldName = ADDITIONAL_PROPERTIES_KEY,
-            externalizedKeyName = ADDITIONAL_PROPERTIES_KEY,
+            configFieldName = ADDITIONAL_KAFKA_PROPERTIES_KEY,
+            externalizedKeyName = ADDITIONAL_KAFKA_PROPERTIES_KEY,
             externalized = true,
-            description = "Any additional properties that are not defined in the schema can be added here.\n" +
+            description = "Any additional kafka properties that are not defined in the schema can be added here.\n" +
                     "This is useful for custom configurations that are not part of the standard Kafka consumer properties.",
             additionalProperties = true,
 
             // TODO - This is a bug with the light4j config schema generator. It should be able to handle Object.class, but it throws an error.
             valueType = String.class
     )
-    @JsonProperty(ADDITIONAL_PROPERTIES_KEY)
-    private Map<String, Object> additionalProperties = new HashMap<>();
+    @JsonProperty(ADDITIONAL_KAFKA_PROPERTIES_KEY)
+    private Map<String, Object> additionalKafkaProperties = new HashMap<>();
 
     public Map<String, Object> getMergedProperties() {
-        Map<String, Object> properties = new HashMap<>(additionalProperties);
+        Map<String, Object> properties = new HashMap<>(additionalKafkaProperties);
         addIfSet(properties, BOOTSTRAP_SERVERS_KEY, bootstrapServers);
         addIfSet(properties, KEY_DESERIALIZER_KEY, keyDeserializer);
         addIfSet(properties, VALUE_DESERIALIZER_KEY, valueDeserializer);
@@ -394,7 +394,7 @@ public class KafkaConsumerPropertiesConfig {
         return maxPartitionFetchBytes;
     }
 
-    public Map<String, Object> getAdditionalProperties() {
-        return additionalProperties;
+    public Map<String, Object> getAdditionalKafkaProperties() {
+        return additionalKafkaProperties;
     }
 }

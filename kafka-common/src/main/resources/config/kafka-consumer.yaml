@@ -47,9 +47,9 @@ properties:
   # The maximum amount of data per-partition the server will return. Records are fetched in batches by the consumer.
   # If the first record batch in the first non-empty partition of the fetch is larger than this limit, the batch will still be returned to ensure that the consumer can make progress.
   max.partition.fetch.bytes: ${kafka-consumer.max.partition.fetch.bytes:100}
-  # Any additional properties that are not defined in the schema can be added here.
+  # Any additional kafka properties that are not defined in the schema can be added here.
   # This is useful for custom configurations that are not part of the standard Kafka consumer properties.
-  additionalProperties: ${kafka-consumer.additionalProperties:}
+  additionalKafkaProperties: ${kafka-consumer.additionalKafkaProperties:}
 # Common configuration properties between active and reactive consumers
 # Indicator if the dead letter topic is enabled.
 deadLetterEnabled: ${kafka-consumer.deadLetterEnabled:true}

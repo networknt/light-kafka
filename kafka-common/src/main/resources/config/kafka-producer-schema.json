@@ -11,6 +11,13 @@
           "type" : "boolean",
           "description" : "enable idempotence. Default to true"
         },
+        "additionalKafkaProperties" : {
+          "type" : "object",
+          "description" : "Any additional properties that are not defined in the schema can be added here.\nThis is useful for custom configurations that are not part of the standard Kafka producer properties.",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
         "basic.auth.credentials.source" : {
           "type" : "string",
           "description" : "basic authentication credentials source for the schema registry. Default to USER_INFO",
@@ -124,13 +131,6 @@
           "type" : "number",
           "description" : "Schema registry identity cache size",
           "format" : "float32"
-        },
-        "additionalProperties" : {
-          "type" : "object",
-          "description" : "Any additional properties that are not defined in the schema can be added here.\nThis is useful for custom configurations that are not part of the standard Kafka producer properties.",
-          "additionalProperties" : {
-            "type" : "string"
-          }
         },
         "linger.ms" : {
           "type" : "number",

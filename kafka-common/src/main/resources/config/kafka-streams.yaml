@@ -40,7 +40,7 @@ properties:
   state.dir: ${kafka-streams.state.dir:/tmp}
   # Any additional properties that are not defined in the schema can be added here.
   # This is useful for custom configurations that are not part of the standard Kafka streams properties.
-  additionalProperties: ${kafka-streams.additionalProperties:}
+  additionalKafkaProperties: ${kafka-streams.additionalKafkaProperties:}
 # Only set to true right after the streams reset and start the server. Once the server is up, shutdown and change this to false and restart.
 cleanUp: ${kafka-streams.cleanUp:false}
 # Common configuration properties between active and reactive consumers

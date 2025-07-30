@@ -9,7 +9,7 @@ properties:
   schema.registry.auto.register.schemas: true
   fetch.max.bytes: 102400
   max.poll.records: 100
-  additionalProperties:
+  additionalKafkaProperties:
     # This property will be loaded
     myNewProperty: "myNewValue"
     # This property will not be loaded because the field exists in root properties.

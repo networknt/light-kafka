@@ -17,6 +17,13 @@
           "description" : "Kafka value deserializer. Default to ByteArrayDeserializer",
           "default" : "org.apache.kafka.common.serialization.ByteArrayDeserializer"
         },
+        "additionalKafkaProperties" : {
+          "type" : "object",
+          "description" : "Any additional properties that are not defined in the schema can be added here.\nThis is useful for custom configurations that are not part of the standard Kafka streams properties.",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
         "basic.auth.credentials.source" : {
           "type" : "string",
           "description" : "basic authentication credentials source for the schema registry. Default to USER_INFO",
@@ -85,13 +92,6 @@
           "type" : "string",
           "description" : "SSL truststore password for secure communication",
           "default" : "password"
-        },
-        "additionalProperties" : {
-          "type" : "object",
-          "description" : "Any additional properties that are not defined in the schema can be added here.\nThis is useful for custom configurations that are not part of the standard Kafka streams properties.",
-          "additionalProperties" : {
-            "type" : "string"
-          }
         },
         "auto.offset.reset" : {
           "type" : "string",

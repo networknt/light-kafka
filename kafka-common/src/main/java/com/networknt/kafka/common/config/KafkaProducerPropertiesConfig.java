@@ -28,7 +28,7 @@ public class KafkaProducerPropertiesConfig {
     private static final String SCHEMA_REGISTRY_CACHE_KEY = "schema.registry.cache";
     private static final String SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY = "schema.registry.auto.register.schemas";
     private static final String MAX_REQUEST_SIZE_KEY = "max.request.size";
-    private static final String ADDITIONAL_PROPERTIES_KEY = "additionalProperties";
+    private static final String ADDITIONAL_KAFKA_PROPERTIES_KEY = "additionalKafkaProperties";
 
     private static final String SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY = "schema.registry.ssl.truststore.location";
     private static final String SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY = "schema.registry.ssl.truststore.password";
@@ -296,8 +296,8 @@ public class KafkaProducerPropertiesConfig {
     private Integer maxRequestSize;
 
     @MapField(
-            configFieldName = ADDITIONAL_PROPERTIES_KEY,
-            externalizedKeyName = ADDITIONAL_PROPERTIES_KEY,
+            configFieldName = ADDITIONAL_KAFKA_PROPERTIES_KEY,
+            externalizedKeyName = ADDITIONAL_KAFKA_PROPERTIES_KEY,
             externalized = true,
             description = "Any additional properties that are not defined in the schema can be added here.\n" +
                           "This is useful for custom configurations that are not part of the standard Kafka producer properties.",
@@ -306,11 +306,11 @@ public class KafkaProducerPropertiesConfig {
             // TODO - This is a bug with the light4j config schema generator. It should be able to handle Object.class, but it throws an error.
             valueType = String.class
     )
-    @JsonProperty(ADDITIONAL_PROPERTIES_KEY)
-    private Map<String, Object> additionalProperties = new HashMap<>();
+    @JsonProperty(ADDITIONAL_KAFKA_PROPERTIES_KEY)
+    private Map<String, Object> additionalKafkaProperties = new HashMap<>();
 
     public Map<String, Object> getMergedProperties() {
-        Map<String, Object> properties = new HashMap<>(additionalProperties);
+        Map<String, Object> properties = new HashMap<>(additionalKafkaProperties);
         addIfSet(properties, KEY_SERIALIZER_KEY, keySerializer);
         addIfSet(properties, VALUE_SERIALIZER_KEY, valueSerializer);
         addIfSet(properties, ACKS_KEY, acks);
@@ -439,7 +439,7 @@ public class KafkaProducerPropertiesConfig {
         return maxRequestSize;
     }
 
-    public Map<String, Object> getAdditionalProperties() {
-        return additionalProperties;
+    public Map<String, Object> getAdditionalKafkaProperties() {
+        return additionalKafkaProperties;
     }
 }
