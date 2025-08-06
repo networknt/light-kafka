@@ -1,9 +1,8 @@
 package com.networknt.kafka.producer;
 
 import com.networknt.config.Config;
-import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.httpstring.HttpStringConstants;
-import com.networknt.kafka.common.KafkaProducerConfig;
+import com.networknt.kafka.common.config.KafkaProducerConfig;
 import com.networknt.kafka.common.TransactionalKafkaException;
 import com.networknt.kafka.common.FlinkKafkaProducer;
 import com.networknt.server.ServerConfig;
@@ -275,18 +274,18 @@ public class TransactionalProducer implements Runnable, QueuedLightProducer {
      * obtain new producerId and epoch counters).
      */
     private FlinkKafkaProducer<byte[], byte[]> createTransactionalProducer() throws TransactionalKafkaException {
-        FlinkKafkaProducer<byte[], byte[]> producer = initTransactionalProducer((String)config.getProperties().get("transactional.id"));
+        FlinkKafkaProducer<byte[], byte[]> producer = initTransactionalProducer((String)config.getKafkaMapProperties().get("transactional.id"));
         producer.initTransactions();
         return producer;
     }
 
     private FlinkKafkaProducer<byte[], byte[]> initTransactionalProducer(String transactionalId) {
-        config.getProperties().put("transactional.id", transactionalId);
+        config.getKafkaMapProperties().put("transactional.id", transactionalId);
         return initProducer();
     }
 
     private FlinkKafkaProducer<byte[], byte[]> initProducer() {
-        FlinkKafkaProducer<byte[], byte[]> producer = new FlinkKafkaProducer<>(config.getProperties());
+        FlinkKafkaProducer<byte[], byte[]> producer = new FlinkKafkaProducer<>(config.getKafkaMapProperties());
         logger.info("Starting FlinkKafkaProducer");
         return producer;
     }

@@ -2,14 +2,12 @@ package com.networknt.kafka.producer;
 
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.google.protobuf.ByteString;
-import com.networknt.config.Config;
 import com.networknt.exception.FrameworkException;
-import com.networknt.kafka.common.KafkaProducerConfig;
+import com.networknt.kafka.common.config.KafkaProducerConfig;
 import com.networknt.kafka.entity.*;
 import com.networknt.status.Status;
 import com.networknt.utility.Constants;
 import com.networknt.utility.ObjectUtils;
-import com.networknt.utility.Util;
 import com.networknt.utility.UuidUtil;
 import io.confluent.kafka.schemaregistry.avro.AvroSchemaProvider;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
@@ -53,7 +51,7 @@ import static java.util.Collections.singletonList;
  */
 public class SidecarProducer implements NativeLightProducer {
     static private final Logger logger = LoggerFactory.getLogger(SidecarProducer.class);
-    public static final KafkaProducerConfig config = (KafkaProducerConfig) Config.getInstance().getJsonObjectConfig(KafkaProducerConfig.CONFIG_NAME, KafkaProducerConfig.class);
+    public static final KafkaProducerConfig config = new KafkaProducerConfig();
     public static Map<String, Optional<RegisteredSchema>> schemaCache = new ConcurrentHashMap<>();
     private final static String FAILED_TO_GET_SCHEMA = "ERR12208";
     private SchemaManager schemaManager;
@@ -64,12 +62,12 @@ public class SidecarProducer implements NativeLightProducer {
 
     @Override
     public void open() {
-        if(logger.isTraceEnabled()) logger.trace("config properties: {}", config.getProperties());
-        producer = new KafkaProducer<>(config.getProperties());
+        if(logger.isTraceEnabled()) logger.trace("config properties: {}", config.getKafkaMapProperties());
+        producer = new KafkaProducer<>(config.getKafkaMapProperties());
         Map<String, Object> configs = new HashMap<>();
-        configs.putAll(config.getProperties());
-        String url = (String) config.getProperties().get("schema.registry.url");
-        Object cacheObj = config.getProperties().get("schema.registry.cache");
+        configs.putAll(config.getKafkaMapProperties());
+        String url = (String) config.getKafkaMapProperties().get("schema.registry.url");
+        Object cacheObj = config.getKafkaMapProperties().get("schema.registry.cache");
         int cache = 100;
         if (cacheObj != null && cacheObj instanceof String) {
             cache = Integer.valueOf((String) cacheObj);

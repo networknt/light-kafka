@@ -545,6 +545,10 @@
     </reporting>
 
     <profiles>
+        <!-- Enable this profile to generate the config resource files. -->
+        <profile>
+            <id>schema-generation</id>
+        </profile>
         <profile>
             <id>release-sign-artifacts</id>
             <activation>

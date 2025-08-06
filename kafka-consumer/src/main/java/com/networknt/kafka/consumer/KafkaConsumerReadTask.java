@@ -16,14 +16,12 @@
 package com.networknt.kafka.consumer;
 
 import com.networknt.exception.FrameworkException;
-import com.networknt.kafka.common.KafkaConsumerConfig;
+import com.networknt.kafka.common.config.KafkaConsumerConfig;
 import com.networknt.kafka.entity.ConsumerRecord;
 import com.networknt.status.Status;
-import jdk.jshell.Snippet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;

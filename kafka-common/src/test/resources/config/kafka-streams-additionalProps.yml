@@ -1,0 +1,16 @@
+# Generic Kafka Streams Configuration
+properties:
+  bootstrap.servers: localhost:9092
+  key.deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+  value.deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+  auto.offset.reset: earliest
+  application.id: placeholder
+  schema.registry.url: http://localhost:8081
+  schema.registry.auto.register.schemas: true
+  additionalKafkaProperties:
+    # This property will be loaded
+    myNewProperty: "myNewValue"
+    # This property will not be loaded because the field exists in root properties.
+    schema.registry.url: attemptedOverwrite
+
+cleanUp: false

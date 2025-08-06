@@ -1,7 +1,7 @@
 package com.networknt.kafka.streams;
 
 import com.networknt.config.Config;
-import com.networknt.kafka.common.KafkaStreamsConfig;
+import com.networknt.kafka.common.config.KafkaStreamsConfig;
 import com.networknt.kafka.entity.StreamsDLQMetadata;
 import com.networknt.utility.ModuleRegistry;
 import com.networknt.utility.ObjectUtils;
@@ -123,7 +123,7 @@ public interface LightStreams {
          * Then starts the streams and returns the same
          */
         Properties streamProps = new Properties();
-        streamProps.putAll(config.getProperties());
+        streamProps.putAll(config.getKafkaMapProperties());
         streamProps.put(StreamsConfig.APPLICATION_SERVER_CONFIG, ip + ":" + port);
 
 
@@ -155,7 +155,7 @@ public interface LightStreams {
 
         KafkaStreams kafkaStreams = new KafkaStreams(topology, streamProps);
 
-        if (config.isCleanUp()) {
+        if (Boolean.TRUE.equals(config.getCleanUp())) {
             kafkaStreams.cleanUp();
         }
         kafkaStreams.start();

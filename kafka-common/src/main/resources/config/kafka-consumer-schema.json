@@ -1,0 +1,223 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "required" : [ "properties", "deadLetterEnabled", "deadLetterTopicExt", "auditEnabled", "auditTarget", "auditTopic", "useNoWrappingAvro", "topic", "keyFormat", "valueFormat", "waitPeriod", "backendApiHost", "backendApiPath", "maxConsumerThreads", "serverId", "requestMaxBytes", "requestTimeoutMs", "fetchMinBytes", "instanceTimeoutMs", "iteratorBackoffMs", "backendConnectionReset" ],
+  "properties" : {
+    "properties" : {
+      "type" : "object",
+      "description" : "Generic Kafka Consumer Configuration",
+      "properties" : {
+        "key.deserializer" : {
+          "type" : "string",
+          "description" : "Consumer will use the schema for deserialization from byte array\nKafka key deserializer. Default to ByteArrayDeserializer",
+          "default" : "org.apache.kafka.common.serialization.ByteArrayDeserializer"
+        },
+        "value.deserializer" : {
+          "type" : "string",
+          "description" : "Kafka value deserializer. Default to ByteArrayDeserializer",
+          "default" : "org.apache.kafka.common.serialization.ByteArrayDeserializer"
+        },
+        "max.poll.records" : {
+          "type" : "number",
+          "description" : "max poll records default is 500. Adjust it based on the size of the records to make sure each poll\nis similar to requestMaxBytes down below.",
+          "format" : "float32"
+        },
+        "additionalKafkaProperties" : {
+          "type" : "object",
+          "description" : "Any additional kafka properties that are not defined in the schema can be added here.\nThis is useful for custom configurations that are not part of the standard Kafka consumer properties.",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "basic.auth.credentials.source" : {
+          "type" : "string",
+          "description" : "basic authentication credentials source for the schema registry. Default to USER_INFO",
+          "default" : "USER_INFO"
+        },
+        "group.id" : {
+          "type" : "string",
+          "description" : "Kafka consumer group id. Default to group1",
+          "default" : "group1"
+        },
+        "schema.registry.ssl.truststore.password" : {
+          "type" : "string",
+          "description" : "Schema registry client truststore password",
+          "default" : "password"
+        },
+        "client.rack" : {
+          "type" : "string",
+          "description" : "Client rack identifier for Kafka consumer. Default to rack1",
+          "default" : "rack1"
+        },
+        "max.partition.fetch.bytes" : {
+          "type" : "number",
+          "description" : "The maximum amount of data per-partition the server will return. Records are fetched in batches by the consumer.\nIf the first record batch in the first non-empty partition of the fetch is larger than this limit, the batch will still be returned to ensure that the consumer can make progress.",
+          "format" : "float32"
+        },
+        "bootstrap.servers" : {
+          "type" : "string",
+          "description" : "Kafka bootstrap servers. Default to localhost:9092",
+          "default" : "localhost:9092"
+        },
+        "schema.registry.ssl.truststore.location" : {
+          "type" : "string",
+          "description" : "Schema registry client truststore location, use the following two properties only if schema registry url is https.",
+          "default" : "/config/client.truststore"
+        },
+        "security.protocol" : {
+          "type" : "string",
+          "description" : "security configuration for enterprise deployment",
+          "default" : "SASL_SSL"
+        },
+        "schema.registry.url" : {
+          "type" : "string",
+          "description" : "Schema registry url",
+          "default" : "http://localhost:8081"
+        },
+        "enable.auto.commit" : {
+          "type" : "boolean",
+          "description" : "As the control pane or API to access admin endpoint for commit, this value should be false."
+        },
+        "ssl.truststore.location" : {
+          "type" : "string",
+          "description" : "SSL truststore location for secure communication",
+          "default" : "/config/client.truststore"
+        },
+        "basic.auth.user.info" : {
+          "type" : "string",
+          "description" : "basic authentication user:pass for the schema registry",
+          "default" : "${kafka-consumer.username:username}:${KAFKA_CONSUMER_PASSWORD:password}"
+        },
+        "sasl.mechanism" : {
+          "type" : "string",
+          "description" : "SASL mechanism for authentication",
+          "default" : "PLAIN"
+        },
+        "sasl.jaas.config" : {
+          "type" : "string",
+          "description" : "SASL JAAS configuration for authentication",
+          "default" : "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-consumer.username:username}\" password=\"${KAFKA_CONSUMER_PASSWORD:password}\";"
+        },
+        "fetch.max.bytes" : {
+          "type" : "number",
+          "description" : "Max fetch size from Kafka cluster. Default 50mb is too big for cache consumption on the sidecar",
+          "format" : "float32"
+        },
+        "schema.registry.auto.register.schemas" : {
+          "type" : "boolean",
+          "description" : "Schema registry auto register schema indicator for streams application. If true, the first request will register the schema auto automatically."
+        },
+        "ssl.truststore.password" : {
+          "type" : "string",
+          "description" : "SSL truststore password for secure communication",
+          "default" : "password"
+        },
+        "auto.offset.reset" : {
+          "type" : "string",
+          "description" : "Kafka auto offset reset. Default to earliest",
+          "default" : "earliest"
+        },
+        "ssl.endpoint.identification.algorithm" : {
+          "type" : "string",
+          "description" : "SSL endpoint identification algorithm for secure communication. This is used to verify the hostname of the server against the certificate presented by the server.",
+          "default" : "also-name"
+        }
+      }
+    },
+    "deadLetterEnabled" : {
+      "type" : "boolean",
+      "description" : "Common configuration properties between active and reactive consumers\nIndicator if the dead letter topic is enabled."
+    },
+    "deadLetterTopicExt" : {
+      "type" : "string",
+      "description" : "The extension of the dead letter queue(topic) that is added to the original topic to form the dead letter topic",
+      "default" : ".dlq"
+    },
+    "auditEnabled" : {
+      "type" : "boolean",
+      "description" : "Indicator if the audit is enabled."
+    },
+    "auditTarget" : {
+      "type" : "string",
+      "description" : "Audit log destination topic or logfile. Default to topic"
+    },
+    "auditTopic" : {
+      "type" : "string",
+      "description" : "The consumer audit topic name if the auditTarget is topic",
+      "default" : "logfile"
+    },
+    "useNoWrappingAvro" : {
+      "type" : "boolean",
+      "description" : "Indicate if the NoWrapping Avro converter is used. This should be used for avro schema with data type in JSON."
+    },
+    "topic" : {
+      "type" : "string",
+      "description" : "Reactive Consumer Specific Configuration\nThe topic that is going to be consumed. For reactive consumer only in the kafka-sidecar.\nIf two or more topics are going to be subscribed, concat them with comma without space.\ntopic: sidecar-test",
+      "default" : "test1"
+    },
+    "keyFormat" : {
+      "type" : "string",
+      "description" : "the format of the key optional",
+      "default" : "jsonschema"
+    },
+    "valueFormat" : {
+      "type" : "string",
+      "description" : "the format of the value optional",
+      "default" : "jsonschema"
+    },
+    "waitPeriod" : {
+      "type" : "string",
+      "description" : "Waiting period in millisecond to poll another batch",
+      "default" : "100"
+    },
+    "backendApiHost" : {
+      "type" : "string",
+      "description" : "Backend API host",
+      "default" : "https://localhost:8444"
+    },
+    "backendApiPath" : {
+      "type" : "string",
+      "description" : "Backend API path",
+      "default" : "/kafka/records"
+    },
+    "maxConsumerThreads" : {
+      "type" : "number",
+      "description" : "Active Consumer Specific Configuration and the reactive consumer also depends on these properties\ndefault max consumer threads to 50.",
+      "format" : "float32"
+    },
+    "serverId" : {
+      "type" : "string",
+      "description" : "a unique id for the server instance, if running in a Kubernetes cluster, use the container id environment variable",
+      "default" : "id"
+    },
+    "requestMaxBytes" : {
+      "type" : "number",
+      "description" : "maximum number of bytes message keys and values returned. Default to 100*1024",
+      "format" : "float32"
+    },
+    "requestTimeoutMs" : {
+      "type" : "number",
+      "description" : "The maximum total time to wait for messages for a request if the maximum number of messages hs not yet been reached.",
+      "format" : "float32"
+    },
+    "fetchMinBytes" : {
+      "type" : "number",
+      "description" : "Minimum bytes of records to accumulate before returning a response to a consumer request. Default 10MB",
+      "format" : "float32"
+    },
+    "instanceTimeoutMs" : {
+      "type" : "number",
+      "description" : "amount of idle time before a consumer instance is automatically destroyed. If you use the ActiveConsumer and do not\nwant to recreate the consumer instance for every request, increase this number to a bigger value. Default to 5 minutes\nthat is in sync with max.poll.interval.ms default value. When this value is increased to a value greater than 5 minutes,\nthe max.poll.interval.ms will be automatically increased as these two values are related although completely different.",
+      "format" : "float32"
+    },
+    "iteratorBackoffMs" : {
+      "type" : "number",
+      "description" : "Amount of time to backoff when an iterator runs out of date.",
+      "format" : "float32"
+    },
+    "backendConnectionReset" : {
+      "type" : "boolean",
+      "description" : "In case of .NET application we realized , under load, response comes back for batch HTTP request however FinACK does not come until\nkeep alive time out occurs and sidecar consumer does not move forward. Hence we are adding this property so that we can explicitly close the connection\nwhen we receive the response and not wait for FinAck."
+    }
+  }
+}

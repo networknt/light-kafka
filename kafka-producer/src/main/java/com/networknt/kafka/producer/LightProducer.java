@@ -1,17 +1,11 @@
 package com.networknt.kafka.producer;
 
 import com.networknt.config.Config;
-import com.networknt.kafka.common.KafkaProducerConfig;
-import com.networknt.kafka.common.TransactionalKafkaException;
+import com.networknt.kafka.common.config.KafkaProducerConfig;
 import com.networknt.utility.ModuleRegistry;
-import io.undertow.server.HttpServerExchange;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * A generic Kafka producer that can handle the header propagation with open and close methods to be
