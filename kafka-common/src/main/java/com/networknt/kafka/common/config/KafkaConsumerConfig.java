@@ -40,7 +40,8 @@ public class KafkaConsumerConfig {
     public static final String INSTANCE_TIMEOUT_MS_KEY = "instanceTimeoutMs";
     public static final String ITERATOR_BACKOFF_MS_KEY = "iteratorBackoffMs";
     public static final String BACKEND_CONNECTION_RESET_KEY = "backendConnectionReset";
-
+    public static final String MAX_RETRIES_KEY = "maxRetries";
+    public static final String RETRY_DELAY_MS_KEY = "retryDelayMs";
 
     @ObjectField(
             configFieldName = PROPERTIES_KEY,
@@ -261,6 +262,27 @@ public class KafkaConsumerConfig {
     @JsonProperty(BACKEND_CONNECTION_RESET_KEY)
     private Boolean backendConnectionReset = false;
 
+    @NumberField(
+            configFieldName = MAX_RETRIES_KEY,
+            externalizedKeyName = MAX_RETRIES_KEY,
+            externalized = true,
+            defaultValue = "3",
+            description = "Max retries when exception occurs."
+    )
+    @JsonProperty(MAX_RETRIES_KEY)
+    private Integer maxRetries = 3;
+
+    @NumberField(
+            configFieldName = RETRY_DELAY_MS_KEY,
+            externalizedKeyName = RETRY_DELAY_MS_KEY,
+            externalized = true,
+            defaultValue = "1000",
+            description = "Delay milliseconds between retries."
+    )
+    @JsonProperty(RETRY_DELAY_MS_KEY)
+    private Integer retryDelayMs = 1000;
+
+
     private final Config config;
     private Map<String, Object> mappedConfig;
 
@@ -310,6 +332,8 @@ public class KafkaConsumerConfig {
         this.instanceTimeoutMs = getFromMappedConfigAsType(this.mappedConfig, mapper, INSTANCE_TIMEOUT_MS_KEY, Integer.class);
         this.iteratorBackoffMs = getFromMappedConfigAsType(this.mappedConfig, mapper, ITERATOR_BACKOFF_MS_KEY, Integer.class);
         this.backendConnectionReset = getFromMappedConfigAsType(this.mappedConfig, mapper, BACKEND_CONNECTION_RESET_KEY, Boolean.class);
+        this.maxRetries = getFromMappedConfigAsType(this.mappedConfig, mapper, MAX_RETRIES_KEY, Integer.class);
+        this.retryDelayMs = getFromMappedConfigAsType(this.mappedConfig, mapper, RETRY_DELAY_MS_KEY, Integer.class);
     }
 
     public Map<String, Object> getKafkaMapProperties() {
@@ -399,4 +423,8 @@ public class KafkaConsumerConfig {
     public Boolean getBackendConnectionReset() {
         return backendConnectionReset;
     }
+
+    public Integer getMaxRetries() { return maxRetries; }
+
+    public Integer getRetryDelayMs() { return retryDelayMs; }
 }
