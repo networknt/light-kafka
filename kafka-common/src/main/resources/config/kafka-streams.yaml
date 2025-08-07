@@ -54,3 +54,5 @@ auditEnabled: ${kafka-streams.auditEnabled:true}
 auditTarget: ${kafka-streams.auditTarget:logfile}
 # The consumer audit topic name if the auditTarget is topic
 auditTopic: ${kafka-streams.auditTopic:sidecar-audit}
+# The dead letter controller topic, one per environment.
+deadLetterControllerTopic: ${kafka-streams.deadLetterControllerTopic:dev.ent.all.kafka.replay.metadata.0}

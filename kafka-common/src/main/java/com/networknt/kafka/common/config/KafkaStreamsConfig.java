@@ -25,6 +25,7 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     private static final String AUDIT_ENABLED_KEY = "auditEnabled";
     private static final String AUDIT_TARGET_KEY = "auditTarget";
     private static final String AUDIT_TOPIC_KEY = "auditTopic";
+    private static final String DEAD_LETTER_CONTROLLER_TOPIC_KEY = "deadLetterControllerTopic";
 
 
     @ObjectField(
@@ -96,6 +97,15 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     @JsonProperty(AUDIT_TOPIC_KEY)
     private String auditTopic = "sidecar-audit";
 
+    @StringField(
+            configFieldName = DEAD_LETTER_CONTROLLER_TOPIC_KEY,
+            externalizedKeyName = DEAD_LETTER_CONTROLLER_TOPIC_KEY,
+            externalized = true,
+            defaultValue = "dev.ent.all.kafka.replay.metadata.0",
+            description = "The dead letter controller topic, one per environment."
+    )
+    @JsonProperty(DEAD_LETTER_CONTROLLER_TOPIC_KEY)
+    private String deadLetterControllerTopicKey = "dev.ent.all.kafka.replay.metadata.0";
 
 
     private final Config config;
@@ -153,6 +163,8 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     public String getAuditTopic() {
         return auditTopic;
     }
+
+    public String getDeadLetterControllerTopic() { return deadLetterControllerTopicKey; }
 
     public Boolean isDeadLetterEnabled() {
         return deadLetterEnabled;

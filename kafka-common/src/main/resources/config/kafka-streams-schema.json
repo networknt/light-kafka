@@ -1,7 +1,7 @@
 {
   "$schema" : "http://json-schema.org/draft-07/schema#",
   "type" : "object",
-  "required" : [ "properties", "cleanUp", "deadLetterEnabled", "deadLetterTopicExt", "auditEnabled", "auditTarget", "auditTopic" ],
+  "required" : [ "properties", "cleanUp", "deadLetterEnabled", "deadLetterTopicExt", "auditEnabled", "auditTarget", "auditTopic", "deadLetterControllerTopic" ],
   "properties" : {
     "properties" : {
       "type" : "object",
@@ -136,6 +136,11 @@
       "type" : "string",
       "description" : "The consumer audit topic name if the auditTarget is topic",
       "default" : "sidecar-audit"
+    },
+    "deadLetterControllerTopic" : {
+      "type" : "string",
+      "description" : "The dead letter controller topic, one per environment.",
+      "default" : "dev.ent.all.kafka.replay.metadata.0"
     }
   }
 }
