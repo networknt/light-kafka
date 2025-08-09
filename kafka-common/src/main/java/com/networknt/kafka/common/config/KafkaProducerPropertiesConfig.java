@@ -307,10 +307,10 @@ public class KafkaProducerPropertiesConfig {
             valueType = String.class
     )
     @JsonProperty(ADDITIONAL_KAFKA_PROPERTIES_KEY)
-    private Map<String, Object> additionalKafkaProperties = new HashMap<>();
+    private final Map<String, Object> additionalKafkaProperties = new HashMap<>();
 
     public Map<String, Object> getMergedProperties() {
-        Map<String, Object> properties = new HashMap<>(additionalKafkaProperties);
+        Map<String, Object> properties = new HashMap<>(additionalKafkaProperties == null ? new HashMap<>() : additionalKafkaProperties);
         addIfSet(properties, KEY_SERIALIZER_KEY, keySerializer);
         addIfSet(properties, VALUE_SERIALIZER_KEY, valueSerializer);
         addIfSet(properties, ACKS_KEY, acks);

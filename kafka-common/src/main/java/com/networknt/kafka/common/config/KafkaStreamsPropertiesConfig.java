@@ -239,10 +239,10 @@ public class KafkaStreamsPropertiesConfig {
             valueType = String.class
     )
     @JsonProperty(ADDITIONAL_KAFKA_PROPERTIES_KEY)
-    private Map<String, Object> additionalKafkaProperties = new HashMap<>();
+    private final Map<String, Object> additionalKafkaProperties = new HashMap<>();
 
     public Map<String, Object> getMergedProperties() {
-        Map<String, Object> mergedProperties = new HashMap<>(additionalKafkaProperties);
+        Map<String, Object> mergedProperties = new HashMap<>(additionalKafkaProperties == null ? new HashMap<>() : additionalKafkaProperties);
         addIfSet(mergedProperties, BOOTSTRAP_SERVERS_KEY, bootstrapServers);
         addIfSet(mergedProperties, KEY_DESERIALIZER_KEY, keyDeserializer);
         addIfSet(mergedProperties, VALUE_DESERIALIZER_KEY, valueDeserializer);

@@ -277,10 +277,10 @@ public class KafkaConsumerPropertiesConfig {
             valueType = String.class
     )
     @JsonProperty(ADDITIONAL_KAFKA_PROPERTIES_KEY)
-    private Map<String, Object> additionalKafkaProperties = new HashMap<>();
+    private final Map<String, Object> additionalKafkaProperties = new HashMap<>();
 
     public Map<String, Object> getMergedProperties() {
-        Map<String, Object> properties = new HashMap<>(additionalKafkaProperties);
+        Map<String, Object> properties = new HashMap<>(additionalKafkaProperties == null ? new HashMap<>() : additionalKafkaProperties);
         addIfSet(properties, BOOTSTRAP_SERVERS_KEY, bootstrapServers);
         addIfSet(properties, KEY_DESERIALIZER_KEY, keyDeserializer);
         addIfSet(properties, VALUE_DESERIALIZER_KEY, valueDeserializer);
