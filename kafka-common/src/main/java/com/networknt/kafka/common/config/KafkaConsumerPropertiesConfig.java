@@ -164,7 +164,7 @@ public class KafkaConsumerPropertiesConfig {
             configFieldName = SASL_JAAS_CONFIG_KEY,
             externalizedKeyName = SASL_JAAS_CONFIG_KEY,
             externalized = true,
-            defaultValue = "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-consumer.username:username}\" password=\"${KAFKA_CONSUMER_PASSWORD:password}\";",
+            defaultValue = "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-consumer.username:username}\\\" password=\\\"${kafka-consumer.password:password}\\\";",
             description = "SASL JAAS configuration for authentication"
     )
     @JsonProperty(SASL_JAAS_CONFIG_KEY)

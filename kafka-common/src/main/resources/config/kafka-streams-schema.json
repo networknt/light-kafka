@@ -82,7 +82,7 @@
         "sasl.jaas.config" : {
           "type" : "string",
           "description" : "SASL JAAS configuration for authentication",
-          "default" : "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-streams.username:username}\" password=\"${KAFKA_STREAMS_PASSWORD:password}\";"
+          "default" : "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-streams.username:username}\\\" password=\\\"${kafka-streams.password:password}\\\";"
         },
         "schema.registry.auto.register.schemas" : {
           "type" : "boolean",

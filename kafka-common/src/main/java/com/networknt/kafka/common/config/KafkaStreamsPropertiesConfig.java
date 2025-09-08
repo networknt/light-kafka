@@ -149,7 +149,7 @@ public class KafkaStreamsPropertiesConfig {
             configFieldName = SASL_JAAS_CONFIG_KEY,
             externalizedKeyName = SASL_JAAS_CONFIG_KEY,
             externalized = true,
-            defaultValue = "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-streams.username:username}\" password=\"${KAFKA_STREAMS_PASSWORD:password}\";",
+            defaultValue = "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-streams.username:username}\\\" password=\\\"${kafka-streams.password:password}\\\";",
             description = "SASL JAAS configuration for authentication"
     )
     @JsonProperty(SASL_JAAS_CONFIG_KEY)

@@ -56,7 +56,7 @@
         "sasl.jaas.config" : {
           "type" : "string",
           "description" : "SASL JAAS configuration for authentication",
-          "default" : "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-consumer.username:username}\" password=\"${KAFKA_CONSUMER_PASSWORD:password}\";"
+          "default" : "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-producer.username:username}\\\" password=\\\"${kafka-producer.password:password}\\\";"
         },
         "schema.registry.auto.register.schemas" : {
           "type" : "boolean",

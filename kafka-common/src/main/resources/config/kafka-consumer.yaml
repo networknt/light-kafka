@@ -26,7 +26,7 @@ properties:
   # SASL mechanism for authentication
   sasl.mechanism: ${kafka-consumer.sasl.mechanism:PLAIN}
   # SASL JAAS configuration for authentication
-  sasl.jaas.config: ${kafka-consumer.sasl.jaas.config:org.apache.kafka.common.security.plain.PlainLoginModule required username="${kafka-consumer.username:username}" password="${KAFKA_CONSUMER_PASSWORD:password}";}
+  sasl.jaas.config: ${kafka-consumer.sasl.jaas.config:org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-consumer.username:username}\" password=\"${kafka-consumer.password:password}\";}
   # SSL truststore location for secure communication
   ssl.truststore.location: ${kafka-consumer.ssl.truststore.location:/config/client.truststore}
   # SSL truststore password for secure communication
