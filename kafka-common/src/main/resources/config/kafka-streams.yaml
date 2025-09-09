@@ -23,7 +23,7 @@ properties:
   # SASL mechanism for authentication
   sasl.mechanism: ${kafka-streams.sasl.mechanism:PLAIN}
   # SASL JAAS configuration for authentication
-  sasl.jaas.config: ${kafka-streams.sasl.jaas.config:org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-streams.username:username}\" password=\"${kafka-streams.password:password}\";}
+  sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-streams.username:''}\" password=\"${kafka-streams.password:''}\";"
   # SSL truststore location for secure communication
   ssl.truststore.location: ${kafka-streams.ssl.truststore.location:/config/client.truststore}
   # SSL truststore password for secure communication
