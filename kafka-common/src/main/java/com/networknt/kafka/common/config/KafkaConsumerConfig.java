@@ -57,7 +57,6 @@ public class KafkaConsumerConfig {
     @BooleanField(
             configFieldName = DEAD_LETTER_ENABLED_KEY,
             externalizedKeyName = DEAD_LETTER_ENABLED_KEY,
-            externalized = true,
             defaultValue = "true",
             description = "Common configuration properties between active and reactive consumers\n" +
                     "Indicator if the dead letter topic is enabled."
@@ -68,7 +67,6 @@ public class KafkaConsumerConfig {
     @StringField(
             configFieldName = DEAD_LETTER_TOPIC_EXT_KEY,
             externalizedKeyName = DEAD_LETTER_TOPIC_EXT_KEY,
-            externalized = true,
             defaultValue = ".dlq",
             description = "The extension of the dead letter queue(topic) that is added to the original topic to form the dead letter topic"
     )
@@ -78,7 +76,6 @@ public class KafkaConsumerConfig {
     @BooleanField(
             configFieldName = AUDIT_ENABLED_KEY,
             externalizedKeyName = AUDIT_ENABLED_KEY,
-            externalized = true,
             defaultValue = "true",
             description = "Indicator if the audit is enabled."
     )
@@ -88,7 +85,6 @@ public class KafkaConsumerConfig {
     @StringField(
             configFieldName = AUDIT_TARGET_KEY,
             externalizedKeyName = AUDIT_TARGET_KEY,
-            externalized = true,
             defaultValue = "",
             description = "Audit log destination topic or logfile. Default to topic"
     )
@@ -98,7 +94,6 @@ public class KafkaConsumerConfig {
     @StringField(
             configFieldName = AUDIT_TOPIC_KEY,
             externalizedKeyName = AUDIT_TOPIC_KEY,
-            externalized = true,
             defaultValue = "logfile",
             description = "The consumer audit topic name if the auditTarget is topic"
     )
@@ -108,7 +103,6 @@ public class KafkaConsumerConfig {
     @BooleanField(
             configFieldName = USE_NO_WRAPPING_AVRO_KEY,
             externalizedKeyName = USE_NO_WRAPPING_AVRO_KEY,
-            externalized = true,
             defaultValue = "false",
             description = "Indicate if the NoWrapping Avro converter is used. This should be used for avro schema with data type in JSON."
     )
@@ -118,7 +112,6 @@ public class KafkaConsumerConfig {
     @StringField(
             configFieldName = TOPIC_KEY,
             externalizedKeyName = TOPIC_KEY,
-            externalized = true,
             defaultValue = "test1",
             description = "Reactive Consumer Specific Configuration\n" +
                     "The topic that is going to be consumed. For reactive consumer only in the kafka-sidecar.\n" +
@@ -131,7 +124,6 @@ public class KafkaConsumerConfig {
     @StringField(
             configFieldName = KEY_FORMAT_KEY,
             externalizedKeyName = KEY_FORMAT_KEY,
-            externalized = true,
             defaultValue = "jsonschema",
             description = "the format of the key optional"
     )
@@ -141,7 +133,6 @@ public class KafkaConsumerConfig {
     @StringField(
             configFieldName = VALUE_FORMAT_KEY,
             externalizedKeyName = VALUE_FORMAT_KEY,
-            externalized = true,
             defaultValue = "jsonschema",
             description = "the format of the value optional"
     )
@@ -151,7 +142,6 @@ public class KafkaConsumerConfig {
     @StringField(
             configFieldName = WAIT_PERIOD_KEY,
             externalizedKeyName = WAIT_PERIOD_KEY,
-            externalized = true,
             defaultValue = "100",
             description = "Waiting period in millisecond to poll another batch"
     )
@@ -161,7 +151,6 @@ public class KafkaConsumerConfig {
     @StringField(
             configFieldName = BACKEND_API_HOST_KEY,
             externalizedKeyName = BACKEND_API_HOST_KEY,
-            externalized = true,
             defaultValue = "https://localhost:8444",
             description = "Backend API host"
     )
@@ -171,7 +160,6 @@ public class KafkaConsumerConfig {
     @StringField(
             configFieldName = BACKEND_API_PATH_KEY,
             externalizedKeyName = BACKEND_API_PATH_KEY,
-            externalized = true,
             defaultValue = "/kafka/records",
             description = "Backend API path"
     )
@@ -181,7 +169,6 @@ public class KafkaConsumerConfig {
     @NumberField(
             configFieldName = MAX_CONSUMER_THREADS_KEY,
             externalizedKeyName = MAX_CONSUMER_THREADS_KEY,
-            externalized = true,
             defaultValue = "50",
             description = "Active Consumer Specific Configuration and the reactive consumer also depends on these properties\n" +
                     "default max consumer threads to 50."
@@ -192,7 +179,6 @@ public class KafkaConsumerConfig {
     @StringField(
             configFieldName = SERVER_ID_KEY,
             externalizedKeyName = SERVER_ID_KEY,
-            externalized = true,
             defaultValue = "id",
             description = "a unique id for the server instance, if running in a Kubernetes cluster, use the container id environment variable"
     )
@@ -202,7 +188,6 @@ public class KafkaConsumerConfig {
     @NumberField(
             configFieldName = REQUEST_MAX_BYTES_KEY,
             externalizedKeyName = REQUEST_MAX_BYTES_KEY,
-            externalized = true,
             defaultValue = "102400",
             description = "maximum number of bytes message keys and values returned. Default to 100*1024"
     )
@@ -212,7 +197,6 @@ public class KafkaConsumerConfig {
     @NumberField(
             configFieldName = REQUEST_TIMEOUT_MS_KEY,
             externalizedKeyName = REQUEST_TIMEOUT_MS_KEY,
-            externalized = true,
             defaultValue = "1000",
             description = "The maximum total time to wait for messages for a request if the maximum number of messages hs not yet been reached."
     )
@@ -222,7 +206,6 @@ public class KafkaConsumerConfig {
     @NumberField(
             configFieldName = FETCH_MIN_BYTES_KEY,
             externalizedKeyName = FETCH_MIN_BYTES_KEY,
-            externalized = true,
             defaultValue = "-1",
             description = "Minimum bytes of records to accumulate before returning a response to a consumer request. Default 10MB"
     )
@@ -232,7 +215,6 @@ public class KafkaConsumerConfig {
     @NumberField(
             configFieldName = INSTANCE_TIMEOUT_MS_KEY,
             externalizedKeyName = INSTANCE_TIMEOUT_MS_KEY,
-            externalized = true,
             defaultValue = "300000",
             description = "amount of idle time before a consumer instance is automatically destroyed. If you use the ActiveConsumer and do not\n" +
                     "want to recreate the consumer instance for every request, increase this number to a bigger value. Default to 5 minutes\n" +
@@ -245,7 +227,6 @@ public class KafkaConsumerConfig {
     @NumberField(
             configFieldName = ITERATOR_BACKOFF_MS_KEY,
             externalizedKeyName = ITERATOR_BACKOFF_MS_KEY,
-            externalized = true,
             defaultValue = "50",
             description = "Amount of time to backoff when an iterator runs out of date."
     )
@@ -255,7 +236,6 @@ public class KafkaConsumerConfig {
     @BooleanField(
             configFieldName = BACKEND_CONNECTION_RESET_KEY,
             externalizedKeyName = BACKEND_CONNECTION_RESET_KEY,
-            externalized = true,
             defaultValue = "false",
             description = "In case of .NET application we realized , under load, response comes back for batch HTTP request however FinACK does not come until\n" +
                     "keep alive time out occurs and sidecar consumer does not move forward. Hence we are adding this property so that we can explicitly close the connection\n" +
@@ -267,7 +247,6 @@ public class KafkaConsumerConfig {
     @NumberField(
             configFieldName = MAX_RETRIES_KEY,
             externalizedKeyName = MAX_RETRIES_KEY,
-            externalized = true,
             defaultValue = "3",
             description = "Max retries when exception occurs."
     )
@@ -277,7 +256,6 @@ public class KafkaConsumerConfig {
     @NumberField(
             configFieldName = RETRY_DELAY_MS_KEY,
             externalizedKeyName = RETRY_DELAY_MS_KEY,
-            externalized = true,
             defaultValue = "1000",
             description = "Delay milliseconds between retries."
     )

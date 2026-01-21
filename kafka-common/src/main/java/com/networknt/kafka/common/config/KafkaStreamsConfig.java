@@ -40,7 +40,6 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     @BooleanField(
             configFieldName = CLEAN_UP_KEY,
             externalizedKeyName = CLEAN_UP_KEY,
-            externalized = true,
             defaultValue = "false",
             description = "Only set to true right after the streams reset and start the server. Once the server is up, shutdown and change this to false and restart."
     )
@@ -49,7 +48,6 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     @BooleanField(
             configFieldName = DEAD_LETTER_ENABLED_KEY,
             externalizedKeyName = DEAD_LETTER_ENABLED_KEY,
-            externalized = true,
             defaultValue = "true",
             description = "Common configuration properties between active and reactive consumers\n" +
                     "Indicator if the dead letter topic is enabled."
@@ -60,7 +58,6 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     @StringField(
             configFieldName = DEAD_LETTER_TOPIC_EXT_KEY,
             externalizedKeyName = DEAD_LETTER_TOPIC_EXT_KEY,
-            externalized = true,
             defaultValue = ".dlq",
             description = "The extension of the dead letter queue(topic) that is added to the original topic to form the dead letter topic"
     )
@@ -70,7 +67,6 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     @BooleanField(
             configFieldName = AUDIT_ENABLED_KEY,
             externalizedKeyName = AUDIT_ENABLED_KEY,
-            externalized = true,
             defaultValue = "true",
             description = "If audit is enabled, the producer will send the audit message to the audit topic."
     )
@@ -80,7 +76,6 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     @StringField(
             configFieldName = AUDIT_TARGET_KEY,
             externalizedKeyName = AUDIT_TARGET_KEY,
-            externalized = true,
             defaultValue = "logfile",
             description = "Audit log destination topic or logfile. Default to topic"
     )
@@ -90,7 +85,6 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     @StringField(
             configFieldName = AUDIT_TOPIC_KEY,
             externalizedKeyName = AUDIT_TOPIC_KEY,
-            externalized = true,
             defaultValue = "sidecar-audit",
             description = "The consumer audit topic name if the auditTarget is topic"
     )
@@ -100,7 +94,6 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     @StringField(
             configFieldName = DEAD_LETTER_CONTROLLER_TOPIC_KEY,
             externalizedKeyName = DEAD_LETTER_CONTROLLER_TOPIC_KEY,
-            externalized = true,
             defaultValue = "dev.ent.all.kafka.replay.metadata.0",
             description = "The dead letter controller topic, one per environment."
     )

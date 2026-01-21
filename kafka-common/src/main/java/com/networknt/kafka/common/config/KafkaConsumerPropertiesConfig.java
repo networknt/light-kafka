@@ -41,7 +41,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = BOOTSTRAP_SERVERS_KEY,
             externalizedKeyName = BOOTSTRAP_SERVERS_KEY,
-            externalized = true,
             defaultValue = "localhost:9092",
             description = "Kafka bootstrap servers. Default to localhost:9092"
     )
@@ -51,7 +50,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = KEY_DESERIALIZER_KEY,
             externalizedKeyName = KEY_DESERIALIZER_KEY,
-            externalized = true,
             defaultValue = "org.apache.kafka.common.serialization.ByteArrayDeserializer",
             description = "Consumer will use the schema for deserialization from byte array\n" +
                     "Kafka key deserializer. Default to ByteArrayDeserializer"
@@ -62,7 +60,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = VALUE_DESERIALIZER_KEY,
             externalizedKeyName = VALUE_DESERIALIZER_KEY,
-            externalized = true,
             defaultValue = "org.apache.kafka.common.serialization.ByteArrayDeserializer",
             description = "Kafka value deserializer. Default to ByteArrayDeserializer"
     )
@@ -72,7 +69,6 @@ public class KafkaConsumerPropertiesConfig {
     @BooleanField(
             configFieldName = ENABLE_AUTO_COMMIT_KEY,
             externalizedKeyName = ENABLE_AUTO_COMMIT_KEY,
-            externalized = true,
             defaultValue = "false",
             description = "As the control pane or API to access admin endpoint for commit, this value should be false."
     )
@@ -82,7 +78,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = AUTO_OFFSET_RESET_KEY,
             externalizedKeyName = AUTO_OFFSET_RESET_KEY,
-            externalized = true,
             defaultValue = "earliest",
             description = "Kafka auto offset reset. Default to earliest"
     )
@@ -92,7 +87,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = GROUP_ID_KEY,
             externalizedKeyName = GROUP_ID_KEY,
-            externalized = true,
             defaultValue = "group1",
             description = "Kafka consumer group id. Default to group1"
     )
@@ -102,7 +96,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = SCHEMA_REGISTRY_URL_KEY,
             externalizedKeyName = SCHEMA_REGISTRY_URL_KEY,
-            externalized = true,
             defaultValue = "http://localhost:8081",
             description = "Schema registry url"
     )
@@ -112,7 +105,6 @@ public class KafkaConsumerPropertiesConfig {
     @BooleanField(
             configFieldName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
             externalizedKeyName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
-            externalized = true,
             defaultValue = "true",
             description = "Schema registry auto register schema indicator for streams application. " +
                     "If true, the first request will register the schema auto automatically."
@@ -123,7 +115,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY,
             externalizedKeyName = SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY,
-            externalized = true,
             defaultValue = "/config/client.truststore",
             description = "Schema registry client truststore location, use the following two properties only if schema registry url is https."
     )
@@ -133,7 +124,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY,
             externalizedKeyName = SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY,
-            externalized = true,
             defaultValue = "password",
             description = "Schema registry client truststore password"
     )
@@ -143,7 +133,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = SECURITY_PROTOCOL_KEY,
             externalizedKeyName = SECURITY_PROTOCOL_KEY,
-            externalized = true,
             defaultValue = "SASL_SSL",
             description = "security configuration for enterprise deployment"
     )
@@ -153,7 +142,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = SASL_MECHANISM_KEY,
             externalizedKeyName = SASL_MECHANISM_KEY,
-            externalized = true,
             defaultValue = "PLAIN",
             description = "SASL mechanism for authentication"
     )
@@ -163,7 +151,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = SASL_JAAS_CONFIG_KEY,
             externalizedKeyName = SASL_JAAS_CONFIG_KEY,
-            externalized = true,
             defaultValue = "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-consumer.username:username}\\\" password=\\\"${kafka-consumer.password:password}\\\";",
             description = "SASL JAAS configuration for authentication"
     )
@@ -173,7 +160,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = SSL_TRUSTSTORE_LOCATION_KEY,
             externalizedKeyName = SSL_TRUSTSTORE_LOCATION_KEY,
-            externalized = true,
             defaultValue = "/config/client.truststore",
             description = "SSL truststore location for secure communication"
     )
@@ -183,7 +169,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = SSL_TRUSTSTORE_PASSWORD_KEY,
             externalizedKeyName = SSL_TRUSTSTORE_PASSWORD_KEY,
-            externalized = true,
             defaultValue = "password",
             description = "SSL truststore password for secure communication"
     )
@@ -193,7 +178,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY,
             externalizedKeyName = SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY,
-            externalized = true,
             defaultValue = "also-name",
             description = "SSL endpoint identification algorithm for secure communication. " +
                     "This is used to verify the hostname of the server against the certificate presented by the server."
@@ -204,7 +188,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = CLIENT_RACK_KEY,
             externalizedKeyName = CLIENT_RACK_KEY,
-            externalized = true,
             defaultValue = "rack1",
             description = "Client rack identifier for Kafka consumer. Default to rack1"
     )
@@ -215,7 +198,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = BASIC_AUTH_USER_INFO_KEY,
             externalizedKeyName = BASIC_AUTH_USER_INFO_KEY,
-            externalized = false,
             defaultValue = "${kafka-consumer.username:username}:${KAFKA_CONSUMER_PASSWORD:password}",
             description = "basic authentication user:pass for the schema registry"
     )
@@ -225,7 +207,6 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = BASIC_AUTH_CREDENTIALS_SOURCE_KEY,
             externalizedKeyName = BASIC_AUTH_CREDENTIALS_SOURCE_KEY,
-            externalized = true,
             defaultValue = "USER_INFO",
             description = "basic authentication credentials source for the schema registry. Default to USER_INFO"
     )
@@ -235,7 +216,6 @@ public class KafkaConsumerPropertiesConfig {
     @NumberField(
             configFieldName = FETCH_MAX_BYTES_KEY,
             externalizedKeyName = FETCH_MAX_BYTES_KEY,
-            externalized = true,
             defaultValue = "102400",
             description = "Max fetch size from Kafka cluster. Default 50mb is too big for cache consumption on the sidecar"
     )
@@ -245,7 +225,6 @@ public class KafkaConsumerPropertiesConfig {
     @NumberField(
             configFieldName = MAX_POLL_RECORDS_KEY,
             externalizedKeyName = MAX_POLL_RECORDS_KEY,
-            externalized = true,
             defaultValue = "100",
             description = "max poll records default is 500. Adjust it based on the size of the records to make sure each poll\n" +
                     "is similar to requestMaxBytes down below."
@@ -257,7 +236,6 @@ public class KafkaConsumerPropertiesConfig {
     @NumberField(
             configFieldName = MAX_PARTITION_FETCH_BYTES_KEY,
             externalizedKeyName = MAX_PARTITION_FETCH_BYTES_KEY,
-            externalized = true,
             defaultValue = "100",
             description = "The maximum amount of data per-partition the server will return. Records are fetched in batches by the consumer.\n" +
                     "If the first record batch in the first non-empty partition of the fetch is larger than this limit, the batch will still be returned to ensure that the consumer can make progress."
@@ -268,7 +246,6 @@ public class KafkaConsumerPropertiesConfig {
     @MapField(
             configFieldName = ADDITIONAL_KAFKA_PROPERTIES_KEY,
             externalizedKeyName = ADDITIONAL_KAFKA_PROPERTIES_KEY,
-            externalized = true,
             description = "Any additional kafka properties that are not defined in the schema can be added here.\n" +
                     "This is useful for custom configurations that are not part of the standard Kafka consumer properties.",
             additionalProperties = true,

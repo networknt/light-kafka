@@ -53,7 +53,6 @@ public class KafkaProducerConfig {
     @StringField(
             configFieldName = TOPIC_KEY,
             externalizedKeyName = TOPIC_KEY,
-            externalized = true,
             defaultValue = "portal-event",
             description = "The default topic for the producer. Only certain producer implementation will use it."
     )
@@ -63,7 +62,6 @@ public class KafkaProducerConfig {
     @StringField(
             configFieldName = KEY_FORMAT_KEY,
             externalizedKeyName = KEY_FORMAT_KEY,
-            externalized = true,
             defaultValue = "jsonschema",
             description = "Default key format if no schema for the topic value"
     )
@@ -73,7 +71,6 @@ public class KafkaProducerConfig {
     @StringField(
             configFieldName = VALUE_FORMAT_KEY,
             externalizedKeyName = VALUE_FORMAT_KEY,
-            externalized = true,
             defaultValue = "jsonschema",
             description = "Default value format if no schema for the topic value"
     )
@@ -83,7 +80,6 @@ public class KafkaProducerConfig {
     @BooleanField(
             configFieldName = INJECT_OPEN_TRACING_KEY,
             externalizedKeyName = INJECT_OPEN_TRACING_KEY,
-            externalized = true,
             defaultValue = "false",
             description = "If open tracing is enable. traceability, correlation and metrics should not be in the chain if opentracing is used."
     )
@@ -93,7 +89,6 @@ public class KafkaProducerConfig {
     @BooleanField(
             configFieldName = INJECT_CALLER_ID_KEY,
             externalizedKeyName = INJECT_CALLER_ID_KEY,
-            externalized = true,
             defaultValue = "false",
             description = "Inject serviceId as callerId into the http header for metrics to collect the caller. The serviceId is from server.yml"
     )
@@ -103,7 +98,6 @@ public class KafkaProducerConfig {
     @BooleanField(
             configFieldName = AUDIT_ENABLED_KEY,
             externalizedKeyName = AUDIT_ENABLED_KEY,
-            externalized = true,
             defaultValue = "true",
             description = "If audit is enabled, the producer will send the audit message to the audit topic."
     )
@@ -113,7 +107,6 @@ public class KafkaProducerConfig {
     @StringField(
             configFieldName = AUDIT_TARGET_KEY,
             externalizedKeyName = AUDIT_TARGET_KEY,
-            externalized = true,
             defaultValue = "logfile",
             description = "Audit log destination topic or logfile. Default to topic"
     )
@@ -123,7 +116,6 @@ public class KafkaProducerConfig {
     @StringField(
             configFieldName = AUDIT_TOPIC_KEY,
             externalizedKeyName = AUDIT_TOPIC_KEY,
-            externalized = true,
             defaultValue = "sidecar-audit",
             description = "The consumer audit topic name if the auditTarget is topic"
     )

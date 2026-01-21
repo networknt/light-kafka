@@ -38,7 +38,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = BOOTSTRAP_SERVERS_KEY,
             externalizedKeyName = BOOTSTRAP_SERVERS_KEY,
-            externalized = true,
             defaultValue = "localhost:9092",
             description = "Kafka bootstrap servers. Default to localhost:9092"
     )
@@ -48,7 +47,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = KEY_DESERIALIZER_KEY,
             externalizedKeyName = KEY_DESERIALIZER_KEY,
-            externalized = true,
             defaultValue = "org.apache.kafka.common.serialization.ByteArrayDeserializer",
             description = "Kafka key deserializer. Default to ByteArrayDeserializer"
     )
@@ -58,7 +56,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = VALUE_DESERIALIZER_KEY,
             externalizedKeyName = VALUE_DESERIALIZER_KEY,
-            externalized = true,
             defaultValue = "org.apache.kafka.common.serialization.ByteArrayDeserializer",
             description = "Kafka value deserializer. Default to ByteArrayDeserializer"
     )
@@ -68,7 +65,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = AUTO_OFFSET_RESET_KEY,
             externalizedKeyName = AUTO_OFFSET_RESET_KEY,
-            externalized = true,
             defaultValue = "earliest",
             description = "Kafka auto offset reset. Default to earliest"
     )
@@ -78,7 +74,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = APPLICATION_ID_KEY,
             externalizedKeyName = APPLICATION_ID_KEY,
-            externalized = true,
             defaultValue = "placeholder",
             description = "A unique application id for the Kafka streams app. You need to replace it or overwrite it in your code."
     )
@@ -88,7 +83,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = SCHEMA_REGISTRY_URL_KEY,
             externalizedKeyName = SCHEMA_REGISTRY_URL_KEY,
-            externalized = true,
             defaultValue = "http://localhost:8081",
             description = "SSchema registry url"
     )
@@ -98,7 +92,6 @@ public class KafkaStreamsPropertiesConfig {
     @BooleanField(
             configFieldName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
             externalizedKeyName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
-            externalized = true,
             defaultValue = "true",
             description = "Schema registry auto register schema indicator for streams application. If true, the first request will register the schema auto automatically."
     )
@@ -108,7 +101,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY,
             externalizedKeyName = SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY,
-            externalized = true,
             defaultValue = "/config/client.truststore",
             description = "Schema registry client truststore location, use the following two properties only if schema registry url is https."
     )
@@ -118,7 +110,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY,
             externalizedKeyName = SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY,
-            externalized = true,
             defaultValue = "password",
             description = "Schema registry client truststore password"
     )
@@ -128,7 +119,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = SECURITY_PROTOCOL_KEY,
             externalizedKeyName = SECURITY_PROTOCOL_KEY,
-            externalized = true,
             defaultValue = "SASL_SSL",
             description = "security configuration for enterprise deployment"
     )
@@ -138,7 +128,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = SASL_MECHANISM_KEY,
             externalizedKeyName = SASL_MECHANISM_KEY,
-            externalized = true,
             defaultValue = "PLAIN",
             description = "SASL mechanism for authentication"
     )
@@ -148,7 +137,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = SASL_JAAS_CONFIG_KEY,
             externalizedKeyName = SASL_JAAS_CONFIG_KEY,
-            externalized = true,
             defaultValue = "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-streams.username:username}\\\" password=\\\"${kafka-streams.password:password}\\\";",
             description = "SASL JAAS configuration for authentication"
     )
@@ -158,7 +146,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = SSL_TRUSTSTORE_LOCATION_KEY,
             externalizedKeyName = SSL_TRUSTSTORE_LOCATION_KEY,
-            externalized = true,
             defaultValue = "/config/client.truststore",
             description = "SSL truststore location for secure communication"
     )
@@ -168,7 +155,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = SSL_TRUSTSTORE_PASSWORD_KEY,
             externalizedKeyName = SSL_TRUSTSTORE_PASSWORD_KEY,
-            externalized = true,
             defaultValue = "password",
             description = "SSL truststore password for secure communication"
     )
@@ -178,7 +164,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY,
             externalizedKeyName = SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY,
-            externalized = true,
             defaultValue = "also-name",
             description = "SSL endpoint identification algorithm for secure communication. " +
                     "This is used to verify the hostname of the server against the certificate presented by the server."
@@ -189,7 +174,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = CLIENT_RACK_KEY,
             externalizedKeyName = CLIENT_RACK_KEY,
-            externalized = true,
             defaultValue = "rack1",
             description = "Client rack identifier for Kafka streams. Default to rack1"
     )
@@ -200,7 +184,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = BASIC_AUTH_USER_INFO_KEY,
             externalizedKeyName = BASIC_AUTH_USER_INFO_KEY,
-            externalized = false,
             defaultValue = "${kafka-streams.username:username}:${KAFKA_STREAMS_PASSWORD:password}",
             description = "basic authentication user:pass for the schema registry"
     )
@@ -210,7 +193,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = BASIC_AUTH_CREDENTIALS_SOURCE_KEY,
             externalizedKeyName = BASIC_AUTH_CREDENTIALS_SOURCE_KEY,
-            externalized = true,
             defaultValue = "USER_INFO",
             description = "basic authentication credentials source for the schema registry. Default to USER_INFO"
     )
@@ -220,7 +202,6 @@ public class KafkaStreamsPropertiesConfig {
     @StringField(
             configFieldName = STATE_DIR_KEY,
             externalizedKeyName = STATE_DIR_KEY,
-            externalized = true,
             defaultValue = "/tmp",
             description = "The directory where Kafka Streams state is stored. Default to /tmp"
     )
@@ -230,7 +211,6 @@ public class KafkaStreamsPropertiesConfig {
     @MapField(
             configFieldName = ADDITIONAL_KAFKA_PROPERTIES_KEY,
             externalizedKeyName = ADDITIONAL_KAFKA_PROPERTIES_KEY,
-            externalized = true,
             description = "Any additional properties that are not defined in the schema can be added here.\n" +
                     "This is useful for custom configurations that are not part of the standard Kafka streams properties.",
             additionalProperties = true,

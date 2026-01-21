@@ -45,7 +45,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = KEY_SERIALIZER_KEY,
             externalizedKeyName = KEY_SERIALIZER_KEY,
-            externalized = true,
             defaultValue = "org.apache.kafka.common.serialization.ByteArraySerializer",
             description = "Kafka key serializer. Default to ByteArraySerializer"
     )
@@ -55,7 +54,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = VALUE_SERIALIZER_KEY,
             externalizedKeyName = VALUE_SERIALIZER_KEY,
-            externalized = true,
             defaultValue = "org.apache.kafka.common.serialization.ByteArraySerializer",
             description = "Kafka value serializer. Default to ByteArraySerializer"
     )
@@ -65,7 +63,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = ACKS_KEY,
             externalizedKeyName = ACKS_KEY,
-            externalized = true,
             defaultValue = "all",
             description = "This value is a string, if using 1 or 0, you must use '1' or '0' as the value"
     )
@@ -75,7 +72,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = BOOTSTRAP_SERVERS_KEY,
             externalizedKeyName = BOOTSTRAP_SERVERS_KEY,
-            externalized = true,
             defaultValue = "localhost:9092",
             description = "Kafka bootstrap servers. Default to localhost:9092"
     )
@@ -85,7 +81,6 @@ public class KafkaProducerPropertiesConfig {
     @NumberField(
             configFieldName = BUFFER_MEMORY_KEY,
             externalizedKeyName = BUFFER_MEMORY_KEY,
-            externalized = true,
             defaultValue = "33554432", // 32MB
             description = "Buffer size for unsent records. Default to 33554432"
     )
@@ -95,7 +90,6 @@ public class KafkaProducerPropertiesConfig {
     @NumberField(
             configFieldName = RETRIES_KEY,
             externalizedKeyName = RETRIES_KEY,
-            externalized = true,
             defaultValue = "3",
             description = "Retry times for producer. Default to 3"
     )
@@ -105,7 +99,6 @@ public class KafkaProducerPropertiesConfig {
     @NumberField(
             configFieldName = BATCH_SIZE_KEY,
             externalizedKeyName = BATCH_SIZE_KEY,
-            externalized = true,
             defaultValue = "16384",
             description = "Batch size. Default to 16KB"
     )
@@ -115,7 +108,6 @@ public class KafkaProducerPropertiesConfig {
     @NumberField(
             configFieldName = LINGER_MS_KEY,
             externalizedKeyName = LINGER_MS_KEY,
-            externalized = true,
             defaultValue = "1",
             description = "Linger time. Default to 1ms"
     )
@@ -125,7 +117,6 @@ public class KafkaProducerPropertiesConfig {
     @NumberField(
             configFieldName = MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION_KEY,
             externalizedKeyName = MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION_KEY,
-            externalized = true,
             defaultValue = "5",
             description = "max in-flight requests per connection. Default to 5"
     )
@@ -135,7 +126,6 @@ public class KafkaProducerPropertiesConfig {
     @BooleanField(
             configFieldName = ENABLE_IDEMPOTENCE_KEY,
             externalizedKeyName = ENABLE_IDEMPOTENCE_KEY,
-            externalized = true,
             defaultValue = "false",
             description = "enable idempotence. Default to true"
     )
@@ -145,7 +135,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = SCHEMA_REGISTRY_URL_KEY,
             externalizedKeyName = SCHEMA_REGISTRY_URL_KEY,
-            externalized = true,
             defaultValue = "http://localhost:8081",
             description = "Confluent schema registry url"
     )
@@ -155,7 +144,6 @@ public class KafkaProducerPropertiesConfig {
     @NumberField(
             configFieldName = SCHEMA_REGISTRY_CACHE_KEY,
             externalizedKeyName = SCHEMA_REGISTRY_CACHE_KEY,
-            externalized = true,
             defaultValue = "100",
             description = "Schema registry identity cache size"
     )
@@ -165,7 +153,6 @@ public class KafkaProducerPropertiesConfig {
     @BooleanField(
             configFieldName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
             externalizedKeyName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
-            externalized = true,
             defaultValue = "true",
             description = "Schema registry auto register schema indicator for streams application.\n" +
                     "If true, the first request will register the schema auto automatically."
@@ -176,7 +163,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY,
             externalizedKeyName = SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY,
-            externalized = true,
             defaultValue = "/config/client.truststore",
             description = "Schema registry client truststore location, use the following two properties only if schema registry url is https."
     )
@@ -186,7 +172,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY,
             externalizedKeyName = SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY,
-            externalized = true,
             defaultValue = "password",
             description = "Schema registry client truststore password"
     )
@@ -196,7 +181,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = SECURITY_PROTOCOL_KEY,
             externalizedKeyName = SECURITY_PROTOCOL_KEY,
-            externalized = true,
             defaultValue = "SASL_SSL",
             description = "security configuration for enterprise deployment"
     )
@@ -206,7 +190,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = SASL_MECHANISM_KEY,
             externalizedKeyName = SASL_MECHANISM_KEY,
-            externalized = true,
             defaultValue = "PLAIN",
             description = "SASL mechanism for authentication"
     )
@@ -216,7 +199,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = SASL_JAAS_CONFIG_KEY,
             externalizedKeyName = SASL_JAAS_CONFIG_KEY,
-            externalized = true,
             defaultValue = "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-producer.username:username}\\\" password=\\\"${kafka-producer.password:password}\\\";",
             description = "SASL JAAS configuration for authentication"
     )
@@ -226,7 +208,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = SSL_TRUSTSTORE_LOCATION_KEY,
             externalizedKeyName = SSL_TRUSTSTORE_LOCATION_KEY,
-            externalized = true,
             defaultValue = "/config/client.truststore",
             description = "SSL truststore location for secure communication"
     )
@@ -236,7 +217,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = SSL_TRUSTSTORE_PASSWORD_KEY,
             externalizedKeyName = SSL_TRUSTSTORE_PASSWORD_KEY,
-            externalized = true,
             defaultValue = "password",
             description = "SSL truststore password for secure communication"
     )
@@ -246,7 +226,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY,
             externalizedKeyName = SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY,
-            externalized = true,
             defaultValue = "also-name",
             description = "SSL endpoint identification algorithm for secure communication. " +
                     "This is used to verify the hostname of the server against the certificate presented by the server."
@@ -257,7 +236,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = CLIENT_RACK_KEY,
             externalizedKeyName = CLIENT_RACK_KEY,
-            externalized = true,
             defaultValue = "rack1",
             description = "Client rack identifier for Kafka producer. Default to rack1"
     )
@@ -268,7 +246,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = BASIC_AUTH_USER_INFO_KEY,
             externalizedKeyName = BASIC_AUTH_USER_INFO_KEY,
-            externalized = false,
             defaultValue = "${kafka-producer.username:username}:${KAFKA_PRODUCER_PASSWORD:password}",
             description = "basic authentication user:pass for the schema registry"
     )
@@ -278,7 +255,6 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = BASIC_AUTH_CREDENTIALS_SOURCE_KEY,
             externalizedKeyName = BASIC_AUTH_CREDENTIALS_SOURCE_KEY,
-            externalized = true,
             defaultValue = "USER_INFO",
             description = "basic authentication credentials source for the schema registry. Default to USER_INFO"
     )
@@ -288,7 +264,6 @@ public class KafkaProducerPropertiesConfig {
     @NumberField(
             configFieldName = MAX_REQUEST_SIZE_KEY,
             externalizedKeyName = MAX_REQUEST_SIZE_KEY,
-            externalized = true,
             defaultValue = "1048576",
             description = "If you have message that is bigger than 1 MB to produce, increase this value."
     )
@@ -298,7 +273,6 @@ public class KafkaProducerPropertiesConfig {
     @MapField(
             configFieldName = ADDITIONAL_KAFKA_PROPERTIES_KEY,
             externalizedKeyName = ADDITIONAL_KAFKA_PROPERTIES_KEY,
-            externalized = true,
             description = "Any additional properties that are not defined in the schema can be added here.\n" +
                           "This is useful for custom configurations that are not part of the standard Kafka producer properties.",
             additionalProperties = true,
