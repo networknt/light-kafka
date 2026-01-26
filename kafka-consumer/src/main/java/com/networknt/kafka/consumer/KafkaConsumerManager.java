@@ -16,14 +16,13 @@
 package com.networknt.kafka.consumer;
 
 import com.networknt.client.Http2Client;
-import com.networknt.config.Config;
 import com.networknt.config.JsonMapper;
 import com.networknt.exception.FrameworkException;
 import com.networknt.kafka.common.config.KafkaConsumerConfig;
 import com.networknt.kafka.entity.*;
 import com.networknt.status.Status;
 import com.networknt.utility.Constants;
-import com.networknt.utility.ModuleRegistry;
+import com.networknt.utility.Constants;
 import com.networknt.utility.StringUtils;
 import io.undertow.client.ClientConnection;
 import io.undertow.server.HttpServerExchange;
@@ -69,7 +68,7 @@ public class KafkaConsumerManager {
   private static final String CONSUMER_FORMAT_MISMATCH = "ERR12204";
   private static final String FAILED_TO_COMMIT_OFFSETS = "ERR12207";
 
-  private final KafkaConsumerConfig config = (KafkaConsumerConfig) Config.getInstance().getJsonObjectConfig(KafkaConsumerConfig.CONFIG_NAME, KafkaConsumerConfig.class);
+  private final KafkaConsumerConfig config;
   private final Clock clock = Clock.systemUTC();
 
   // KafkaConsumerState is generic, but we store them untyped here. This allows many operations to
@@ -90,12 +89,7 @@ public class KafkaConsumerManager {
   public static Http2Client client = Http2Client.getInstance();
 
   public KafkaConsumerManager(final KafkaConsumerConfig config) {
-    // register the module with the configuration properties.
-    List<String> masks = new ArrayList<>();
-    masks.add("basic.auth.user.info");
-    masks.add("sasl.jaas.config");
-    masks.add("schema.registry.ssl.truststore.password");
-    ModuleRegistry.registerModule(KafkaConsumerConfig.CONFIG_NAME, KafkaConsumerManager.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(KafkaConsumerConfig.CONFIG_NAME), masks);
+    this.config = config;
 
     // Cached thread pool
     int maxThreadCount = config.getMaxConsumerThreads();

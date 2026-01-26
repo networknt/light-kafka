@@ -1,8 +1,6 @@
 package com.networknt.kafka.producer;
 
-import com.networknt.config.Config;
 import com.networknt.kafka.common.config.KafkaProducerConfig;
-import com.networknt.utility.ModuleRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +30,5 @@ public interface LightProducer {
      *
      */
     default void registerModule() {
-        // register the module with the configuration properties.
-        List<String> masks = new ArrayList<>();
-        masks.add("basic.auth.user.info");
-        masks.add("sasl.jaas.config");
-        masks.add("schema.registry.ssl.truststore.password");
-        ModuleRegistry.registerModule(KafkaProducerConfig.CONFIG_NAME, LightProducer.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(KafkaProducerConfig.CONFIG_NAME), masks);
     }
 }

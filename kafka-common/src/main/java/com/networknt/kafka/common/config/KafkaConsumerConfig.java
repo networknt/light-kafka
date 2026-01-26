@@ -4,7 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.networknt.config.Config;
 import com.networknt.config.schema.*;
 
+import com.networknt.server.ModuleRegistry;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.networknt.kafka.common.config.KafkaConfigUtils.getFromMappedConfigAsType;
 
@@ -19,6 +24,7 @@ import static com.networknt.kafka.common.config.KafkaConfigUtils.getFromMappedCo
 public class KafkaConsumerConfig {
 
     public static final String CONFIG_NAME = "kafka-consumer";
+    private static final List<String> MASKS = Arrays.asList("basic.auth.user.info", "sasl.jaas.config", "schema.registry.ssl.truststore.password");
     public static final String AUDIT_TARGET_TOPIC = "topic";
     public static final String AUDIT_TARGET_LOGFILE = "logfile";
     public static final String PROPERTIES_KEY = "properties";
@@ -265,6 +271,7 @@ public class KafkaConsumerConfig {
 
     private final Config config;
     private Map<String, Object> mappedConfig;
+    private static final Map<String, KafkaConsumerConfig> instances = new ConcurrentHashMap<>();
 
     public KafkaConsumerConfig() {
         this(CONFIG_NAME);
@@ -277,16 +284,40 @@ public class KafkaConsumerConfig {
     }
 
     public static KafkaConsumerConfig load() {
-        return new KafkaConsumerConfig();
+        return load(CONFIG_NAME);
     }
 
     public static KafkaConsumerConfig load(final String configName) {
-        return new KafkaConsumerConfig(configName);
+        KafkaConsumerConfig instance = instances.get(configName);
+        if (instance != null) {
+            return instance;
+        }
+        synchronized (KafkaConsumerConfig.class) {
+            instance = instances.get(configName);
+            if (instance != null) {
+                return instance;
+            }
+            instance = new KafkaConsumerConfig(configName);
+            instances.put(configName, instance);
+            if (CONFIG_NAME.equals(configName)) {
+                ModuleRegistry.registerModule(CONFIG_NAME, KafkaConsumerConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), MASKS);
+            }
+            return instance;
+        }
     }
 
-    void reload() {
-        this.mappedConfig = this.config.getJsonMapConfigNoCache(CONFIG_NAME);
-        this.setConfigData();
+    public static void reload() {
+        reload(CONFIG_NAME);
+    }
+
+    public static void reload(String configName) {
+        synchronized (KafkaConsumerConfig.class) {
+            KafkaConsumerConfig instance = new KafkaConsumerConfig(configName);
+            instances.put(configName, instance);
+            if (CONFIG_NAME.equals(configName)) {
+                ModuleRegistry.registerModule(CONFIG_NAME, KafkaConsumerConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), MASKS);
+            }
+        }
     }
 
     private void setConfigData() {
