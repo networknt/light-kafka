@@ -269,8 +269,8 @@ public class KafkaConsumerConfig {
     private Integer retryDelayMs = 1000;
 
 
-    private final Config config;
     private Map<String, Object> mappedConfig;
+    private static KafkaConsumerConfig instance;
     private static final Map<String, KafkaConsumerConfig> instances = new ConcurrentHashMap<>();
 
     public KafkaConsumerConfig() {
@@ -278,8 +278,7 @@ public class KafkaConsumerConfig {
     }
 
     public KafkaConsumerConfig(final String configName) {
-        this.config = Config.getInstance();
-        this.mappedConfig = config.getJsonMapConfigNoCache(configName);
+        this.mappedConfig = Config.getInstance().getJsonMapConfig(configName);
         this.setConfigData();
     }
 
@@ -288,22 +287,23 @@ public class KafkaConsumerConfig {
     }
 
     public static KafkaConsumerConfig load(final String configName) {
-        KafkaConsumerConfig instance = instances.get(configName);
-        if (instance != null) {
-            return instance;
-        }
-        synchronized (KafkaConsumerConfig.class) {
-            instance = instances.get(configName);
-            if (instance != null) {
+        if (CONFIG_NAME.equals(configName)) {
+            Map<String, Object> mappedConfig = Config.getInstance().getJsonMapConfig(configName);
+            if (instance != null && instance.getMappedConfig() == mappedConfig) {
                 return instance;
             }
-            instance = new KafkaConsumerConfig(configName);
-            instances.put(configName, instance);
-            if (CONFIG_NAME.equals(configName)) {
+            synchronized (KafkaConsumerConfig.class) {
+                mappedConfig = Config.getInstance().getJsonMapConfig(configName);
+                if (instance != null && instance.getMappedConfig() == mappedConfig) {
+                    return instance;
+                }
+                instance = new KafkaConsumerConfig(configName);
+                instances.put(configName, instance);
                 ModuleRegistry.registerModule(CONFIG_NAME, KafkaConsumerConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), MASKS);
+                return instance;
             }
-            return instance;
         }
+        return new KafkaConsumerConfig(configName);
     }
 
     public static void reload() {
@@ -321,7 +321,7 @@ public class KafkaConsumerConfig {
     }
 
     private void setConfigData() {
-        final var mapper = this.config.getMapper();
+        final var mapper = Config.getInstance().getMapper();
         this.properties = getFromMappedConfigAsType(this.mappedConfig, mapper, PROPERTIES_KEY, KafkaConsumerPropertiesConfig.class);
         this.deadLetterEnabled = getFromMappedConfigAsType(this.mappedConfig, mapper, DEAD_LETTER_ENABLED_KEY, Boolean.class);
         this.deadLetterTopicExt = getFromMappedConfigAsType(this.mappedConfig, mapper, DEAD_LETTER_TOPIC_EXT_KEY, String.class);
@@ -345,6 +345,10 @@ public class KafkaConsumerConfig {
         this.backendConnectionReset = getFromMappedConfigAsType(this.mappedConfig, mapper, BACKEND_CONNECTION_RESET_KEY, Boolean.class);
         this.maxRetries = getFromMappedConfigAsType(this.mappedConfig, mapper, MAX_RETRIES_KEY, Integer.class);
         this.retryDelayMs = getFromMappedConfigAsType(this.mappedConfig, mapper, RETRY_DELAY_MS_KEY, Integer.class);
+    }
+
+    public Map<String, Object> getMappedConfig() {
+        return mappedConfig;
     }
 
     public Map<String, Object> getKafkaMapProperties() {
