@@ -29,13 +29,6 @@ public interface LightStreams {
     void close();
 
     /**
-     * Register the module to the Registry so that the config can be shown in the server/info
-     *
-     */
-    default void registerModule() {
-    }
-
-    /**
      * Get a value from a ReadOnlyKeyStore based on a given key.
      *
      * InvalidStateStoreException may be caused by a rebalance (transient),

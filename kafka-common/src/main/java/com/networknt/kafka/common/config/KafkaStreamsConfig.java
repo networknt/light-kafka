@@ -10,7 +10,6 @@ import com.networknt.server.ModuleRegistry;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @ConfigSchema(
         configName = "kafka-streams",
@@ -109,8 +108,7 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
 
 
     private Map<String, Object> mappedConfig;
-    private static KafkaStreamsConfig instance;
-    private static final Map<String, KafkaStreamsConfig> instances = new ConcurrentHashMap<>();
+    private static volatile KafkaStreamsConfig instance;
 
     public KafkaStreamsConfig() {
         this(CONFIG_NAME);
@@ -137,7 +135,6 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
                     return instance;
                 }
                 instance = new KafkaStreamsConfig(configName);
-                instances.put(configName, instance);
                 ModuleRegistry.registerModule(CONFIG_NAME, KafkaStreamsConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), MASKS);
                 return instance;
             }
@@ -150,10 +147,9 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     }
 
     public static void reload(String configName) {
-        synchronized (KafkaStreamsConfig.class) {
-            KafkaStreamsConfig instance = new KafkaStreamsConfig(configName);
-            instances.put(configName, instance);
-            if (CONFIG_NAME.equals(configName)) {
+        if (CONFIG_NAME.equals(configName)) {
+            synchronized (KafkaStreamsConfig.class) {
+                instance = new KafkaStreamsConfig(configName);
                 ModuleRegistry.registerModule(CONFIG_NAME, KafkaStreamsConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), MASKS);
             }
         }

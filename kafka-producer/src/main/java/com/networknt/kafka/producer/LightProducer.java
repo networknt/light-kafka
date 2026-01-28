@@ -1,10 +1,5 @@
 package com.networknt.kafka.producer;
 
-import com.networknt.kafka.common.config.KafkaProducerConfig;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * A generic Kafka producer that can handle the header propagation with open and close methods to be
  * called from the startup and shutdown hooks.

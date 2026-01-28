@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import com.networknt.server.ModuleRegistry;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.networknt.kafka.common.config.KafkaConfigUtils.getFromMappedConfigAsType;
 
@@ -126,8 +125,7 @@ public class KafkaProducerConfig {
     private String auditTopic = "sidecar-audit";
 
     private Map<String, Object> mappedConfig;
-    private static KafkaProducerConfig instance;
-    private static final Map<String, KafkaProducerConfig> instances = new ConcurrentHashMap<>();
+    private static volatile KafkaProducerConfig instance;
 
     public KafkaProducerConfig() {
         this(CONFIG_NAME);
@@ -154,7 +152,6 @@ public class KafkaProducerConfig {
                     return instance;
                 }
                 instance = new KafkaProducerConfig(configName);
-                instances.put(configName, instance);
                 ModuleRegistry.registerModule(CONFIG_NAME, KafkaProducerConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), null);
                 return instance;
             }
@@ -167,10 +164,9 @@ public class KafkaProducerConfig {
     }
 
     public static void reload(String configName) {
-        synchronized (KafkaProducerConfig.class) {
-            KafkaProducerConfig instance = new KafkaProducerConfig(configName);
-            instances.put(configName, instance);
-            if (CONFIG_NAME.equals(configName)) {
+        if (CONFIG_NAME.equals(configName)) {
+            synchronized (KafkaProducerConfig.class) {
+                instance = new KafkaProducerConfig(configName);
                 ModuleRegistry.registerModule(CONFIG_NAME, KafkaProducerConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), null);
             }
         }

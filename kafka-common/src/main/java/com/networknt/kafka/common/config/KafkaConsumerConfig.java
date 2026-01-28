@@ -9,7 +9,6 @@ import com.networknt.server.ModuleRegistry;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.networknt.kafka.common.config.KafkaConfigUtils.getFromMappedConfigAsType;
 
@@ -270,8 +269,7 @@ public class KafkaConsumerConfig {
 
 
     private Map<String, Object> mappedConfig;
-    private static KafkaConsumerConfig instance;
-    private static final Map<String, KafkaConsumerConfig> instances = new ConcurrentHashMap<>();
+    private static volatile KafkaConsumerConfig instance;
 
     public KafkaConsumerConfig() {
         this(CONFIG_NAME);
@@ -298,26 +296,11 @@ public class KafkaConsumerConfig {
                     return instance;
                 }
                 instance = new KafkaConsumerConfig(configName);
-                instances.put(configName, instance);
                 ModuleRegistry.registerModule(CONFIG_NAME, KafkaConsumerConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), MASKS);
                 return instance;
             }
         }
         return new KafkaConsumerConfig(configName);
-    }
-
-    public static void reload() {
-        reload(CONFIG_NAME);
-    }
-
-    public static void reload(String configName) {
-        synchronized (KafkaConsumerConfig.class) {
-            KafkaConsumerConfig instance = new KafkaConsumerConfig(configName);
-            instances.put(configName, instance);
-            if (CONFIG_NAME.equals(configName)) {
-                ModuleRegistry.registerModule(CONFIG_NAME, KafkaConsumerConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), MASKS);
-            }
-        }
     }
 
     private void setConfigData() {
