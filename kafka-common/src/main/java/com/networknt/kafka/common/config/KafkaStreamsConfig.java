@@ -5,6 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.networknt.config.Config;
 import com.networknt.config.schema.*;
 
+import com.networknt.server.ModuleRegistry;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @ConfigSchema(
@@ -17,6 +21,7 @@ import java.util.Map;
 )
 public class KafkaStreamsConfig extends KafkaConfigUtils {
     public static final String CONFIG_NAME = "kafka-streams";
+    private static final List<String> MASKS = Arrays.asList("basic.auth.user.info", "sasl.jaas.config", "schema.registry.ssl.truststore.password");
 
     public static final String PROPERTIES_KEY = "properties";
     public static final String CLEAN_UP_KEY = "cleanUp";
@@ -101,36 +106,63 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     private String deadLetterControllerTopicKey = "dev.ent.all.kafka.replay.metadata.0";
 
 
-    private final Config config;
+
     private Map<String, Object> mappedConfig;
+    private static volatile KafkaStreamsConfig instance;
 
     public KafkaStreamsConfig() {
         this(CONFIG_NAME);
     }
 
     public KafkaStreamsConfig(final String configName) {
-        this.config = Config.getInstance();
-        this.mappedConfig = config.getJsonMapConfigNoCache(configName);
+        this.mappedConfig = Config.getInstance().getJsonMapConfig(configName);
         this.setConfigData();
     }
 
     public static KafkaStreamsConfig load() {
-        return new KafkaStreamsConfig();
+        return load(CONFIG_NAME);
     }
 
     public static KafkaStreamsConfig load(final String configName) {
+        if (CONFIG_NAME.equals(configName)) {
+            Map<String, Object> mappedConfig = Config.getInstance().getJsonMapConfig(configName);
+            if (instance != null && instance.getMappedConfig() == mappedConfig) {
+                return instance;
+            }
+            synchronized (KafkaStreamsConfig.class) {
+                mappedConfig = Config.getInstance().getJsonMapConfig(configName);
+                if (instance != null && instance.getMappedConfig() == mappedConfig) {
+                    return instance;
+                }
+                instance = new KafkaStreamsConfig(configName);
+                ModuleRegistry.registerModule(CONFIG_NAME, KafkaStreamsConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), MASKS);
+                return instance;
+            }
+        }
         return new KafkaStreamsConfig(configName);
     }
 
-    void reload() {
-        this.mappedConfig = config.getJsonMapConfigNoCache(CONFIG_NAME);
-        this.setConfigData();
+    public static void reload() {
+        reload(CONFIG_NAME);
+    }
+
+    public static void reload(String configName) {
+        if (CONFIG_NAME.equals(configName)) {
+            synchronized (KafkaStreamsConfig.class) {
+                instance = new KafkaStreamsConfig(configName);
+                ModuleRegistry.registerModule(CONFIG_NAME, KafkaStreamsConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), MASKS);
+            }
+        }
     }
 
     private void setConfigData() {
-        final var mapper = config.getMapper();
+        final var mapper = Config.getInstance().getMapper();
         this.properties = getFromMappedConfigAsType(this.mappedConfig, mapper, PROPERTIES_KEY, KafkaStreamsPropertiesConfig.class);
         this.cleanUp = getFromMappedConfigAsType(this.mappedConfig, mapper, CLEAN_UP_KEY, Boolean.class);
+    }
+
+    public Map<String, Object> getMappedConfig() {
+        return mappedConfig;
     }
 
     public Map<String, Object> getKafkaMapProperties() {

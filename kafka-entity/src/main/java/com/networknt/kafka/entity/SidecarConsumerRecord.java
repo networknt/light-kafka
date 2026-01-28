@@ -10,7 +10,7 @@ import com.networknt.kafka.common.config.KafkaConsumerConfig;
 import java.util.*;
 
 public class SidecarConsumerRecord {
-    private final static KafkaConsumerConfig config = (KafkaConsumerConfig) Config.getInstance().getJsonObjectConfig(KafkaConsumerConfig.CONFIG_NAME, KafkaConsumerConfig.class);
+    private final static KafkaConsumerConfig config = KafkaConsumerConfig.load();
 
     private final String topic;
 

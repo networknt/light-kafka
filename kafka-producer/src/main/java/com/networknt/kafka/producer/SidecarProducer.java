@@ -51,7 +51,7 @@ import static java.util.Collections.singletonList;
  */
 public class SidecarProducer implements NativeLightProducer {
     static private final Logger logger = LoggerFactory.getLogger(SidecarProducer.class);
-    public static final KafkaProducerConfig config = new KafkaProducerConfig();
+    public static final KafkaProducerConfig config = KafkaProducerConfig.load();
     public static Map<String, Optional<RegisteredSchema>> schemaCache = new ConcurrentHashMap<>();
     private final static String FAILED_TO_GET_SCHEMA = "ERR12208";
     private SchemaManager schemaManager;
@@ -82,8 +82,6 @@ public class SidecarProducer implements NativeLightProducer {
         noSchemaRecordSerializer = new NoSchemaRecordSerializer(new HashMap<>());
         schemaRecordSerializer = new SchemaRecordSerializer(schemaRegistryClient, configs, configs, configs);
         schemaManager = new SchemaManagerImpl(schemaRegistryClient, new TopicNameStrategy());
-        // register the config to the module registry to output in server info.
-        registerModule();
     }
 
     @Override

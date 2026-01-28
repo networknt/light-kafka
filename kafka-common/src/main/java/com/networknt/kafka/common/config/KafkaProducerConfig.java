@@ -6,6 +6,8 @@ import com.networknt.config.schema.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.networknt.server.ModuleRegistry;
+
 import java.util.Map;
 
 import static com.networknt.kafka.common.config.KafkaConfigUtils.getFromMappedConfigAsType;
@@ -122,34 +124,56 @@ public class KafkaProducerConfig {
     @JsonProperty(AUDIT_TOPIC_KEY)
     private String auditTopic = "sidecar-audit";
 
-    private final Config config;
     private Map<String, Object> mappedConfig;
+    private static volatile KafkaProducerConfig instance;
 
     public KafkaProducerConfig() {
         this(CONFIG_NAME);
     }
 
     public KafkaProducerConfig(final String configName) {
-        this.config = Config.getInstance();
-        this.mappedConfig = this.config.getJsonMapConfigNoCache(configName);
+        this.mappedConfig = Config.getInstance().getJsonMapConfig(configName);
         this.setConfigData();
     }
 
     public static KafkaProducerConfig load() {
-        return new KafkaProducerConfig();
+        return load(CONFIG_NAME);
     }
 
     public static KafkaProducerConfig load(final String configName) {
+        if (CONFIG_NAME.equals(configName)) {
+            Map<String, Object> mappedConfig = Config.getInstance().getJsonMapConfig(configName);
+            if (instance != null && instance.getMappedConfig() == mappedConfig) {
+                return instance;
+            }
+            synchronized (KafkaProducerConfig.class) {
+                mappedConfig = Config.getInstance().getJsonMapConfig(configName);
+                if (instance != null && instance.getMappedConfig() == mappedConfig) {
+                    return instance;
+                }
+                instance = new KafkaProducerConfig(configName);
+                ModuleRegistry.registerModule(CONFIG_NAME, KafkaProducerConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), null);
+                return instance;
+            }
+        }
         return new KafkaProducerConfig(configName);
     }
 
-    void reload() {
-        this.mappedConfig = this.config.getJsonMapConfigNoCache(CONFIG_NAME);
-        this.setConfigData();
+    public static void reload() {
+        reload(CONFIG_NAME);
+    }
+
+    public static void reload(String configName) {
+        if (CONFIG_NAME.equals(configName)) {
+            synchronized (KafkaProducerConfig.class) {
+                instance = new KafkaProducerConfig(configName);
+                ModuleRegistry.registerModule(CONFIG_NAME, KafkaProducerConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), null);
+            }
+        }
     }
 
     private void setConfigData() {
-        final var mapper = this.config.getMapper();
+        final var mapper = Config.getInstance().getMapper();
         this.properties = getFromMappedConfigAsType(this.mappedConfig, mapper, PROPERTIES_KEY, KafkaProducerPropertiesConfig.class);
         this.topic = getFromMappedConfigAsType(this.mappedConfig,mapper, TOPIC_KEY, String.class);
         this.keyFormat = getFromMappedConfigAsType(this.mappedConfig,mapper, KEY_FORMAT_KEY, String.class);
@@ -159,6 +183,10 @@ public class KafkaProducerConfig {
         this.auditEnabled = getFromMappedConfigAsType(this.mappedConfig,mapper, AUDIT_ENABLED_KEY, Boolean.class);
         this.auditTarget = getFromMappedConfigAsType(this.mappedConfig,mapper, AUDIT_TARGET_KEY, String.class);
         this.auditTopic = getFromMappedConfigAsType(this.mappedConfig,mapper, AUDIT_TOPIC_KEY, String.class);
+    }
+
+    public Map<String, Object> getMappedConfig() {
+        return mappedConfig;
     }
 
     public KafkaProducerPropertiesConfig getProperties() {
