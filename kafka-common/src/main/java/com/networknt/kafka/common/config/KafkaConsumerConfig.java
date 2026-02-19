@@ -272,8 +272,15 @@ public class KafkaConsumerConfig {
             configFieldName = BATCH_ROLLBACK_THRESHOLD_KEY,
             externalizedKeyName = BATCH_ROLLBACK_THRESHOLD_KEY,
             defaultValue = "30",
-            description = "A batch rollback threshold defines the limit of errors or failed records allowed within a single batch operation\n" +
-                    "before the entire batch is reversed (rolled back) to its original state."
+            description = "The percentage threshold (0–100) of records in a batch that are allowed to fail before the entire batch is rolled back.\n" +
+                    "  - 0  = strict behavior: any failure rolls back the whole batch (nothing goes to DLQ for that batch).\n" +
+                    "  - 100 = permissive behavior: the entire batch can fail and be sent to the DLQ without rollback.\n" +
+                    "The default of 30 is a conservative compromise: up to 30% of records may be redirected to the DLQ\n" +
+                    "while still committing the successful records, which limits reprocessing of good messages but avoids\n" +
+                    "silently accepting mostly-bad batches. Adjust this value based on your tolerance for partial failures:\n" +
+                    "  - Lower values (e.g. 5–10) for highly critical data where most failures should block the batch.\n" +
+                    "  - Higher values (e.g. 50–80) for noisy or less critical topics where partial DLQing is acceptable.\n" +
+                    "NOTE: Values outside 0–100 are considered invalid and may be rejected by the application or lead to undefined behavior.\n"
     )
     @JsonProperty(BATCH_ROLLBACK_THRESHOLD_KEY)
     private Integer batchRollbackThreshold = 30;
