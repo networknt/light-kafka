@@ -49,7 +49,7 @@ public class KafkaConsumerConfig {
     public static final String BACKEND_CONNECTION_RESET_KEY = "backendConnectionReset";
     public static final String MAX_RETRIES_KEY = "maxRetries";
     public static final String RETRY_DELAY_MS_KEY = "retryDelayMs";
-    public static final String BATCH_ROLLBACK_THRESHOLD = "batchRollbackThreshold";
+    public static final String BATCH_ROLLBACK_THRESHOLD_KEY = "batchRollbackThreshold";
 
     @ObjectField(
             configFieldName = PROPERTIES_KEY,
@@ -268,7 +268,14 @@ public class KafkaConsumerConfig {
     @JsonProperty(RETRY_DELAY_MS_KEY)
     private Integer retryDelayMs = 1000;
 
-    @JsonProperty(BATCH_ROLLBACK_THRESHOLD)
+    @NumberField(
+            configFieldName = BATCH_ROLLBACK_THRESHOLD_KEY,
+            externalizedKeyName = BATCH_ROLLBACK_THRESHOLD_KEY,
+            defaultValue = "30",
+            description = "A batch rollback threshold defines the limit of errors or failed records allowed within a single batch operation\n" +
+                    "before the entire batch is reversed (rolled back) to its original state."
+    )
+    @JsonProperty(BATCH_ROLLBACK_THRESHOLD_KEY)
     private Integer batchRollbackThreshold = 30;
 
 
@@ -332,7 +339,7 @@ public class KafkaConsumerConfig {
         this.backendConnectionReset = getFromMappedConfigAsType(this.mappedConfig, mapper, BACKEND_CONNECTION_RESET_KEY, Boolean.class);
         this.maxRetries = getFromMappedConfigAsType(this.mappedConfig, mapper, MAX_RETRIES_KEY, Integer.class);
         this.retryDelayMs = getFromMappedConfigAsType(this.mappedConfig, mapper, RETRY_DELAY_MS_KEY, Integer.class);
-        this.batchRollbackThreshold = getFromMappedConfigAsType(this.mappedConfig, mapper, BATCH_ROLLBACK_THRESHOLD, Integer.class);
+        this.batchRollbackThreshold = getFromMappedConfigAsType(this.mappedConfig, mapper, BATCH_ROLLBACK_THRESHOLD_KEY, Integer.class);
     }
 
     public Map<String, Object> getMappedConfig() {
