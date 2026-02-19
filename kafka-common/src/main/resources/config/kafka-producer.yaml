@@ -35,8 +35,7 @@ properties:
   security.protocol: ${kafka-producer.security.protocol:SASL_SSL}
   # SASL mechanism for authentication
   sasl.mechanism: ${kafka-producer.sasl.mechanism:PLAIN}
-  # SASL JAAS configuration for authentication
-  sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-producer.username:''}\" password=\"${kafka-producer.password:''}\";"
+  sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-producer.username:username}\" password=\"${kafka-producer.password:password}\";
   # SSL truststore location for secure communication
   ssl.truststore.location: ${kafka-producer.ssl.truststore.location:/config/client.truststore}
   # SSL truststore password for secure communication
@@ -45,8 +44,7 @@ properties:
   ssl.endpoint.identification.algorithm: ${kafka-producer.ssl.endpoint.identification.algorithm:also-name}
   # Client rack identifier for Kafka producer. Default to rack1
   client.rack: ${kafka-producer.client.rack:rack1}
-  # basic authentication user:pass for the schema registry
-  basic.auth.user.info: ${kafka-producer.username:username}:${KAFKA_PRODUCER_PASSWORD:password}
+  basic.auth.user.info: ${kafka-producer.username:username}:${kafka-producer.password:password}
   # basic authentication credentials source for the schema registry. Default to USER_INFO
   basic.auth.credentials.source: ${kafka-producer.basic.auth.credentials.source:USER_INFO}
   # If you have message that is bigger than 1 MB to produce, increase this value.

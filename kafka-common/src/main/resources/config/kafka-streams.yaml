@@ -22,8 +22,7 @@ properties:
   security.protocol: ${kafka-streams.security.protocol:SASL_SSL}
   # SASL mechanism for authentication
   sasl.mechanism: ${kafka-streams.sasl.mechanism:PLAIN}
-  # SASL JAAS configuration for authentication
-  sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-streams.username:''}\" password=\"${kafka-streams.password:''}\";"
+  sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-streams.username:username}\" password=\"${kafka-streams.password:password}\";
   # SSL truststore location for secure communication
   ssl.truststore.location: ${kafka-streams.ssl.truststore.location:/config/client.truststore}
   # SSL truststore password for secure communication
@@ -32,8 +31,7 @@ properties:
   ssl.endpoint.identification.algorithm: ${kafka-streams.ssl.endpoint.identification.algorithm:also-name}
   # Client rack identifier for Kafka streams. Default to rack1
   client.rack: ${kafka-streams.client.rack:rack1}
-  # basic authentication user:pass for the schema registry
-  basic.auth.user.info: ${kafka-streams.username:username}:${KAFKA_STREAMS_PASSWORD:password}
+  basic.auth.user.info: ${kafka-streams.username:username}:${kafka-streams.password:password}
   # basic authentication credentials source for the schema registry. Default to USER_INFO
   basic.auth.credentials.source: ${kafka-streams.basic.auth.credentials.source:USER_INFO}
   # The directory where Kafka Streams state is stored. Default to /tmp

@@ -25,8 +25,7 @@ properties:
   security.protocol: ${kafka-consumer.security.protocol:SASL_SSL}
   # SASL mechanism for authentication
   sasl.mechanism: ${kafka-consumer.sasl.mechanism:PLAIN}
-  # SASL JAAS configuration for authentication
-  sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-consumer.username:''}\" password=\"${kafka-consumer.password:''}\";"
+  sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-consumer.username:username}\" password=\"${kafka-consumer.password:password}\";
   # SSL truststore location for secure communication
   ssl.truststore.location: ${kafka-consumer.ssl.truststore.location:/config/client.truststore}
   # SSL truststore password for secure communication
@@ -35,8 +34,7 @@ properties:
   ssl.endpoint.identification.algorithm: ${kafka-consumer.ssl.endpoint.identification.algorithm:also-name}
   # Client rack identifier for Kafka consumer. Default to rack1
   client.rack: ${kafka-consumer.client.rack:rack1}
-  # basic authentication user:pass for the schema registry
-  basic.auth.user.info: ${kafka-consumer.username:username}:${KAFKA_CONSUMER_PASSWORD:password}
+  basic.auth.user.info: ${kafka-consumer.username:username}:${kafka-consumer.password:password}
   # basic authentication credentials source for the schema registry. Default to USER_INFO
   basic.auth.credentials.source: ${kafka-consumer.basic.auth.credentials.source:USER_INFO}
   # Max fetch size from Kafka cluster. Default 50mb is too big for cache consumption on the sidecar

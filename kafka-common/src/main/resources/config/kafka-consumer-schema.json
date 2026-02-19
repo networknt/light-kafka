@@ -95,7 +95,7 @@
         "basic.auth.user.info" : {
           "type" : "string",
           "description" : "basic authentication user:pass for the schema registry",
-          "default" : "${kafka-consumer.username:username}:${KAFKA_CONSUMER_PASSWORD:password}"
+          "default" : "${kafka-consumer.username:username}:${kafka-consumer.password:password}"
         },
         "basic.auth.credentials.source" : {
           "type" : "string",

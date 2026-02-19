@@ -138,7 +138,8 @@ public class KafkaStreamsPropertiesConfig {
             configFieldName = SASL_JAAS_CONFIG_KEY,
             externalizedKeyName = SASL_JAAS_CONFIG_KEY,
             defaultValue = "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-streams.username:username}\\\" password=\\\"${kafka-streams.password:password}\\\";",
-            description = "SASL JAAS configuration for authentication"
+            description = "SASL JAAS configuration for authentication",
+            injection = false
     )
     @JsonProperty(SASL_JAAS_CONFIG_KEY)
     private String saslJaasConfig;
@@ -180,12 +181,12 @@ public class KafkaStreamsPropertiesConfig {
     @JsonProperty(CLIENT_RACK_KEY)
     private String clientRack;
 
-    // TODO - this is a hack way to support original configuration style. This should be updated when we move security out from root properties.
     @StringField(
             configFieldName = BASIC_AUTH_USER_INFO_KEY,
             externalizedKeyName = BASIC_AUTH_USER_INFO_KEY,
-            defaultValue = "${kafka-streams.username:username}:${KAFKA_STREAMS_PASSWORD:password}",
-            description = "basic authentication user:pass for the schema registry"
+            defaultValue = "${kafka-streams.username:username}:${kafka-streams.password:password}",
+            description = "basic authentication user:pass for the schema registry",
+            injection = false
     )
     @JsonProperty(BASIC_AUTH_USER_INFO_KEY)
     private String basicAuthUserInfo;

@@ -200,7 +200,8 @@ public class KafkaProducerPropertiesConfig {
             configFieldName = SASL_JAAS_CONFIG_KEY,
             externalizedKeyName = SASL_JAAS_CONFIG_KEY,
             defaultValue = "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-producer.username:username}\\\" password=\\\"${kafka-producer.password:password}\\\";",
-            description = "SASL JAAS configuration for authentication"
+            description = "SASL JAAS configuration for authentication",
+            injection = false
     )
     @JsonProperty(SASL_JAAS_CONFIG_KEY)
     private String saslJaasConfig;
@@ -246,8 +247,9 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = BASIC_AUTH_USER_INFO_KEY,
             externalizedKeyName = BASIC_AUTH_USER_INFO_KEY,
-            defaultValue = "${kafka-producer.username:username}:${KAFKA_PRODUCER_PASSWORD:password}",
-            description = "basic authentication user:pass for the schema registry"
+            defaultValue = "${kafka-producer.username:username}:${kafka-producer.password:password}",
+            description = "basic authentication user:pass for the schema registry",
+            injection = false
     )
     @JsonProperty(BASIC_AUTH_USER_INFO_KEY)
     private String basicAuthUserInfo;

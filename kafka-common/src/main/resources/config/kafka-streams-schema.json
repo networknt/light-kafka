@@ -90,7 +90,7 @@
         "basic.auth.user.info" : {
           "type" : "string",
           "description" : "basic authentication user:pass for the schema registry",
-          "default" : "${kafka-streams.username:username}:${KAFKA_STREAMS_PASSWORD:password}"
+          "default" : "${kafka-streams.username:username}:${kafka-streams.password:password}"
         },
         "basic.auth.credentials.source" : {
           "type" : "string",

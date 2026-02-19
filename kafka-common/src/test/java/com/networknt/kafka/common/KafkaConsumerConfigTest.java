@@ -5,16 +5,26 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class KafkaConsumerConfigTest {
+class KafkaConsumerConfigTest {
     @Test
-    public void testLoadingDefaultConfigName() {
+    void testLoadingDefaultConfigName() {
         KafkaConsumerConfig config = KafkaConsumerConfig.load();
         assertNotNull(config);
         assertNotNull(config.getProperties().getGroupId());
     }
 
     @Test
-    public void testLoadingAdditionalProps() {
+    void testLoadingLocalConfig() {
+        KafkaConsumerConfig config = KafkaConsumerConfig.load("kafka-consumer-local");
+        assertNotNull(config);
+        final var kafkaProps = config.getKafkaMapProperties();
+        assertTrue(kafkaProps.containsKey("group.id"));
+        assertFalse(kafkaProps.containsKey("saslJaasConfig"));
+        assertEquals("http://localhost:8081", kafkaProps.get("schema.registry.url"));
+    }
+
+    @Test
+    void testLoadingAdditionalProps() {
         KafkaConsumerConfig config = KafkaConsumerConfig.load("kafka-consumer-additionalProps");
         assertNotNull(config);
         final var kafkaProps = config.getKafkaMapProperties();

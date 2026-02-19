@@ -126,7 +126,7 @@
         "basic.auth.user.info" : {
           "type" : "string",
           "description" : "basic authentication user:pass for the schema registry",
-          "default" : "${kafka-producer.username:username}:${KAFKA_PRODUCER_PASSWORD:password}"
+          "default" : "${kafka-producer.username:username}:${kafka-producer.password:password}"
         },
         "basic.auth.credentials.source" : {
           "type" : "string",
