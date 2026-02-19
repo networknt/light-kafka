@@ -268,7 +268,7 @@ public class KafkaConsumerConfig {
     @JsonProperty(RETRY_DELAY_MS_KEY)
     private Integer retryDelayMs = 1000;
 
-    @JsonProperty(RETRY_DELAY_MS_KEY)
+    @JsonProperty(BATCH_ROLLBACK_THRESHOLD)
     private Integer batchRollbackThreshold = 30;
 
 
