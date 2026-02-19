@@ -7,46 +7,91 @@
       "type" : "object",
       "description" : "Generic configuration for Kafka producer.",
       "properties" : {
-        "enable.idempotence" : {
-          "type" : "boolean",
-          "description" : "enable idempotence. Default to true"
-        },
-        "additionalKafkaProperties" : {
-          "type" : "object",
-          "description" : "Any additional properties that are not defined in the schema can be added here.\nThis is useful for custom configurations that are not part of the standard Kafka producer properties.",
-          "additionalProperties" : {
-            "type" : "string"
-          }
-        },
-        "basic.auth.credentials.source" : {
+        "key.serializer" : {
           "type" : "string",
-          "description" : "basic authentication credentials source for the schema registry. Default to USER_INFO",
-          "default" : "USER_INFO"
+          "description" : "Kafka key serializer. Default to ByteArraySerializer",
+          "default" : "org.apache.kafka.common.serialization.ByteArraySerializer"
+        },
+        "value.serializer" : {
+          "type" : "string",
+          "description" : "Kafka value serializer. Default to ByteArraySerializer",
+          "default" : "org.apache.kafka.common.serialization.ByteArraySerializer"
+        },
+        "acks" : {
+          "type" : "string",
+          "description" : "This value is a string, if using 1 or 0, you must use '1' or '0' as the value",
+          "default" : "all"
         },
         "bootstrap.servers" : {
           "type" : "string",
           "description" : "Kafka bootstrap servers. Default to localhost:9092",
           "default" : "localhost:9092"
         },
-        "schema.registry.ssl.truststore.location" : {
-          "type" : "string",
-          "description" : "Schema registry client truststore location, use the following two properties only if schema registry url is https.",
-          "default" : "/config/client.truststore"
-        },
         "buffer.memory" : {
           "type" : "number",
           "description" : "Buffer size for unsent records. Default to 33554432",
+          "default" : 3.3554432E7,
           "format" : "float32"
         },
-        "key.serializer" : {
-          "type" : "string",
-          "description" : "Kafka key serializer. Default to ByteArraySerializer",
-          "default" : "org.apache.kafka.common.serialization.ByteArraySerializer"
+        "retries" : {
+          "type" : "number",
+          "description" : "Retry times for producer. Default to 3",
+          "default" : 3.0,
+          "format" : "float32"
+        },
+        "batch.size" : {
+          "type" : "number",
+          "description" : "Batch size. Default to 16KB",
+          "default" : 16384.0,
+          "format" : "float32"
+        },
+        "linger.ms" : {
+          "type" : "number",
+          "description" : "Linger time. Default to 1ms",
+          "default" : 1.0,
+          "format" : "float32"
+        },
+        "max.in.flight.requests.per.connection" : {
+          "type" : "number",
+          "description" : "max in-flight requests per connection. Default to 5",
+          "default" : 5.0,
+          "format" : "float32"
+        },
+        "enable.idempotence" : {
+          "type" : "boolean",
+          "description" : "enable idempotence. Default to true",
+          "default" : false
         },
         "schema.registry.url" : {
           "type" : "string",
           "description" : "Confluent schema registry url",
           "default" : "http://localhost:8081"
+        },
+        "schema.registry.cache" : {
+          "type" : "number",
+          "description" : "Schema registry identity cache size",
+          "default" : 100.0,
+          "format" : "float32"
+        },
+        "schema.registry.auto.register.schemas" : {
+          "type" : "boolean",
+          "description" : "Schema registry auto register schema indicator for streams application.\nIf true, the first request will register the schema auto automatically.",
+          "default" : true
+        },
+        "schema.registry.ssl.truststore.location" : {
+          "type" : "string",
+          "description" : "Schema registry client truststore location, use the following two properties only if schema registry url is https.",
+          "default" : "/config/client.truststore"
+        },
+        "schema.registry.ssl.truststore.password" : {
+          "type" : "string",
+          "description" : "Schema registry client truststore password",
+          "default" : "password"
+        },
+        "security.protocol" : {
+          "type" : "string",
+          "description" : "security configuration for enterprise deployment",
+          "default" : "SASL_SSL"
         },
         "sasl.mechanism" : {
           "type" : "string",
@@ -58,84 +103,48 @@
           "description" : "SASL JAAS configuration for authentication",
           "default" : "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-producer.username:username}\\\" password=\\\"${kafka-producer.password:password}\\\";"
         },
-        "schema.registry.auto.register.schemas" : {
-          "type" : "boolean",
-          "description" : "Schema registry auto register schema indicator for streams application.\nIf true, the first request will register the schema auto automatically."
+        "ssl.truststore.location" : {
+          "type" : "string",
+          "description" : "SSL truststore location for secure communication",
+          "default" : "/config/client.truststore"
         },
         "ssl.truststore.password" : {
           "type" : "string",
           "description" : "SSL truststore password for secure communication",
           "default" : "password"
         },
-        "max.in.flight.requests.per.connection" : {
-          "type" : "number",
-          "description" : "max in-flight requests per connection. Default to 5",
-          "format" : "float32"
-        },
         "ssl.endpoint.identification.algorithm" : {
           "type" : "string",
           "description" : "SSL endpoint identification algorithm for secure communication. This is used to verify the hostname of the server against the certificate presented by the server.",
           "default" : "also-name"
-        },
-        "acks" : {
-          "type" : "string",
-          "description" : "This value is a string, if using 1 or 0, you must use '1' or '0' as the value",
-          "default" : "all"
-        },
-        "batch.size" : {
-          "type" : "number",
-          "description" : "Batch size. Default to 16KB",
-          "format" : "float32"
-        },
-        "schema.registry.ssl.truststore.password" : {
-          "type" : "string",
-          "description" : "Schema registry client truststore password",
-          "default" : "password"
         },
         "client.rack" : {
           "type" : "string",
           "description" : "Client rack identifier for Kafka producer. Default to rack1",
           "default" : "rack1"
         },
-        "security.protocol" : {
-          "type" : "string",
-          "description" : "security configuration for enterprise deployment",
-          "default" : "SASL_SSL"
-        },
-        "retries" : {
-          "type" : "number",
-          "description" : "Retry times for producer. Default to 3",
-          "format" : "float32"
-        },
-        "max.request.size" : {
-          "type" : "number",
-          "description" : "If you have message that is bigger than 1 MB to produce, increase this value.",
-          "format" : "float32"
-        },
-        "value.serializer" : {
-          "type" : "string",
-          "description" : "Kafka value serializer. Default to ByteArraySerializer",
-          "default" : "org.apache.kafka.common.serialization.ByteArraySerializer"
-        },
-        "ssl.truststore.location" : {
-          "type" : "string",
-          "description" : "SSL truststore location for secure communication",
-          "default" : "/config/client.truststore"
-        },
         "basic.auth.user.info" : {
           "type" : "string",
           "description" : "basic authentication user:pass for the schema registry",
           "default" : "${kafka-producer.username:username}:${KAFKA_PRODUCER_PASSWORD:password}"
         },
-        "schema.registry.cache" : {
+        "basic.auth.credentials.source" : {
+          "type" : "string",
+          "description" : "basic authentication credentials source for the schema registry. Default to USER_INFO",
+          "default" : "USER_INFO"
+        },
+        "max.request.size" : {
           "type" : "number",
-          "description" : "Schema registry identity cache size",
+          "description" : "If you have message that is bigger than 1 MB to produce, increase this value.",
+          "default" : 1048576.0,
           "format" : "float32"
         },
-        "linger.ms" : {
-          "type" : "number",
-          "description" : "Linger time. Default to 1ms",
-          "format" : "float32"
+        "additionalKafkaProperties" : {
+          "type" : "object",
+          "description" : "Any additional properties that are not defined in the schema can be added here.\nThis is useful for custom configurations that are not part of the standard Kafka producer properties.",
+          "additionalProperties" : {
+            "type" : "string"
+          }
         }
       }
     },
@@ -156,15 +165,18 @@
     },
     "injectOpenTracing" : {
       "type" : "boolean",
-      "description" : "If open tracing is enable. traceability, correlation and metrics should not be in the chain if opentracing is used."
+      "description" : "If open tracing is enable. traceability, correlation and metrics should not be in the chain if opentracing is used.",
+      "default" : false
     },
     "injectCallerId" : {
       "type" : "boolean",
-      "description" : "Inject serviceId as callerId into the http header for metrics to collect the caller. The serviceId is from server.yml"
+      "description" : "Inject serviceId as callerId into the http header for metrics to collect the caller. The serviceId is from server.yml",
+      "default" : false
     },
     "auditEnabled" : {
       "type" : "boolean",
-      "description" : "If audit is enabled, the producer will send the audit message to the audit topic."
+      "description" : "If audit is enabled, the producer will send the audit message to the audit topic.",
+      "default" : true
     },
     "auditTarget" : {
       "type" : "string",

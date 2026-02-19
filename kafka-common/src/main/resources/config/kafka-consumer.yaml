@@ -104,3 +104,6 @@ backendConnectionReset: ${kafka-consumer.backendConnectionReset:false}
 maxRetries: ${kafka-consumer.maxRetries:3}
 # Delay milliseconds between retries.
 retryDelayMs: ${kafka-consumer.retryDelayMs:1000}
+# A batch rollback threshold defines the limit of errors or failed records allowed within a single batch operation
+# before the entire batch is reversed (rolled back) to its original state.
+batchRollbackThreshold: ${kafka-consumer.batchRollbackThreshold:30}

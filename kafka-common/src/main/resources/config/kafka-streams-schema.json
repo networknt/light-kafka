@@ -7,6 +7,11 @@
       "type" : "object",
       "description" : "Generic Kafka Streams Configuration",
       "properties" : {
+        "bootstrap.servers" : {
+          "type" : "string",
+          "description" : "Kafka bootstrap servers. Default to localhost:9092",
+          "default" : "localhost:9092"
+        },
         "key.deserializer" : {
           "type" : "string",
           "description" : "Kafka key deserializer. Default to ByteArrayDeserializer",
@@ -16,82 +21,6 @@
           "type" : "string",
           "description" : "Kafka value deserializer. Default to ByteArrayDeserializer",
           "default" : "org.apache.kafka.common.serialization.ByteArrayDeserializer"
-        },
-        "additionalKafkaProperties" : {
-          "type" : "object",
-          "description" : "Any additional properties that are not defined in the schema can be added here.\nThis is useful for custom configurations that are not part of the standard Kafka streams properties.",
-          "additionalProperties" : {
-            "type" : "string"
-          }
-        },
-        "basic.auth.credentials.source" : {
-          "type" : "string",
-          "description" : "basic authentication credentials source for the schema registry. Default to USER_INFO",
-          "default" : "USER_INFO"
-        },
-        "schema.registry.ssl.truststore.password" : {
-          "type" : "string",
-          "description" : "Schema registry client truststore password",
-          "default" : "password"
-        },
-        "client.rack" : {
-          "type" : "string",
-          "description" : "Client rack identifier for Kafka streams. Default to rack1",
-          "default" : "rack1"
-        },
-        "bootstrap.servers" : {
-          "type" : "string",
-          "description" : "Kafka bootstrap servers. Default to localhost:9092",
-          "default" : "localhost:9092"
-        },
-        "state.dir" : {
-          "type" : "string",
-          "description" : "The directory where Kafka Streams state is stored. Default to /tmp",
-          "default" : "/tmp"
-        },
-        "schema.registry.ssl.truststore.location" : {
-          "type" : "string",
-          "description" : "Schema registry client truststore location, use the following two properties only if schema registry url is https.",
-          "default" : "/config/client.truststore"
-        },
-        "security.protocol" : {
-          "type" : "string",
-          "description" : "security configuration for enterprise deployment",
-          "default" : "SASL_SSL"
-        },
-        "schema.registry.url" : {
-          "type" : "string",
-          "description" : "SSchema registry url",
-          "default" : "http://localhost:8081"
-        },
-        "ssl.truststore.location" : {
-          "type" : "string",
-          "description" : "SSL truststore location for secure communication",
-          "default" : "/config/client.truststore"
-        },
-        "basic.auth.user.info" : {
-          "type" : "string",
-          "description" : "basic authentication user:pass for the schema registry",
-          "default" : "${kafka-streams.username:username}:${KAFKA_STREAMS_PASSWORD:password}"
-        },
-        "sasl.mechanism" : {
-          "type" : "string",
-          "description" : "SASL mechanism for authentication",
-          "default" : "PLAIN"
-        },
-        "sasl.jaas.config" : {
-          "type" : "string",
-          "description" : "SASL JAAS configuration for authentication",
-          "default" : "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-streams.username:username}\\\" password=\\\"${kafka-streams.password:password}\\\";"
-        },
-        "schema.registry.auto.register.schemas" : {
-          "type" : "boolean",
-          "description" : "Schema registry auto register schema indicator for streams application. If true, the first request will register the schema auto automatically."
-        },
-        "ssl.truststore.password" : {
-          "type" : "string",
-          "description" : "SSL truststore password for secure communication",
-          "default" : "password"
         },
         "auto.offset.reset" : {
           "type" : "string",
@@ -103,20 +32,94 @@
           "description" : "A unique application id for the Kafka streams app. You need to replace it or overwrite it in your code.",
           "default" : "placeholder"
         },
+        "schema.registry.url" : {
+          "type" : "string",
+          "description" : "SSchema registry url",
+          "default" : "http://localhost:8081"
+        },
+        "schema.registry.auto.register.schemas" : {
+          "type" : "boolean",
+          "description" : "Schema registry auto register schema indicator for streams application. If true, the first request will register the schema auto automatically.",
+          "default" : true
+        },
+        "schema.registry.ssl.truststore.location" : {
+          "type" : "string",
+          "description" : "Schema registry client truststore location, use the following two properties only if schema registry url is https.",
+          "default" : "/config/client.truststore"
+        },
+        "schema.registry.ssl.truststore.password" : {
+          "type" : "string",
+          "description" : "Schema registry client truststore password",
+          "default" : "password"
+        },
+        "security.protocol" : {
+          "type" : "string",
+          "description" : "security configuration for enterprise deployment",
+          "default" : "SASL_SSL"
+        },
+        "sasl.mechanism" : {
+          "type" : "string",
+          "description" : "SASL mechanism for authentication",
+          "default" : "PLAIN"
+        },
+        "sasl.jaas.config" : {
+          "type" : "string",
+          "description" : "SASL JAAS configuration for authentication",
+          "default" : "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-streams.username:username}\\\" password=\\\"${kafka-streams.password:password}\\\";"
+        },
+        "ssl.truststore.location" : {
+          "type" : "string",
+          "description" : "SSL truststore location for secure communication",
+          "default" : "/config/client.truststore"
+        },
+        "ssl.truststore.password" : {
+          "type" : "string",
+          "description" : "SSL truststore password for secure communication",
+          "default" : "password"
+        },
         "ssl.endpoint.identification.algorithm" : {
           "type" : "string",
           "description" : "SSL endpoint identification algorithm for secure communication. This is used to verify the hostname of the server against the certificate presented by the server.",
           "default" : "also-name"
+        },
+        "client.rack" : {
+          "type" : "string",
+          "description" : "Client rack identifier for Kafka streams. Default to rack1",
+          "default" : "rack1"
+        },
+        "basic.auth.user.info" : {
+          "type" : "string",
+          "description" : "basic authentication user:pass for the schema registry",
+          "default" : "${kafka-streams.username:username}:${KAFKA_STREAMS_PASSWORD:password}"
+        },
+        "basic.auth.credentials.source" : {
+          "type" : "string",
+          "description" : "basic authentication credentials source for the schema registry. Default to USER_INFO",
+          "default" : "USER_INFO"
+        },
+        "state.dir" : {
+          "type" : "string",
+          "description" : "The directory where Kafka Streams state is stored. Default to /tmp",
+          "default" : "/tmp"
+        },
+        "additionalKafkaProperties" : {
+          "type" : "object",
+          "description" : "Any additional properties that are not defined in the schema can be added here.\nThis is useful for custom configurations that are not part of the standard Kafka streams properties.",
+          "additionalProperties" : {
+            "type" : "string"
+          }
         }
       }
     },
     "cleanUp" : {
       "type" : "boolean",
-      "description" : "Only set to true right after the streams reset and start the server. Once the server is up, shutdown and change this to false and restart."
+      "description" : "Only set to true right after the streams reset and start the server. Once the server is up, shutdown and change this to false and restart.",
+      "default" : false
     },
     "deadLetterEnabled" : {
       "type" : "boolean",
-      "description" : "Common configuration properties between active and reactive consumers\nIndicator if the dead letter topic is enabled."
+      "description" : "Common configuration properties between active and reactive consumers\nIndicator if the dead letter topic is enabled.",
+      "default" : true
     },
     "deadLetterTopicExt" : {
       "type" : "string",
@@ -125,7 +128,8 @@
     },
     "auditEnabled" : {
       "type" : "boolean",
-      "description" : "If audit is enabled, the producer will send the audit message to the audit topic."
+      "description" : "If audit is enabled, the producer will send the audit message to the audit topic.",
+      "default" : true
     },
     "auditTarget" : {
       "type" : "string",
