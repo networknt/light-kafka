@@ -8,6 +8,8 @@
 
 - I4041 [\#236](https://github.com/networknt/light-kafka/pull/236) ([Debashisa](https://github.com/Debashisa))
 - adding property batchRollbackThreshold in consumer [\#235](https://github.com/networknt/light-kafka/pull/235) ([Debashisa](https://github.com/Debashisa))
+
+
 ## [2.3.2](https://github.com/networknt/light-kafka/tree/2.3.2) (2026-02-02)
 
 
