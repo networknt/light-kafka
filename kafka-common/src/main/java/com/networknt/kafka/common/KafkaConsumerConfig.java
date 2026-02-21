@@ -30,6 +30,7 @@ public class KafkaConsumerConfig {
     private int batchRollbackThreshold;
 
     private Map<String, Object> properties;
+    private Map<String, Object> additionalKafkaProperties;
 
     public KafkaConsumerConfig() {
     }
@@ -115,11 +116,11 @@ public class KafkaConsumerConfig {
     }
 
     public Map<String, Object> getProperties() {
-        return properties;
+        return mergeAdditionalProperties();
     }
 
     public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
+        this.properties = mergeAdditionalProperties();
         this.groupId = (String)getProperties().get("group.id");
     }
 
@@ -212,6 +213,22 @@ public class KafkaConsumerConfig {
     }
     public void setBatchRollbackThreshold(int batchRollbackThreshold) {
         this.batchRollbackThreshold = batchRollbackThreshold;
+    }
+
+
+    public Map<String, Object> getAdditionalKafkaProperties() {
+        return additionalKafkaProperties;
+    }
+
+    public void setAdditionalKafkaProperties(Map<String, Object> additionalKafkaProperties) {
+        this.additionalKafkaProperties = additionalKafkaProperties;
+    }
+
+    private Map mergeAdditionalProperties() {
+        if (additionalKafkaProperties != null && properties != null) {
+            properties.putAll(additionalKafkaProperties);
+        }
+        return properties;
     }
 
 
