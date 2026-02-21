@@ -105,7 +105,7 @@
         <version.kafka>3.9.1</version.kafka>
         <version.confluent>7.9.1</version.confluent>
         <version.logback>1.5.26</version.logback>
-        <version.junit>5.11.3</version.junit>
+        <version.junit>5.11.4</version.junit>
         <version.undertow>2.3.22.Final</version.undertow>
         <version.avro>1.12.1</version.avro>
         <version.schemaConverter>0.2.9</version.schemaConverter>
