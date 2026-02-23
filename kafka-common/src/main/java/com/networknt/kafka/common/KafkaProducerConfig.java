@@ -1,5 +1,6 @@
 package com.networknt.kafka.common;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,6 +17,7 @@ public class KafkaProducerConfig {
     public static final String AUDIT_TARGET_LOGFILE = "logfile";
 
     private Map<String, Object> properties;
+    private Map<String, Object> additionalKafkaProperties;
 
     private String topic;
     private boolean injectOpenTracing;
@@ -26,17 +28,30 @@ public class KafkaProducerConfig {
     private String keyFormat;
     private String valueFormat;
 
-    private Map<String, Object> additionalKafkaProperties;
-
     public KafkaProducerConfig() {
     }
 
     public Map<String, Object> getProperties() {
-        return mergeAdditionalProperties();
+        final Map<String, Object> mergedProperties;
+        if (this.additionalKafkaProperties != null) {
+            mergedProperties = new HashMap<>(this.additionalKafkaProperties);
+        } else {
+            mergedProperties = new HashMap<>();
+        }
+        mergedProperties.putAll(this.properties);
+        return mergedProperties;
     }
 
     public void setProperties(Map<String, Object> properties) {
-        this.properties = mergeAdditionalProperties();;
+        this.properties = properties;
+    }
+
+    public Map<String, Object> getAdditionalKafkaProperties() {
+        return additionalKafkaProperties;
+    }
+
+    public void setAdditionalKafkaProperties(Map<String, Object> additionalKafkaProperties) {
+        this.additionalKafkaProperties = additionalKafkaProperties;
     }
 
     public String getTopic() {
@@ -101,19 +116,5 @@ public class KafkaProducerConfig {
 
     public void setValueFormat(String valueFormat) {
         this.valueFormat = valueFormat;
-    }
-
-    public Map<String, Object> getAdditionalKafkaProperties() {
-        return additionalKafkaProperties;
-    }
-
-    public void setAdditionalKafkaProperties(Map<String, Object> additionalKafkaProperties) {
-        this.additionalKafkaProperties = additionalKafkaProperties;
-    }
-    private Map<String, Object> mergeAdditionalProperties() {
-        if (additionalKafkaProperties != null && properties != null) {
-            properties.putAll(additionalKafkaProperties);
-        }
-        return properties;
     }
 }

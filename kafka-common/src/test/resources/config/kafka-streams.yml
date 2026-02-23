@@ -33,6 +33,6 @@ properties:
   # basic.auth.user.info: ${kafka-streams.username:username}:${kafka-streams.password:password}
   # basic authentication credentials source. Default to USER_INFO
   # basic.auth.credentials.source: ${kafka-streams.basic.auth.credentials.source:USER_INFO}
-
+additionalKafkaProperties: ${kafka-consumer.additionalKafkaProperties:}
 # Only set to true right after the streams reset and start the server. Once the server is up, shutdown and change this to false and restart.
 cleanUp: ${kafka-streams.cleanUp:false}
