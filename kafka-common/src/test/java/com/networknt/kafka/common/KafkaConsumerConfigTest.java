@@ -13,4 +13,19 @@ public class KafkaConsumerConfigTest {
         Assertions.assertNotNull(config);
         Assertions.assertNotNull(config.getGroupId());
     }
+
+    @Test
+    public void testAdditionalProperties() {
+        KafkaConsumerConfig config = (KafkaConsumerConfig) Config.getInstance().getJsonObjectConfig("test-additional-consumer-props", KafkaConsumerConfig.class);
+        var mergedProps = config.getProperties();
+        Assertions.assertNotNull(mergedProps);
+
+        var bootstrap = mergedProps.get("bootstrap.servers");
+        Assertions.assertNotNull(bootstrap);
+        Assertions.assertEquals("localhost:9092", bootstrap);
+
+        var customProp = mergedProps.get("my.other.prop");
+        Assertions.assertNotNull(customProp);
+        Assertions.assertEquals("someprop", customProp);
+    }
 }

@@ -1,5 +1,6 @@
 package com.networknt.kafka.common;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class KafkaConsumerConfig {
@@ -116,12 +117,27 @@ public class KafkaConsumerConfig {
     }
 
     public Map<String, Object> getProperties() {
-        return mergeAdditionalProperties();
+        final Map<String, Object> mergedProperties;
+        if (this.additionalKafkaProperties != null) {
+            mergedProperties = new HashMap<>(this.additionalKafkaProperties);
+        } else {
+            mergedProperties = new HashMap<>();
+        }
+        mergedProperties.putAll(this.properties);
+        return mergedProperties;
     }
 
     public void setProperties(Map<String, Object> properties) {
-        this.properties = mergeAdditionalProperties();
+        this.properties = properties;
         this.groupId = (String)getProperties().get("group.id");
+    }
+
+    public Map<String, Object> getAdditionalKafkaProperties() {
+        return additionalKafkaProperties;
+    }
+
+    public void setAdditionalKafkaProperties(Map<String, Object> additionalKafkaProperties) {
+        this.additionalKafkaProperties = additionalKafkaProperties;
     }
 
     public String getKeyFormat() {
@@ -213,22 +229,6 @@ public class KafkaConsumerConfig {
     }
     public void setBatchRollbackThreshold(int batchRollbackThreshold) {
         this.batchRollbackThreshold = batchRollbackThreshold;
-    }
-
-
-    public Map<String, Object> getAdditionalKafkaProperties() {
-        return additionalKafkaProperties;
-    }
-
-    public void setAdditionalKafkaProperties(Map<String, Object> additionalKafkaProperties) {
-        this.additionalKafkaProperties = additionalKafkaProperties;
-    }
-
-    private Map mergeAdditionalProperties() {
-        if (additionalKafkaProperties != null && properties != null) {
-            properties.putAll(additionalKafkaProperties);
-        }
-        return properties;
     }
 
 

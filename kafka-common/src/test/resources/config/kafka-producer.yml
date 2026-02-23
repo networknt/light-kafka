@@ -58,7 +58,7 @@ properties:
   # basic.auth.credentials.source: ${kafka-producer.basic.auth.credentials.source:USER_INFO}
   # If you have message that is bigger than 1 MB to produce, increase this value.
   max.request.size: ${kafka-producer.max.request.size:1048576}
-
+additionalKafkaProperties: ${kafka-consumer.additionalKafkaProperties:}
 # The default topic for the producer. Only certain producer implementation will use it.
 topic: ${kafka-producer.topic:portal-event}
 # Default key format if no schema for the topic key

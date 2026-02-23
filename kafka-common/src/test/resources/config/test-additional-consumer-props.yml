@@ -1,0 +1,31 @@
+# Generic Kafka Consumer Configuration
+properties:
+  bootstrap.servers: localhost:9092
+additionalKafkaProperties:
+  # This should not override 'properties' definition
+  bootstrap.servers: localhost:9999
+  # This should be present
+  my.other.prop: someprop
+
+
+# Everything else is default
+deadLetterEnabled: ${kafka-consumer.deadLetterEnabled:true}
+deadLetterTopicExt: ${kafka-consumer.deadLetterTopicExt:.dlq}
+auditEnabled: ${kafka-consumer.auditEnabled:true}
+auditTarget: ${kafka-consumer.auditTarget:logfile}
+auditTopic: ${kafka-consumer.auditTopic:sidecar-audit}
+useNoWrappingAvro: ${kafka-consumer.useNoWrappingAvro:false}
+topic: ${kafka-consumer.topic:test1}
+keyFormat: ${kafka-consumer.keyFormat:jsonschema}
+valueFormat: ${kafka-consumer.valueFormat:jsonschema}
+waitPeriod: ${kafka-consumer.waitPeriod:100}
+backendApiHost: ${kafka-consumer.backendApiHost:https://localhost:8444}
+backendApiPath: ${kafka-consumer.backendApiPath:/kafka/records}
+maxConsumerThreads: ${kafka-consumer.maxConsumerThreads:50}
+serverId: ${kafka-consumer.serverId:id}
+requestMaxBytes: ${kafka-consumer.requestMaxBytes:102400}
+requestTimeoutMs: ${kafka-consumer.requestTimeoutMs:1000}
+fetchMinBytes: ${kafka-consumer.fetchMinBytes:-1}
+instanceTimeoutMs: ${kafka-consumer.instanceTimeoutMs:300000}
+iteratorBackoffMs: ${kafka-consumer.iteratorBackoffMs:50}
+backendConnectionReset: ${kafka-consumer.backendConnectionReset:false}
