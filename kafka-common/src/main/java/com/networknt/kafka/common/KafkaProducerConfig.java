@@ -26,15 +26,17 @@ public class KafkaProducerConfig {
     private String keyFormat;
     private String valueFormat;
 
+    private Map<String, Object> additionalKafkaProperties;
+
     public KafkaProducerConfig() {
     }
 
     public Map<String, Object> getProperties() {
-        return properties;
+        return mergeAdditionalProperties();
     }
 
     public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
+        this.properties = mergeAdditionalProperties();;
     }
 
     public String getTopic() {
@@ -99,5 +101,19 @@ public class KafkaProducerConfig {
 
     public void setValueFormat(String valueFormat) {
         this.valueFormat = valueFormat;
+    }
+
+    public Map<String, Object> getAdditionalKafkaProperties() {
+        return additionalKafkaProperties;
+    }
+
+    public void setAdditionalKafkaProperties(Map<String, Object> additionalKafkaProperties) {
+        this.additionalKafkaProperties = additionalKafkaProperties;
+    }
+    private Map<String, Object> mergeAdditionalProperties() {
+        if (additionalKafkaProperties != null && properties != null) {
+            properties.putAll(additionalKafkaProperties);
+        }
+        return properties;
     }
 }
