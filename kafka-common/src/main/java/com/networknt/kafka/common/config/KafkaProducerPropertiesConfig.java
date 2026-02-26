@@ -221,6 +221,7 @@ public class KafkaProducerPropertiesConfig {
             externalizedKeyName = SASL_JAAS_CONFIG_PASSWORD_KEY,
             description = "The password used in the sasl.jaas.config value"
     )
+    @JsonProperty(SASL_JAAS_CONFIG_PASSWORD_KEY)
     private String saslJaasConfigPassword;
 
     @StringField(

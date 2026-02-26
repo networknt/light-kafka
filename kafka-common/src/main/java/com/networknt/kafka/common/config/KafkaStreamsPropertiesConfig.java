@@ -137,16 +137,6 @@ public class KafkaStreamsPropertiesConfig {
     @JsonProperty(SASL_MECHANISM_KEY)
     private String saslMechanism;
 
-//    @StringField(
-//            configFieldName = SASL_JAAS_CONFIG_KEY,
-//            externalizedKeyName = SASL_JAAS_CONFIG_KEY,
-//            defaultValue = "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-streams.username:username}\\\" password=\\\"${kafka-streams.password:password}\\\";",
-//            description = "SASL JAAS configuration for authentication",
-//            injection = false
-//    )
-//    @JsonProperty(SASL_JAAS_CONFIG_KEY)
-//    private String saslJaasConfig;
-
     @StringField(
             configFieldName = SASL_JAAS_CONFIG_MODULE_KEY,
             externalizedKeyName = SASL_JAAS_CONFIG_MODULE_KEY,
@@ -169,6 +159,7 @@ public class KafkaStreamsPropertiesConfig {
             externalizedKeyName = SASL_JAAS_CONFIG_PASSWORD_KEY,
             description = "The password used in the sasl.jaas.config value"
     )
+    @JsonProperty(SASL_JAAS_CONFIG_PASSWORD_KEY)
     private String saslJaasConfigPassword;
 
     @StringField(
@@ -318,10 +309,6 @@ public class KafkaStreamsPropertiesConfig {
     public String getSaslMechanism() {
         return saslMechanism;
     }
-
-//    public String getSaslJaasConfig() {
-//        return saslJaasConfig;
-//    }
 
     public String getSslTruststoreLocation() {
         return sslTruststoreLocation;
