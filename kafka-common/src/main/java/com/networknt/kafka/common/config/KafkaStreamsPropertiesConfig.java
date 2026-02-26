@@ -27,6 +27,9 @@ public class KafkaStreamsPropertiesConfig {
     private static final String SECURITY_PROTOCOL_KEY = "security.protocol";
     private static final String SASL_MECHANISM_KEY = "sasl.mechanism";
     private static final String SASL_JAAS_CONFIG_KEY = "sasl.jaas.config";
+    private static final String SASL_JAAS_CONFIG_USERNAME_KEY = "sasl.jaas.config.username";
+    private static final String SASL_JAAS_CONFIG_MODULE_KEY = "sasl.jaas.config.module";
+    private static final String SASL_JAAS_CONFIG_PASSWORD_KEY = "sasl.jaas.config.password";
     private static final String SSL_TRUSTSTORE_LOCATION_KEY = "ssl.truststore.location";
     private static final String SSL_TRUSTSTORE_PASSWORD_KEY = "ssl.truststore.password";
     private static final String SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY = "ssl.endpoint.identification.algorithm";
@@ -134,15 +137,39 @@ public class KafkaStreamsPropertiesConfig {
     @JsonProperty(SASL_MECHANISM_KEY)
     private String saslMechanism;
 
+//    @StringField(
+//            configFieldName = SASL_JAAS_CONFIG_KEY,
+//            externalizedKeyName = SASL_JAAS_CONFIG_KEY,
+//            defaultValue = "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-streams.username:username}\\\" password=\\\"${kafka-streams.password:password}\\\";",
+//            description = "SASL JAAS configuration for authentication",
+//            injection = false
+//    )
+//    @JsonProperty(SASL_JAAS_CONFIG_KEY)
+//    private String saslJaasConfig;
+
     @StringField(
-            configFieldName = SASL_JAAS_CONFIG_KEY,
-            externalizedKeyName = SASL_JAAS_CONFIG_KEY,
-            defaultValue = "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-streams.username:username}\\\" password=\\\"${kafka-streams.password:password}\\\";",
-            description = "SASL JAAS configuration for authentication",
-            injection = false
+            configFieldName = SASL_JAAS_CONFIG_MODULE_KEY,
+            externalizedKeyName = SASL_JAAS_CONFIG_MODULE_KEY,
+            description = "The full class path for which apache kafka security module to use in the sasl.jaas.config kafka property. The default is org.apache.kafka.common.security.plain.PlainLoginModule",
+            defaultValue = "org.apache.kafka.common.security.plain.PlainLoginModule"
     )
-    @JsonProperty(SASL_JAAS_CONFIG_KEY)
-    private String saslJaasConfig;
+    @JsonProperty(SASL_JAAS_CONFIG_MODULE_KEY)
+    private String saslJaasConfigModule;
+
+    @StringField(
+            configFieldName = SASL_JAAS_CONFIG_USERNAME_KEY,
+            externalizedKeyName = SASL_JAAS_CONFIG_USERNAME_KEY,
+            description = "The username used in the sasl.jaas.config value"
+    )
+    @JsonProperty(SASL_JAAS_CONFIG_USERNAME_KEY)
+    private String saslJaasConfigUsername;
+
+    @StringField(
+            configFieldName = SASL_JAAS_CONFIG_PASSWORD_KEY,
+            externalizedKeyName = SASL_JAAS_CONFIG_PASSWORD_KEY,
+            description = "The password used in the sasl.jaas.config value"
+    )
+    private String saslJaasConfigPassword;
 
     @StringField(
             configFieldName = SSL_TRUSTSTORE_LOCATION_KEY,
@@ -214,16 +241,13 @@ public class KafkaStreamsPropertiesConfig {
             externalizedKeyName = ADDITIONAL_KAFKA_PROPERTIES_KEY,
             description = "Any additional properties that are not defined in the schema can be added here.\n" +
                     "This is useful for custom configurations that are not part of the standard Kafka streams properties.",
-            additionalProperties = true,
-
-            // TODO - This is a bug with the light4j config schema generator. It should be able to handle Object.class, but it throws an error.
-            valueType = String.class
+            additionalProperties = true
     )
     @JsonProperty(ADDITIONAL_KAFKA_PROPERTIES_KEY)
     private final Map<String, Object> additionalKafkaProperties = new HashMap<>();
 
     public Map<String, Object> getMergedProperties() {
-        Map<String, Object> mergedProperties = new HashMap<>(additionalKafkaProperties == null ? new HashMap<>() : additionalKafkaProperties);
+        Map<String, Object> mergedProperties = new HashMap<>(additionalKafkaProperties);
         addIfSet(mergedProperties, BOOTSTRAP_SERVERS_KEY, bootstrapServers);
         addIfSet(mergedProperties, KEY_DESERIALIZER_KEY, keyDeserializer);
         addIfSet(mergedProperties, VALUE_DESERIALIZER_KEY, valueDeserializer);
@@ -235,7 +259,12 @@ public class KafkaStreamsPropertiesConfig {
         addIfSet(mergedProperties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY, schemaRegistrySslTruststorePassword);
         addIfSet(mergedProperties, SECURITY_PROTOCOL_KEY, securityProtocol);
         addIfSet(mergedProperties, SASL_MECHANISM_KEY, saslMechanism);
-        addIfSet(mergedProperties, SASL_JAAS_CONFIG_KEY, saslJaasConfig);
+        //addIfSet(mergedProperties, SASL_JAAS_CONFIG_KEY, saslJaasConfig);
+        addIfSet(mergedProperties, SASL_JAAS_CONFIG_KEY, KafkaConfigUtils.createSaslJaasConfigProperty(
+                saslJaasConfigModule,
+                saslJaasConfigUsername,
+                saslJaasConfigPassword
+        ));
         addIfSet(mergedProperties, SSL_TRUSTSTORE_LOCATION_KEY, sslTruststoreLocation);
         addIfSet(mergedProperties, SSL_TRUSTSTORE_PASSWORD_KEY, sslTruststorePassword);
         addIfSet(mergedProperties, SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY, sslEndpointIdentificationAlgorithm);
@@ -290,9 +319,9 @@ public class KafkaStreamsPropertiesConfig {
         return saslMechanism;
     }
 
-    public String getSaslJaasConfig() {
-        return saslJaasConfig;
-    }
+//    public String getSaslJaasConfig() {
+//        return saslJaasConfig;
+//    }
 
     public String getSslTruststoreLocation() {
         return sslTruststoreLocation;

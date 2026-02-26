@@ -98,10 +98,18 @@
           "description" : "SASL mechanism for authentication",
           "default" : "PLAIN"
         },
-        "sasl.jaas.config" : {
+        "sasl.jaas.config.module" : {
           "type" : "string",
-          "description" : "SASL JAAS configuration for authentication",
-          "default" : "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-producer.username:username}\\\" password=\\\"${kafka-producer.password:password}\\\";"
+          "description" : "The full class path for which apache kafka security module to use in the sasl.jaas.config kafka property. The default is org.apache.kafka.common.security.plain.PlainLoginModule",
+          "default" : "org.apache.kafka.common.security.plain.PlainLoginModule"
+        },
+        "sasl.jaas.config.username" : {
+          "type" : "string",
+          "description" : "The username used in the sasl.jaas.config value"
+        },
+        "sasl.jaas.config.password" : {
+          "type" : "string",
+          "description" : "The password used in the sasl.jaas.config value"
         },
         "ssl.truststore.location" : {
           "type" : "string",
@@ -143,7 +151,7 @@
           "type" : "object",
           "description" : "Any additional properties that are not defined in the schema can be added here.\nThis is useful for custom configurations that are not part of the standard Kafka producer properties.",
           "additionalProperties" : {
-            "type" : "string"
+            "type" : "object"
           }
         }
       }

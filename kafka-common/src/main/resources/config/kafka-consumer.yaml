@@ -25,12 +25,18 @@ properties:
   security.protocol: ${kafka-consumer.security.protocol:SASL_SSL}
   # SASL mechanism for authentication
   sasl.mechanism: ${kafka-consumer.sasl.mechanism:PLAIN}
-  sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-consumer.username:username}\" password=\"${kafka-consumer.password:password}\";
+  # The full class path for which apache kafka security module to use in the sasl.jaas.config kafka property. The default is org.apache.kafka.common.security.plain.PlainLoginModule
+  sasl.jaas.config.module: ${kafka-consumer.sasl.jaas.config.module:org.apache.kafka.common.security.plain.PlainLoginModule}
+  # The username used in the sasl.jaas.config value
+  sasl.jaas.config.username: ${kafka-consumer.sasl.jaas.config.username:}
+  # The password used in the sasl.jaas.config value
+  sasl.jaas.config.password: ${kafka-consumer.sasl.jaas.config.password:}
   # SSL truststore location for secure communication
   ssl.truststore.location: ${kafka-consumer.ssl.truststore.location:/config/client.truststore}
   # SSL truststore password for secure communication
   ssl.truststore.password: ${kafka-consumer.ssl.truststore.password:password}
-  # SSL endpoint identification algorithm for secure communication. This is used to verify the hostname of the server against the certificate presented by the server.
+  # SSL endpoint identification algorithm for secure communication.
+  # This is used to verify the hostname of the server against the certificate presented by the server.
   ssl.endpoint.identification.algorithm: ${kafka-consumer.ssl.endpoint.identification.algorithm:also-name}
   # Client rack identifier for Kafka consumer. Default to rack1
   client.rack: ${kafka-consumer.client.rack:rack1}

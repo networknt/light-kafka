@@ -35,7 +35,12 @@ properties:
   security.protocol: ${kafka-producer.security.protocol:SASL_SSL}
   # SASL mechanism for authentication
   sasl.mechanism: ${kafka-producer.sasl.mechanism:PLAIN}
-  sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${kafka-producer.username:username}\" password=\"${kafka-producer.password:password}\";
+  # The full class path for which apache kafka security module to use in the sasl.jaas.config kafka property. The default is org.apache.kafka.common.security.plain.PlainLoginModule
+  sasl.jaas.config.module: ${kafka-producer.sasl.jaas.config.module:org.apache.kafka.common.security.plain.PlainLoginModule}
+  # The username used in the sasl.jaas.config value
+  sasl.jaas.config.username: ${kafka-producer.sasl.jaas.config.username:}
+  # The password used in the sasl.jaas.config value
+  sasl.jaas.config.password: ${kafka-producer.sasl.jaas.config.password:}
   # SSL truststore location for secure communication
   ssl.truststore.location: ${kafka-producer.ssl.truststore.location:/config/client.truststore}
   # SSL truststore password for secure communication

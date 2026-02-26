@@ -1,0 +1,6 @@
+properties:
+  sasl.jaas.config.module: "org.apache.kafka.common.security.plain.PlainLoginModule"
+  sasl.jaas.config.username: "username"
+  sasl.jaas.config.password: ")(*&_p@5Sw0Rd_^%$#"
+
+cleanUp: false
