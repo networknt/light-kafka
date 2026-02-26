@@ -30,6 +30,9 @@ public class KafkaConsumerPropertiesConfig {
     private static final String SECURITY_PROTOCOL_KEY = "security.protocol";
     private static final String SASL_MECHANISM_KEY = "sasl.mechanism";
     private static final String SASL_JAAS_CONFIG_KEY = "sasl.jaas.config";
+    private static final String SASL_JAAS_CONFIG_USERNAME_KEY = "sasl.jaas.config.username";
+    private static final String SASL_JAAS_CONFIG_MODULE_KEY = "sasl.jaas.config.module";
+    private static final String SASL_JAAS_CONFIG_PASSWORD_KEY = "sasl.jaas.config.password";
     private static final String SSL_TRUSTSTORE_LOCATION_KEY = "ssl.truststore.location";
     private static final String SSL_TRUSTSTORE_PASSWORD_KEY = "ssl.truststore.password";
     private static final String SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY = "ssl.endpoint.identification.algorithm";
@@ -149,14 +152,29 @@ public class KafkaConsumerPropertiesConfig {
     private String saslMechanism;
 
     @StringField(
-            configFieldName = SASL_JAAS_CONFIG_KEY,
-            externalizedKeyName = SASL_JAAS_CONFIG_KEY,
-            defaultValue = "org.apache.kafka.common.security.plain.PlainLoginModule required username=\\\"${kafka-consumer.username:username}\\\" password=\\\"${kafka-consumer.password:password}\\\";",
-            description = "SASL JAAS configuration for authentication",
-            injection = false
+            configFieldName = SASL_JAAS_CONFIG_MODULE_KEY,
+            externalizedKeyName = SASL_JAAS_CONFIG_MODULE_KEY,
+            description = "The full class path for which apache kafka security module to use in the sasl.jaas.config kafka property. The default is org.apache.kafka.common.security.plain.PlainLoginModule",
+            defaultValue = "org.apache.kafka.common.security.plain.PlainLoginModule"
     )
-    @JsonProperty(SASL_JAAS_CONFIG_KEY)
-    private String saslJaasConfig;
+    @JsonProperty(SASL_JAAS_CONFIG_MODULE_KEY)
+    private String saslJaasConfigModule;
+
+    @StringField(
+            configFieldName = SASL_JAAS_CONFIG_USERNAME_KEY,
+            externalizedKeyName = SASL_JAAS_CONFIG_USERNAME_KEY,
+            description = "The username used in the sasl.jaas.config value"
+    )
+    @JsonProperty(SASL_JAAS_CONFIG_USERNAME_KEY)
+    private String saslJaasConfigUsername;
+
+    @StringField(
+            configFieldName = SASL_JAAS_CONFIG_PASSWORD_KEY,
+            externalizedKeyName = SASL_JAAS_CONFIG_PASSWORD_KEY,
+            description = "The password used in the sasl.jaas.config value"
+    )
+    @JsonProperty(SASL_JAAS_CONFIG_PASSWORD_KEY)
+    private String saslJaasConfigPassword;
 
     @StringField(
             configFieldName = SSL_TRUSTSTORE_LOCATION_KEY,
@@ -180,8 +198,9 @@ public class KafkaConsumerPropertiesConfig {
             configFieldName = SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY,
             externalizedKeyName = SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY,
             defaultValue = "also-name",
-            description = "SSL endpoint identification algorithm for secure communication. " +
-                    "This is used to verify the hostname of the server against the certificate presented by the server."
+            description = """
+                    SSL endpoint identification algorithm for secure communication.
+                    This is used to verify the hostname of the server against the certificate presented by the server."""
     )
     @JsonProperty(SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY)
     private String sslEndpointIdentificationAlgorithm;
@@ -193,7 +212,7 @@ public class KafkaConsumerPropertiesConfig {
             description = "Client rack identifier for Kafka consumer. Default to rack1"
     )
     @JsonProperty(CLIENT_RACK_KEY)
-    private String clientRack = "rack1";
+    private String clientRack;
 
     @StringField(
             configFieldName = BASIC_AUTH_USER_INFO_KEY,
@@ -227,8 +246,9 @@ public class KafkaConsumerPropertiesConfig {
             configFieldName = MAX_POLL_RECORDS_KEY,
             externalizedKeyName = MAX_POLL_RECORDS_KEY,
             defaultValue = "100",
-            description = "max poll records default is 500. Adjust it based on the size of the records to make sure each poll\n" +
-                    "is similar to requestMaxBytes down below."
+            description = """
+                    max poll records default is 500. Adjust it based on the size of the records to make sure each poll
+                    is similar to requestMaxBytes down below."""
     )
     @JsonProperty(MAX_POLL_RECORDS_KEY)
     private Integer maxPollRecords;
@@ -238,8 +258,9 @@ public class KafkaConsumerPropertiesConfig {
             configFieldName = MAX_PARTITION_FETCH_BYTES_KEY,
             externalizedKeyName = MAX_PARTITION_FETCH_BYTES_KEY,
             defaultValue = "100",
-            description = "The maximum amount of data per-partition the server will return. Records are fetched in batches by the consumer.\n" +
-                    "If the first record batch in the first non-empty partition of the fetch is larger than this limit, the batch will still be returned to ensure that the consumer can make progress."
+            description = """
+                    The maximum amount of data per-partition the server will return. Records are fetched in batches by the consumer.
+                    If the first record batch in the first non-empty partition of the fetch is larger than this limit, the batch will still be returned to ensure that the consumer can make progress."""
     )
     @JsonProperty(MAX_PARTITION_FETCH_BYTES_KEY)
     private Integer maxPartitionFetchBytes;
@@ -247,18 +268,16 @@ public class KafkaConsumerPropertiesConfig {
     @MapField(
             configFieldName = ADDITIONAL_KAFKA_PROPERTIES_KEY,
             externalizedKeyName = ADDITIONAL_KAFKA_PROPERTIES_KEY,
-            description = "Any additional kafka properties that are not defined in the schema can be added here.\n" +
-                    "This is useful for custom configurations that are not part of the standard Kafka consumer properties.",
-            additionalProperties = true,
-
-            // TODO - This is a bug with the light4j config schema generator. It should be able to handle Object.class, but it throws an error.
-            valueType = String.class
+            description = """
+                    Any additional kafka properties that are not defined in the schema can be added here.
+                    This is useful for custom configurations that are not part of the standard Kafka consumer properties.""",
+            additionalProperties = true
     )
     @JsonProperty(ADDITIONAL_KAFKA_PROPERTIES_KEY)
     private final Map<String, Object> additionalKafkaProperties = new HashMap<>();
 
     public Map<String, Object> getMergedProperties() {
-        Map<String, Object> properties = new HashMap<>(additionalKafkaProperties == null ? new HashMap<>() : additionalKafkaProperties);
+        Map<String, Object> properties = new HashMap<>(additionalKafkaProperties);
         addIfSet(properties, BOOTSTRAP_SERVERS_KEY, bootstrapServers);
         addIfSet(properties, KEY_DESERIALIZER_KEY, keyDeserializer);
         addIfSet(properties, VALUE_DESERIALIZER_KEY, valueDeserializer);
@@ -271,7 +290,11 @@ public class KafkaConsumerPropertiesConfig {
         addIfSet(properties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY, schemaRegistrySslTruststorePassword);
         addIfSet(properties, SECURITY_PROTOCOL_KEY, securityProtocol);
         addIfSet(properties, SASL_MECHANISM_KEY, saslMechanism);
-        addIfSet(properties, SASL_JAAS_CONFIG_KEY, saslJaasConfig);
+        addIfSet(properties, SASL_JAAS_CONFIG_KEY, KafkaConfigUtils.createSaslJaasConfigProperty(
+                saslJaasConfigModule,
+                saslJaasConfigUsername,
+                saslJaasConfigPassword
+        ));
         addIfSet(properties, SSL_TRUSTSTORE_LOCATION_KEY, sslTruststoreLocation);
         addIfSet(properties, SSL_TRUSTSTORE_PASSWORD_KEY, sslTruststorePassword);
         addIfSet(properties, SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY, sslEndpointIdentificationAlgorithm);
@@ -332,8 +355,16 @@ public class KafkaConsumerPropertiesConfig {
         return saslMechanism;
     }
 
-    public String getSaslJaasConfig() {
-        return saslJaasConfig;
+    public String getSaslJaasConfigModule() {
+        return saslJaasConfigModule;
+    }
+
+    public String getSaslJaasConfigUsername() {
+        return saslJaasConfigUsername;
+    }
+
+    public String getSaslJaasConfigPassword() {
+        return saslJaasConfigPassword;
     }
 
     public String getSslTruststoreLocation() {
