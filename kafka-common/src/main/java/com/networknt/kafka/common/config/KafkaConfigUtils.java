@@ -49,7 +49,7 @@ public class KafkaConfigUtils {
     public static String createSaslJaasConfigProperty(final String module, final String username, final String password) {
         if (module == null || username == null || password == null) {
             var printedPass = password != null ? password.substring(0, Math.min(5, password.length())) : null;
-            LOG.error("module, username, and password must not be null when creating the sasl.jaas.config property. (module = {}, key = {}, password={})", module, username, printedPass);
+            LOG.error("module, username, and password must not be null when creating the sasl.jaas.config property. (module = {}, username = {}, password={})", module, username, printedPass);
             return null;
         }
         return module + " required username=" + '"' + username + '"' + " password=" + '"' + password + '"' + ';';
