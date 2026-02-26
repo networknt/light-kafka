@@ -250,7 +250,6 @@ public class KafkaStreamsPropertiesConfig {
         addIfSet(mergedProperties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY, schemaRegistrySslTruststorePassword);
         addIfSet(mergedProperties, SECURITY_PROTOCOL_KEY, securityProtocol);
         addIfSet(mergedProperties, SASL_MECHANISM_KEY, saslMechanism);
-        //addIfSet(mergedProperties, SASL_JAAS_CONFIG_KEY, saslJaasConfig);
         addIfSet(mergedProperties, SASL_JAAS_CONFIG_KEY, KafkaConfigUtils.createSaslJaasConfigProperty(
                 saslJaasConfigModule,
                 saslJaasConfigUsername,
