@@ -9,6 +9,9 @@ public class KafkaStreamsRegistry {
         registry.put(name, streams);
     }
 
+    public static void unregister(String name) {
+        registry.remove(name);
+    }
     public static Map<String, KafkaStreams> getRegistry() {
         return registry;
     }
