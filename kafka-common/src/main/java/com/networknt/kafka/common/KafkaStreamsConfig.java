@@ -78,13 +78,16 @@ public class KafkaStreamsConfig {
 
 
     public Map<String, Object> getProperties() {
-        final Map<String, Object> mergedProperties;
-        if (this.additionalKafkaProperties != null) {
-            mergedProperties = new HashMap<>(this.additionalKafkaProperties);
-        } else {
-            mergedProperties = new HashMap<>();
+        final Map<String, Object> mergedProperties = new HashMap<>();
+        
+        if (this.properties != null) {
+            mergedProperties.putAll(this.properties);
         }
-        mergedProperties.putAll(this.properties);
+        
+        if (this.additionalKafkaProperties != null) {
+            mergedProperties.putAll(this.additionalKafkaProperties);
+        }
+        
         return mergedProperties;
     }
 
