@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.3.4](https://github.com/networknt/light-kafka/tree/2.3.4) (2026-05-05)
+
+
+**Merged pull requests:**
+
+
+- Null Pointer Exception Fix [\#246](https://github.com/networknt/light-kafka/pull/246) ([KalevGonvick](https://github.com/KalevGonvick))
+- sasl.jaas.config Refactor [\#244](https://github.com/networknt/light-kafka/pull/244) ([KalevGonvick](https://github.com/KalevGonvick))
 ## [2.3.3](https://github.com/networknt/light-kafka/tree/2.3.3) (2026-02-19)
 
 
