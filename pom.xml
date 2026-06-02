@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.networknt</groupId>
     <artifactId>light-kafka</artifactId>
-    <version>2.3.0.1</version>
+    <version>2.3.0.3</version>
     <packaging>pom</packaging>
     <name>Parent POM</name>
     <description>Light 4J Kafka integration</description>
@@ -102,11 +102,11 @@
         <version.light-4j>2.3.0</version.light-4j>
         <version.jackson>2.18.3</version.jackson>
         <version.slf4j>2.0.17</version.slf4j>
-        <version.kafka>3.9.1</version.kafka>
-        <version.confluent>7.9.1</version.confluent>
+        <version.kafka>3.9.2</version.kafka>
+        <version.confluent>7.9.2</version.confluent>
         <version.logback>1.5.18</version.logback>
         <version.junit>5.11.3</version.junit>
-        <version.undertow>2.3.18.Final</version.undertow>
+        <version.undertow>2.4.1.Final</version.undertow>
         <version.avro>1.12.0</version.avro>
         <version.schemaConverter>0.2.9</version.schemaConverter>
         <version.hamcrest>2.2</version.hamcrest>
