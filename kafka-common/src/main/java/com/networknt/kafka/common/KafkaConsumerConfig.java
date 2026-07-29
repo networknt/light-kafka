@@ -1,4 +1,4 @@
-package com.networknt.kafka.common.config;
+package com.networknt.kafka.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.networknt.config.Config;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static com.networknt.kafka.common.config.KafkaConfigUtils.getFromMappedConfigAsType;
+import static com.networknt.kafka.common.KafkaConfigUtils.getFromMappedConfigAsType;
 
 @ConfigSchema(
         configKey = "kafka-consumer",

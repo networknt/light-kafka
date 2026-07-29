@@ -1,6 +1,6 @@
 package com.networknt.kafka.streams;
 
-import com.networknt.kafka.common.config.KafkaStreamsConfig;
+import com.networknt.kafka.common.KafkaStreamsConfig;
 import com.networknt.kafka.entity.StreamsDLQMetadata;
 import com.networknt.utility.ObjectUtils;
 import com.networknt.utility.StringUtils;

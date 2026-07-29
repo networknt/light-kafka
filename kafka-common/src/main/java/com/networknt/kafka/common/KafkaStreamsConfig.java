@@ -1,4 +1,4 @@
-package com.networknt.kafka.common.config;
+package com.networknt.kafka.common;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

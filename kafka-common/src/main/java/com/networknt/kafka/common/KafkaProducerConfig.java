@@ -1,4 +1,4 @@
-package com.networknt.kafka.common.config;
+package com.networknt.kafka.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.networknt.config.Config;
@@ -10,7 +10,7 @@ import com.networknt.server.ModuleRegistry;
 
 import java.util.Map;
 
-import static com.networknt.kafka.common.config.KafkaConfigUtils.getFromMappedConfigAsType;
+import static com.networknt.kafka.common.KafkaConfigUtils.getFromMappedConfigAsType;
 
 /**
  * A Kafka setting configuration file. It get from defined resource yml file in

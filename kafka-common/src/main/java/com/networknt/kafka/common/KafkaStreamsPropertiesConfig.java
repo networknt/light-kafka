@@ -1,4 +1,4 @@
-package com.networknt.kafka.common.config;
+package com.networknt.kafka.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.networknt.config.schema.BooleanField;
@@ -8,7 +8,7 @@ import com.networknt.config.schema.StringField;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.networknt.kafka.common.config.KafkaConfigUtils.addIfSet;
+import static com.networknt.kafka.common.KafkaConfigUtils.addIfSet;
 
 public class KafkaStreamsPropertiesConfig {
 

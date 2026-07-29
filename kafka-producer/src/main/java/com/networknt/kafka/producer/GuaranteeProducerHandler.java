@@ -2,7 +2,7 @@ package com.networknt.kafka.producer;
 
 import com.networknt.config.Config;
 import com.networknt.handler.LightHttpHandler;
-import com.networknt.kafka.common.config.KafkaProducerConfig;
+import com.networknt.kafka.common.KafkaProducerConfig;
 import com.networknt.server.ServerConfig;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;

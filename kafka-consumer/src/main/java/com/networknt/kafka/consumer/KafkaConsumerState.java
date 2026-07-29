@@ -16,7 +16,7 @@
 package com.networknt.kafka.consumer;
 
 import com.google.protobuf.ByteString;
-import com.networknt.kafka.common.config.KafkaConsumerConfig;
+import com.networknt.kafka.common.KafkaConsumerConfig;
 import com.networknt.kafka.common.converter.*;
 import com.networknt.kafka.entity.*;
 import com.networknt.utility.Constants;

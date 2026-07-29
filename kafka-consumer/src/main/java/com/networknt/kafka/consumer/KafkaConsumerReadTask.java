@@ -16,7 +16,7 @@
 package com.networknt.kafka.consumer;
 
 import com.networknt.exception.FrameworkException;
-import com.networknt.kafka.common.config.KafkaConsumerConfig;
+import com.networknt.kafka.common.KafkaConsumerConfig;
 import com.networknt.kafka.entity.ConsumerRecord;
 import com.networknt.status.Status;
 import org.slf4j.Logger;
