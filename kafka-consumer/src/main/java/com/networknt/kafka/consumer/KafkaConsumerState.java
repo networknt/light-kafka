@@ -50,6 +50,8 @@ import static java.util.Collections.singletonMap;
  */
 public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT> {
   private static final Logger logger = LoggerFactory.getLogger(KafkaConsumerState.class);
+  private static final Duration ASSIGNMENT_POLL_INTERVAL = Duration.ofMillis(100);
+  private static final int DEFAULT_ASSIGNMENT_TIMEOUT_MS = 1000;
 
   private ConsumerInstanceId instanceId;
   private Consumer<KafkaKeyT, KafkaValueT> consumer;
@@ -304,15 +306,7 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
             .collect(Collectors.toList());
     if (pos.size() > request.getOffsets().size()) request.setOffsets(pos);
 
-    /**
-     * we call poll() once
-     * to make sure we join a consumer group and get assigned partitions, and then we
-     * immediately seek() to the correct offset in the partitions we are assigned to.
-     * Keep in mind that seek() only updates the position we are consuming from, so
-     * the next poll() will fetch the right messages. If there was an error in seek()
-     * (e.g., the offset does not exist), the exception will be thrown by poll().
-     */
-    consumer.poll(0);
+    awaitAssignment();
     for (ConsumerSeekRequest.PartitionOffset partition : request.getOffsets()) {
       if (logger.isDebugEnabled()) {
         logger.debug("seek to topic = " + partition.getTopic() + " partition = " + partition.getPartition() + " offset = " + partition.getOffset());
@@ -347,6 +341,33 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
     }
     // clear the consumerRecords so that the Kafka record will be retrieved again based on the seek offset.
     ((ArrayDeque) consumerRecords).clear();
+  }
+
+  /**
+   * A subscribed consumer receives its assignment through poll. Since Kafka 4.x bounds group coordination by the
+   * poll duration, keep polling until assignment completes or the configured request timeout expires. Consumers
+   * using manual assignment already have their partitions and return immediately.
+   */
+  private void awaitAssignment() {
+    if (consumer.subscription().isEmpty() || !consumer.assignment().isEmpty()) {
+      return;
+    }
+
+    int configuredTimeoutMs = config.getRequestTimeoutMs();
+    int timeoutMs = configuredTimeoutMs > 0 ? configuredTimeoutMs : DEFAULT_ASSIGNMENT_TIMEOUT_MS;
+    long deadlineNanos = System.nanoTime() + Duration.ofMillis(timeoutMs).toNanos();
+
+    while (consumer.assignment().isEmpty()) {
+      long remainingNanos = deadlineNanos - System.nanoTime();
+      if (remainingNanos <= 0) {
+        throw new IllegalStateException(
+                "Consumer group assignment was not completed within " + timeoutMs + " ms.");
+      }
+      Duration remaining = Duration.ofNanos(remainingNanos);
+      consumer.poll(remaining.compareTo(ASSIGNMENT_POLL_INTERVAL) < 0
+              ? remaining
+              : ASSIGNMENT_POLL_INTERVAL);
+    }
   }
 
   /**
@@ -442,7 +463,7 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
     if (consumer != null) {
       for (com.networknt.kafka.entity.TopicPartition t : request.getPartitions()) {
         TopicPartition partition = new TopicPartition(t.getTopic(), t.getPartition());
-        OffsetAndMetadata offsetMetadata = consumer.committed(partition);
+        OffsetAndMetadata offsetMetadata = consumer.committed(Collections.singleton(partition)).get(partition);
         if (offsetMetadata != null) {
           offsets.add(
               new TopicPartitionOffsetMetadata(
@@ -557,7 +578,7 @@ public class KafkaConsumerState<KafkaKeyT, KafkaValueT, ClientKeyT, ClientValueT
    * invoked with the lock held, i.e. after startRead().
    */
   private synchronized void getOrCreateConsumerRecords() {
-    ConsumerRecords<KafkaKeyT, KafkaValueT> polledRecords = consumer.poll(0);
+    ConsumerRecords<KafkaKeyT, KafkaValueT> polledRecords = consumer.poll(Duration.ZERO);
     //drain the iterator and buffer to list
     for (ConsumerRecord<KafkaKeyT, KafkaValueT> consumerRecord : polledRecords) {
       consumerRecords.add(consumerRecord);

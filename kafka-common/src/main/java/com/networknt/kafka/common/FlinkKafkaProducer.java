@@ -23,7 +23,9 @@ import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.clients.producer.internals.TransactionalRequestResult;
 import org.apache.kafka.common.*;
 import org.apache.kafka.common.errors.ProducerFencedException;
+import org.apache.kafka.common.metrics.KafkaMetric;
 import org.apache.kafka.common.requests.FindCoordinatorRequest;
+import org.apache.kafka.common.utils.ProducerIdAndEpoch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +35,6 @@ import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.Future;
 
 /**
@@ -125,9 +126,15 @@ public class FlinkKafkaProducer<K, V> implements Producer<K, V> {
         kafkaProducer.abortTransaction();
     }
 
-    @Override
+    /**
+     * Retained for source compatibility with Kafka clients before 4.0, where this overload was part of
+     * {@link Producer}. Kafka 4.x only exposes the {@link ConsumerGroupMetadata} overload. The synthesized
+     * metadata uses an unknown generation and empty member ID, matching the fencing behavior of the removed overload.
+     */
+    @Deprecated
+    @SuppressWarnings("removal")
     public void sendOffsetsToTransaction(Map<TopicPartition, OffsetAndMetadata> offsets, String consumerGroupId) throws ProducerFencedException {
-        kafkaProducer.sendOffsetsToTransaction(offsets, consumerGroupId);
+        kafkaProducer.sendOffsetsToTransaction(offsets, new ConsumerGroupMetadata(consumerGroupId));
     }
 
     @Override
@@ -153,6 +160,16 @@ public class FlinkKafkaProducer<K, V> implements Producer<K, V> {
     @Override
     public Map<MetricName, ? extends Metric> metrics() {
         return kafkaProducer.metrics();
+    }
+
+    @Override
+    public void registerMetricForSubscription(KafkaMetric metric) {
+        kafkaProducer.registerMetricForSubscription(metric);
+    }
+
+    @Override
+    public void unregisterMetricFromSubscription(KafkaMetric metric) {
+        kafkaProducer.unregisterMetricFromSubscription(metric);
     }
 
     @Override
@@ -188,14 +205,9 @@ public class FlinkKafkaProducer<K, V> implements Producer<K, V> {
 
         Object transactionManager = getValue(kafkaProducer, "transactionManager");
         synchronized (transactionManager) {
-            Object sequenceNumbers = getValue(transactionManager, "sequenceNumbers");
-
             invoke(transactionManager, "transitionTo", getEnum("org.apache.kafka.clients.producer.internals.TransactionManager$State.INITIALIZING"));
-            invoke(sequenceNumbers, "clear");
-
-            Object producerIdAndEpoch = getValue(transactionManager, "producerIdAndEpoch");
-            setValue(producerIdAndEpoch, "producerId", producerId);
-            setValue(producerIdAndEpoch, "epoch", epoch);
+            invoke(transactionManager, "resetSequenceNumbers");
+            setValue(transactionManager, "producerIdAndEpoch", new ProducerIdAndEpoch(producerId, epoch));
 
             invoke(transactionManager, "transitionTo", getEnum("org.apache.kafka.clients.producer.internals.TransactionManager$State.READY"));
 
