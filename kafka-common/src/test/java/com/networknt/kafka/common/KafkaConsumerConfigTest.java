@@ -9,7 +9,7 @@ class KafkaConsumerConfigTest {
     void testLoadingDefaultConfigName() {
         KafkaConsumerConfig config = KafkaConsumerConfig.load();
         assertNotNull(config);
-        assertNotNull(config.getProperties().getGroupId());
+        assertNotNull(config.getGroupId());
     }
 
     @Test
