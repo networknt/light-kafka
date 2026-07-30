@@ -1,5 +1,4 @@
-package com.networknt.kafka.common.config;
-
+package com.networknt.kafka.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.networknt.config.schema.BooleanField;
@@ -10,28 +9,24 @@ import com.networknt.config.schema.StringField;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.networknt.kafka.common.config.KafkaConfigUtils.addIfSet;
+import static com.networknt.kafka.common.KafkaConfigUtils.addIfSet;
 
-public class KafkaProducerPropertiesConfig {
+public class KafkaConsumerPropertiesConfig {
 
-    private static final String KEY_SERIALIZER_KEY = "key.serializer";
-    private static final String VALUE_SERIALIZER_KEY = "value.serializer";
-    private static final String ACKS_KEY = "acks";
+    private static final String KEY_DESERIALIZER_KEY = "key.deserializer";
+    private static final String VALUE_DESERIALIZER_KEY = "value.deserializer";
+    private static final String FETCH_MAX_BYTES_KEY = "fetch.max.bytes";
+    private static final String MAX_POLL_RECORDS_KEY = "max.poll.records";
+    private static final String MAX_PARTITION_FETCH_BYTES_KEY = "max.partition.fetch.bytes";
     private static final String BOOTSTRAP_SERVERS_KEY = "bootstrap.servers";
-    private static final String BUFFER_MEMORY_KEY = "buffer.memory";
-    private static final String RETRIES_KEY = "retries";
-    private static final String BATCH_SIZE_KEY = "batch.size";
-    private static final String LINGER_MS_KEY = "linger.ms";
-    private static final String MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION_KEY = "max.in.flight.requests.per.connection";
-    private static final String ENABLE_IDEMPOTENCE_KEY = "enable.idempotence";
+    private static final String ENABLE_AUTO_COMMIT_KEY = "enable.auto.commit";
+    private static final String AUTO_OFFSET_RESET_KEY = "auto.offset.reset";
+    private static final String GROUP_ID_KEY = "group.id";
     private static final String SCHEMA_REGISTRY_URL_KEY = "schema.registry.url";
-    private static final String SCHEMA_REGISTRY_CACHE_KEY = "schema.registry.cache";
     private static final String SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY = "schema.registry.auto.register.schemas";
-    private static final String MAX_REQUEST_SIZE_KEY = "max.request.size";
-    private static final String ADDITIONAL_KAFKA_PROPERTIES_KEY = "additionalKafkaProperties";
-
     private static final String SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY = "schema.registry.ssl.truststore.location";
     private static final String SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY = "schema.registry.ssl.truststore.password";
+    private static final String ADDITIONAL_KAFKA_PROPERTIES_KEY = "additionalKafkaProperties";
     private static final String SECURITY_PROTOCOL_KEY = "security.protocol";
     private static final String SASL_MECHANISM_KEY = "sasl.mechanism";
     private static final String SASL_JAAS_CONFIG_KEY = "sasl.jaas.config";
@@ -45,32 +40,6 @@ public class KafkaProducerPropertiesConfig {
     private static final String BASIC_AUTH_USER_INFO_KEY = "basic.auth.user.info";
     private static final String BASIC_AUTH_CREDENTIALS_SOURCE_KEY = "basic.auth.credentials.source";
 
-    @StringField(
-            configFieldName = KEY_SERIALIZER_KEY,
-            externalizedKeyName = KEY_SERIALIZER_KEY,
-            defaultValue = "org.apache.kafka.common.serialization.ByteArraySerializer",
-            description = "Kafka key serializer. Default to ByteArraySerializer"
-    )
-    @JsonProperty(KEY_SERIALIZER_KEY)
-    private String keySerializer;
-
-    @StringField(
-            configFieldName = VALUE_SERIALIZER_KEY,
-            externalizedKeyName = VALUE_SERIALIZER_KEY,
-            defaultValue = "org.apache.kafka.common.serialization.ByteArraySerializer",
-            description = "Kafka value serializer. Default to ByteArraySerializer"
-    )
-    @JsonProperty(VALUE_SERIALIZER_KEY)
-    private String valueSerializer;
-
-    @StringField(
-            configFieldName = ACKS_KEY,
-            externalizedKeyName = ACKS_KEY,
-            defaultValue = "all",
-            description = "This value is a string, if using 1 or 0, you must use '1' or '0' as the value"
-    )
-    @JsonProperty(ACKS_KEY)
-    private String acks;
 
     @StringField(
             configFieldName = BOOTSTRAP_SERVERS_KEY,
@@ -81,83 +50,66 @@ public class KafkaProducerPropertiesConfig {
     @JsonProperty(BOOTSTRAP_SERVERS_KEY)
     private String bootstrapServers;
 
-    @NumberField(
-            configFieldName = BUFFER_MEMORY_KEY,
-            externalizedKeyName = BUFFER_MEMORY_KEY,
-            defaultValue = "33554432", // 32MB
-            description = "Buffer size for unsent records. Default to 33554432"
+    @StringField(
+            configFieldName = KEY_DESERIALIZER_KEY,
+            externalizedKeyName = KEY_DESERIALIZER_KEY,
+            defaultValue = "org.apache.kafka.common.serialization.ByteArrayDeserializer",
+            description = "Consumer will use the schema for deserialization from byte array\n" +
+                    "Kafka key deserializer. Default to ByteArrayDeserializer"
     )
-    @JsonProperty(BUFFER_MEMORY_KEY)
-    private Integer bufferMemory;
+    @JsonProperty(KEY_DESERIALIZER_KEY)
+    private String keyDeserializer;
 
-    @NumberField(
-            configFieldName = RETRIES_KEY,
-            externalizedKeyName = RETRIES_KEY,
-            defaultValue = "3",
-            description = "Retry times for producer. Default to 3"
+    @StringField(
+            configFieldName = VALUE_DESERIALIZER_KEY,
+            externalizedKeyName = VALUE_DESERIALIZER_KEY,
+            defaultValue = "org.apache.kafka.common.serialization.ByteArrayDeserializer",
+            description = "Kafka value deserializer. Default to ByteArrayDeserializer"
     )
-    @JsonProperty(RETRIES_KEY)
-    private Integer retries;
-
-    @NumberField(
-            configFieldName = BATCH_SIZE_KEY,
-            externalizedKeyName = BATCH_SIZE_KEY,
-            defaultValue = "16384",
-            description = "Batch size. Default to 16KB"
-    )
-    @JsonProperty(BATCH_SIZE_KEY)
-    private Integer batchSize;
-
-    @NumberField(
-            configFieldName = LINGER_MS_KEY,
-            externalizedKeyName = LINGER_MS_KEY,
-            defaultValue = "1",
-            description = "Linger time. Default to 1ms"
-    )
-    @JsonProperty(LINGER_MS_KEY)
-    private Integer lingerMs;
-
-    @NumberField(
-            configFieldName = MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION_KEY,
-            externalizedKeyName = MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION_KEY,
-            defaultValue = "5",
-            description = "max in-flight requests per connection. Default to 5"
-    )
-    @JsonProperty(MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION_KEY)
-    private Integer maxInFlightRequestsPerConnection;
+    @JsonProperty(VALUE_DESERIALIZER_KEY)
+    private String valueDeserializer;
 
     @BooleanField(
-            configFieldName = ENABLE_IDEMPOTENCE_KEY,
-            externalizedKeyName = ENABLE_IDEMPOTENCE_KEY,
+            configFieldName = ENABLE_AUTO_COMMIT_KEY,
+            externalizedKeyName = ENABLE_AUTO_COMMIT_KEY,
             defaultValue = "false",
-            description = "enable idempotence. Default to true"
+            description = "As the control pane or API to access admin endpoint for commit, this value should be false."
     )
-    @JsonProperty(ENABLE_IDEMPOTENCE_KEY)
-    private Boolean enableIdempotence;
+    @JsonProperty(ENABLE_AUTO_COMMIT_KEY)
+    private Boolean enableAutoCommit;
+
+    @StringField(
+            configFieldName = AUTO_OFFSET_RESET_KEY,
+            externalizedKeyName = AUTO_OFFSET_RESET_KEY,
+            defaultValue = "earliest",
+            description = "Kafka auto offset reset. Default to earliest"
+    )
+    @JsonProperty(AUTO_OFFSET_RESET_KEY)
+    private String autoOffsetReset;
+
+    @StringField(
+            configFieldName = GROUP_ID_KEY,
+            externalizedKeyName = GROUP_ID_KEY,
+            defaultValue = "group1",
+            description = "Kafka consumer group id. Default to group1"
+    )
+    @JsonProperty(GROUP_ID_KEY)
+    private String groupId;
 
     @StringField(
             configFieldName = SCHEMA_REGISTRY_URL_KEY,
             externalizedKeyName = SCHEMA_REGISTRY_URL_KEY,
             defaultValue = "http://localhost:8081",
-            description = "Confluent schema registry url"
+            description = "Schema registry url"
     )
     @JsonProperty(SCHEMA_REGISTRY_URL_KEY)
     private String schemaRegistryUrl;
-
-    @NumberField(
-            configFieldName = SCHEMA_REGISTRY_CACHE_KEY,
-            externalizedKeyName = SCHEMA_REGISTRY_CACHE_KEY,
-            defaultValue = "100",
-            description = "Schema registry identity cache size"
-    )
-    @JsonProperty(SCHEMA_REGISTRY_CACHE_KEY)
-    private Integer schemaRegistryCache;
 
     @BooleanField(
             configFieldName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
             externalizedKeyName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
             defaultValue = "true",
-            description = "Schema registry auto register schema indicator for streams application.\n" +
+            description = "Schema registry auto register schema indicator for streams application. " +
                     "If true, the first request will register the schema auto automatically."
     )
     @JsonProperty(SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY)
@@ -246,8 +198,9 @@ public class KafkaProducerPropertiesConfig {
             configFieldName = SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY,
             externalizedKeyName = SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY,
             defaultValue = "also-name",
-            description = "SSL endpoint identification algorithm for secure communication. " +
-                    "This is used to verify the hostname of the server against the certificate presented by the server."
+            description = """
+                    SSL endpoint identification algorithm for secure communication.
+                    This is used to verify the hostname of the server against the certificate presented by the server."""
     )
     @JsonProperty(SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY)
     private String sslEndpointIdentificationAlgorithm;
@@ -256,7 +209,7 @@ public class KafkaProducerPropertiesConfig {
             configFieldName = CLIENT_RACK_KEY,
             externalizedKeyName = CLIENT_RACK_KEY,
             defaultValue = "rack1",
-            description = "Client rack identifier for Kafka producer. Default to rack1"
+            description = "Client rack identifier for Kafka consumer. Default to rack1"
     )
     @JsonProperty(CLIENT_RACK_KEY)
     private String clientRack;
@@ -264,7 +217,7 @@ public class KafkaProducerPropertiesConfig {
     @StringField(
             configFieldName = BASIC_AUTH_USER_INFO_KEY,
             externalizedKeyName = BASIC_AUTH_USER_INFO_KEY,
-            defaultValue = "${kafka-producer.username:username}:${kafka-producer.password:password}",
+            defaultValue = "${kafka-consumer.username:username}:${kafka-consumer.password:password}",
             description = "basic authentication user:pass for the schema registry",
             injection = false
     )
@@ -281,19 +234,43 @@ public class KafkaProducerPropertiesConfig {
     private String basicAuthCredentialsSource;
 
     @NumberField(
-            configFieldName = MAX_REQUEST_SIZE_KEY,
-            externalizedKeyName = MAX_REQUEST_SIZE_KEY,
-            defaultValue = "1048576",
-            description = "If you have message that is bigger than 1 MB to produce, increase this value."
+            configFieldName = FETCH_MAX_BYTES_KEY,
+            externalizedKeyName = FETCH_MAX_BYTES_KEY,
+            defaultValue = "102400",
+            description = "Max fetch size from Kafka cluster. Default 50mb is too big for cache consumption on the sidecar"
     )
-    @JsonProperty(MAX_REQUEST_SIZE_KEY)
-    private Integer maxRequestSize;
+    @JsonProperty(FETCH_MAX_BYTES_KEY)
+    private Integer fetchMaxBytes;
+
+    @NumberField(
+            configFieldName = MAX_POLL_RECORDS_KEY,
+            externalizedKeyName = MAX_POLL_RECORDS_KEY,
+            defaultValue = "100",
+            description = """
+                    max poll records default is 500. Adjust it based on the size of the records to make sure each poll
+                    is similar to requestMaxBytes down below."""
+    )
+    @JsonProperty(MAX_POLL_RECORDS_KEY)
+    private Integer maxPollRecords;
+
+
+    @NumberField(
+            configFieldName = MAX_PARTITION_FETCH_BYTES_KEY,
+            externalizedKeyName = MAX_PARTITION_FETCH_BYTES_KEY,
+            defaultValue = "100",
+            description = """
+                    The maximum amount of data per-partition the server will return. Records are fetched in batches by the consumer.
+                    If the first record batch in the first non-empty partition of the fetch is larger than this limit, the batch will still be returned to ensure that the consumer can make progress."""
+    )
+    @JsonProperty(MAX_PARTITION_FETCH_BYTES_KEY)
+    private Integer maxPartitionFetchBytes;
 
     @MapField(
             configFieldName = ADDITIONAL_KAFKA_PROPERTIES_KEY,
             externalizedKeyName = ADDITIONAL_KAFKA_PROPERTIES_KEY,
-            description = "Any additional properties that are not defined in the schema can be added here.\n" +
-                          "This is useful for custom configurations that are not part of the standard Kafka producer properties.",
+            description = """
+                    Any additional kafka properties that are not defined in the schema can be added here.
+                    This is useful for custom configurations that are not part of the standard Kafka consumer properties.""",
             additionalProperties = true
     )
     @JsonProperty(ADDITIONAL_KAFKA_PROPERTIES_KEY)
@@ -304,18 +281,13 @@ public class KafkaProducerPropertiesConfig {
         if (additionalKafkaProperties != null) {
             properties.putAll(additionalKafkaProperties);
         }
-        addIfSet(properties, KEY_SERIALIZER_KEY, keySerializer);
-        addIfSet(properties, VALUE_SERIALIZER_KEY, valueSerializer);
-        addIfSet(properties, ACKS_KEY, acks);
         addIfSet(properties, BOOTSTRAP_SERVERS_KEY, bootstrapServers);
-        addIfSet(properties, BUFFER_MEMORY_KEY, bufferMemory);
-        addIfSet(properties, RETRIES_KEY, retries);
-        addIfSet(properties, BATCH_SIZE_KEY, batchSize);
-        addIfSet(properties, LINGER_MS_KEY, lingerMs);
-        addIfSet(properties, MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION_KEY, maxInFlightRequestsPerConnection);
-        addIfSet(properties, ENABLE_IDEMPOTENCE_KEY, enableIdempotence);
+        addIfSet(properties, KEY_DESERIALIZER_KEY, keyDeserializer);
+        addIfSet(properties, VALUE_DESERIALIZER_KEY, valueDeserializer);
+        addIfSet(properties, ENABLE_AUTO_COMMIT_KEY, enableAutoCommit);
+        addIfSet(properties, AUTO_OFFSET_RESET_KEY, autoOffsetReset);
+        addIfSet(properties, GROUP_ID_KEY, groupId);
         addIfSet(properties, SCHEMA_REGISTRY_URL_KEY, schemaRegistryUrl);
-        addIfSet(properties, SCHEMA_REGISTRY_CACHE_KEY, schemaRegistryCache);
         addIfSet(properties, SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY, schemaRegistryAutoRegisterSchemas);
         addIfSet(properties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY, schemaRegistrySslTruststoreLocation);
         addIfSet(properties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY, schemaRegistrySslTruststorePassword);
@@ -332,56 +304,38 @@ public class KafkaProducerPropertiesConfig {
         addIfSet(properties, CLIENT_RACK_KEY, clientRack);
         addIfSet(properties, BASIC_AUTH_USER_INFO_KEY, basicAuthUserInfo);
         addIfSet(properties, BASIC_AUTH_CREDENTIALS_SOURCE_KEY, basicAuthCredentialsSource);
-        addIfSet(properties, MAX_REQUEST_SIZE_KEY, maxRequestSize);
+        addIfSet(properties, FETCH_MAX_BYTES_KEY, fetchMaxBytes);
+        addIfSet(properties, MAX_POLL_RECORDS_KEY, maxPollRecords);
+        addIfSet(properties, MAX_PARTITION_FETCH_BYTES_KEY, maxPartitionFetchBytes);
         return properties;
-    }
-
-    public String getKeySerializer() {
-        return keySerializer;
-    }
-
-    public String getValueSerializer() {
-        return valueSerializer;
-    }
-
-    public String getAcks() {
-        return acks;
     }
 
     public String getBootstrapServers() {
         return bootstrapServers;
     }
 
-    public Integer getBufferMemory() {
-        return bufferMemory;
+    public String getKeyDeserializer() {
+        return keyDeserializer;
     }
 
-    public Integer getRetries() {
-        return retries;
+    public String getValueDeserializer() {
+        return valueDeserializer;
     }
 
-    public Integer getBatchSize() {
-        return batchSize;
+    public Boolean getEnableAutoCommit() {
+        return enableAutoCommit;
     }
 
-    public Integer getLingerMs() {
-        return lingerMs;
+    public String getAutoOffsetReset() {
+        return autoOffsetReset;
     }
 
-    public Integer getMaxInFlightRequestsPerConnection() {
-        return maxInFlightRequestsPerConnection;
-    }
-
-    public Boolean getEnableIdempotence() {
-        return enableIdempotence;
+    public String getGroupId() {
+        return groupId;
     }
 
     public String getSchemaRegistryUrl() {
         return schemaRegistryUrl;
-    }
-
-    public Integer getSchemaRegistryCache() {
-        return schemaRegistryCache;
     }
 
     public Boolean getSchemaRegistryAutoRegisterSchemas() {
@@ -440,8 +394,16 @@ public class KafkaProducerPropertiesConfig {
         return basicAuthCredentialsSource;
     }
 
-    public Integer getMaxRequestSize() {
-        return maxRequestSize;
+    public Integer getFetchMaxBytes() {
+        return fetchMaxBytes;
+    }
+
+    public Integer getMaxPollRecords() {
+        return maxPollRecords;
+    }
+
+    public Integer getMaxPartitionFetchBytes() {
+        return maxPartitionFetchBytes;
     }
 
     public Map<String, Object> getAdditionalKafkaProperties() {

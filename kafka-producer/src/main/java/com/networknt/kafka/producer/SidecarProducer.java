@@ -3,7 +3,7 @@ package com.networknt.kafka.producer;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.google.protobuf.ByteString;
 import com.networknt.exception.FrameworkException;
-import com.networknt.kafka.common.config.KafkaProducerConfig;
+import com.networknt.kafka.common.KafkaProducerConfig;
 import com.networknt.kafka.entity.*;
 import com.networknt.status.Status;
 import com.networknt.utility.Constants;

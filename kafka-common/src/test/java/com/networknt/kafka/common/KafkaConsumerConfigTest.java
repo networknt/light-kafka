@@ -1,6 +1,5 @@
 package com.networknt.kafka.common;
 
-import com.networknt.kafka.common.config.KafkaConsumerConfig;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,7 +9,7 @@ class KafkaConsumerConfigTest {
     void testLoadingDefaultConfigName() {
         KafkaConsumerConfig config = KafkaConsumerConfig.load();
         assertNotNull(config);
-        assertNotNull(config.getProperties().getGroupId());
+        assertNotNull(config.getGroupId());
     }
 
     @Test

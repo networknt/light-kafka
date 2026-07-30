@@ -1,6 +1,7 @@
-package com.networknt.kafka.common.config;
+package com.networknt.kafka.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.networknt.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +44,27 @@ public class KafkaConfigUtils {
     public static void addIfSet(final Map<String, Object> map, final String key, final Object value) {
         if (value != null) {
             map.put(key, value);
+        }
+    }
+
+    static Map<String, Object> getJsonMapConfig(final String configName, final Map<String, Object> fallback) {
+        try {
+            return Config.getInstance().getJsonMapConfig(configName);
+        } catch (ClassCastException e) {
+            // A 2.3.0 client may already have cached the same file as a configuration POJO.
+            // Reuse our parsed snapshot when possible; only bypass the shared cache on first load.
+            return fallback != null ? fallback : Config.getInstance().getJsonMapConfigNoCache(configName);
+        }
+    }
+
+    static boolean sameMappedConfig(final Map<String, Object> left, final Map<String, Object> right) {
+        return left == right || left != null && left.equals(right);
+    }
+
+    static void copyProperty(final Map<String, Object> source, final Map<String, Object> target,
+                             final String sourceKey, final String targetKey) {
+        if (source.containsKey(sourceKey)) {
+            target.put(targetKey, source.get(sourceKey));
         }
     }
 

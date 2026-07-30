@@ -1,0 +1,8 @@
+bootstrapServers: localhost:9092
+isolationLevel: read_committed
+enableAutoCommit: false
+autoCommitIntervalMs: 1000
+autoOffsetReset: earliest
+keyDeserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+valueDeserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+groupId: group1

@@ -1,4 +1,4 @@
-package com.networknt.kafka.common.config;
+package com.networknt.kafka.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.networknt.config.Config;
@@ -8,9 +8,13 @@ import org.slf4j.LoggerFactory;
 
 import com.networknt.server.ModuleRegistry;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import static com.networknt.kafka.common.config.KafkaConfigUtils.getFromMappedConfigAsType;
+import static com.networknt.kafka.common.KafkaConfigUtils.copyProperty;
+import static com.networknt.kafka.common.KafkaConfigUtils.getFromMappedConfigAsType;
+import static com.networknt.kafka.common.KafkaConfigUtils.getJsonMapConfig;
+import static com.networknt.kafka.common.KafkaConfigUtils.sameMappedConfig;
 
 /**
  * A Kafka setting configuration file. It get from defined resource yml file in
@@ -33,6 +37,8 @@ public class KafkaProducerConfig {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaProducerConfig.class);
 
     public static final String CONFIG_NAME = "kafka-producer";
+    public static final String AUDIT_TARGET_TOPIC = "topic";
+    public static final String AUDIT_TARGET_LOGFILE = "logfile";
     private static final String PROPERTIES_KEY = "properties";
     private static final String TOPIC_KEY = "topic";
     private static final String INJECT_OPEN_TRACING_KEY = "injectOpenTracing";
@@ -50,7 +56,11 @@ public class KafkaProducerConfig {
             description = "Generic configuration for Kafka producer."
     )
     @JsonProperty(PROPERTIES_KEY)
-    private KafkaProducerPropertiesConfig properties = new KafkaProducerPropertiesConfig();
+    // This typed field is used by schema generation and load(). The 2.3.0-compatible
+    // getProperties()/setProperties(Map) accessors intentionally use the same JSON name.
+    private KafkaProducerPropertiesConfig propertiesConfig = new KafkaProducerPropertiesConfig();
+
+    private Map<String, Object> properties;
 
     @StringField(
             configFieldName = TOPIC_KEY,
@@ -59,7 +69,7 @@ public class KafkaProducerConfig {
             description = "The default topic for the producer. Only certain producer implementation will use it."
     )
     @JsonProperty(TOPIC_KEY)
-    private String topic = "portal-event";
+    private String topic;
 
     @StringField(
             configFieldName = KEY_FORMAT_KEY,
@@ -68,7 +78,7 @@ public class KafkaProducerConfig {
             description = "Default key format if no schema for the topic value"
     )
     @JsonProperty(KEY_FORMAT_KEY)
-    private String keyFormat = "jsonschema";
+    private String keyFormat;
 
     @StringField(
             configFieldName = VALUE_FORMAT_KEY,
@@ -77,7 +87,7 @@ public class KafkaProducerConfig {
             description = "Default value format if no schema for the topic value"
     )
     @JsonProperty(VALUE_FORMAT_KEY)
-    private String valueFormat = "jsonschema";
+    private String valueFormat;
 
     @BooleanField(
             configFieldName = INJECT_OPEN_TRACING_KEY,
@@ -86,7 +96,7 @@ public class KafkaProducerConfig {
             description = "If open tracing is enable. traceability, correlation and metrics should not be in the chain if opentracing is used."
     )
     @JsonProperty(INJECT_OPEN_TRACING_KEY)
-    private Boolean injectOpenTracing = false;
+    private Boolean injectOpenTracing;
 
     @BooleanField(
             configFieldName = INJECT_CALLER_ID_KEY,
@@ -95,7 +105,7 @@ public class KafkaProducerConfig {
             description = "Inject serviceId as callerId into the http header for metrics to collect the caller. The serviceId is from server.yml"
     )
     @JsonProperty(INJECT_CALLER_ID_KEY)
-    private Boolean injectCallerId = false;
+    private Boolean injectCallerId;
 
     @BooleanField(
             configFieldName = AUDIT_ENABLED_KEY,
@@ -104,7 +114,7 @@ public class KafkaProducerConfig {
             description = "If audit is enabled, the producer will send the audit message to the audit topic."
     )
     @JsonProperty(AUDIT_ENABLED_KEY)
-    private Boolean auditEnabled = true;
+    private Boolean auditEnabled;
 
     @StringField(
             configFieldName = AUDIT_TARGET_KEY,
@@ -113,7 +123,7 @@ public class KafkaProducerConfig {
             description = "Audit log destination topic or logfile. Default to topic"
     )
     @JsonProperty(AUDIT_TARGET_KEY)
-    private String auditTarget = "logfile";
+    private String auditTarget;
 
     @StringField(
             configFieldName = AUDIT_TOPIC_KEY,
@@ -122,17 +132,28 @@ public class KafkaProducerConfig {
             description = "The consumer audit topic name if the auditTarget is topic"
     )
     @JsonProperty(AUDIT_TOPIC_KEY)
-    private String auditTopic = "sidecar-audit";
+    private String auditTopic;
 
     private Map<String, Object> mappedConfig;
     private static volatile KafkaProducerConfig instance;
 
     public KafkaProducerConfig() {
-        this(CONFIG_NAME);
     }
 
     public KafkaProducerConfig(final String configName) {
-        this.mappedConfig = Config.getInstance().getJsonMapConfig(configName);
+        this(configName, getJsonMapConfig(configName, null));
+    }
+
+    private KafkaProducerConfig(final String configName, final Map<String, Object> mappedConfig) {
+        this.topic = "portal-event";
+        this.keyFormat = "jsonschema";
+        this.valueFormat = "jsonschema";
+        this.injectOpenTracing = false;
+        this.injectCallerId = false;
+        this.auditEnabled = true;
+        this.auditTarget = "logfile";
+        this.auditTopic = "sidecar-audit";
+        this.mappedConfig = mappedConfig;
         this.setConfigData();
     }
 
@@ -142,16 +163,16 @@ public class KafkaProducerConfig {
 
     public static KafkaProducerConfig load(final String configName) {
         if (CONFIG_NAME.equals(configName)) {
-            Map<String, Object> mappedConfig = Config.getInstance().getJsonMapConfig(configName);
-            if (instance != null && instance.getMappedConfig() == mappedConfig) {
+            Map<String, Object> mappedConfig = getJsonMapConfig(configName,
+                    instance == null ? null : instance.getMappedConfig());
+            if (instance != null && sameMappedConfig(instance.getMappedConfig(), mappedConfig)) {
                 return instance;
             }
             synchronized (KafkaProducerConfig.class) {
-                mappedConfig = Config.getInstance().getJsonMapConfig(configName);
-                if (instance != null && instance.getMappedConfig() == mappedConfig) {
+                if (instance != null && sameMappedConfig(instance.getMappedConfig(), mappedConfig)) {
                     return instance;
                 }
-                instance = new KafkaProducerConfig(configName);
+                instance = new KafkaProducerConfig(configName, mappedConfig);
                 ModuleRegistry.registerModule(CONFIG_NAME, KafkaProducerConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), null);
                 return instance;
             }
@@ -166,7 +187,7 @@ public class KafkaProducerConfig {
     public static void reload(String configName) {
         if (CONFIG_NAME.equals(configName)) {
             synchronized (KafkaProducerConfig.class) {
-                instance = new KafkaProducerConfig(configName);
+                instance = new KafkaProducerConfig(configName, Config.getInstance().getJsonMapConfigNoCache(configName));
                 ModuleRegistry.registerModule(CONFIG_NAME, KafkaProducerConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), null);
             }
         }
@@ -174,59 +195,128 @@ public class KafkaProducerConfig {
 
     private void setConfigData() {
         final var mapper = Config.getInstance().getMapper();
-        this.properties = getFromMappedConfigAsType(this.mappedConfig, mapper, PROPERTIES_KEY, KafkaProducerPropertiesConfig.class);
-        this.topic = getFromMappedConfigAsType(this.mappedConfig,mapper, TOPIC_KEY, String.class);
-        this.keyFormat = getFromMappedConfigAsType(this.mappedConfig,mapper, KEY_FORMAT_KEY, String.class);
-        this.valueFormat = getFromMappedConfigAsType(this.mappedConfig,mapper, VALUE_FORMAT_KEY, String.class);
-        this.injectOpenTracing = getFromMappedConfigAsType(this.mappedConfig,mapper, INJECT_OPEN_TRACING_KEY, Boolean.class);
-        this.injectCallerId = getFromMappedConfigAsType(this.mappedConfig,mapper, INJECT_CALLER_ID_KEY, Boolean.class);
-        this.auditEnabled = getFromMappedConfigAsType(this.mappedConfig,mapper, AUDIT_ENABLED_KEY, Boolean.class);
-        this.auditTarget = getFromMappedConfigAsType(this.mappedConfig,mapper, AUDIT_TARGET_KEY, String.class);
-        this.auditTopic = getFromMappedConfigAsType(this.mappedConfig,mapper, AUDIT_TOPIC_KEY, String.class);
+        if (this.mappedConfig.containsKey(PROPERTIES_KEY)) {
+            this.propertiesConfig = getFromMappedConfigAsType(this.mappedConfig, mapper, PROPERTIES_KEY, KafkaProducerPropertiesConfig.class);
+            this.properties = this.propertiesConfig == null ? new HashMap<>() : this.propertiesConfig.getMergedProperties();
+        } else {
+            this.propertiesConfig = null;
+            this.properties = getLegacyKafkaProperties(this.mappedConfig);
+        }
+        this.topic = getIfPresent(TOPIC_KEY, String.class, this.topic);
+        this.keyFormat = getIfPresent(KEY_FORMAT_KEY, String.class, this.keyFormat);
+        this.valueFormat = getIfPresent(VALUE_FORMAT_KEY, String.class, this.valueFormat);
+        this.injectOpenTracing = getIfPresent(INJECT_OPEN_TRACING_KEY, Boolean.class, this.injectOpenTracing);
+        this.injectCallerId = getIfPresent(INJECT_CALLER_ID_KEY, Boolean.class, this.injectCallerId);
+        this.auditEnabled = getIfPresent(AUDIT_ENABLED_KEY, Boolean.class, this.auditEnabled);
+        this.auditTarget = getIfPresent(AUDIT_TARGET_KEY, String.class, this.auditTarget);
+        this.auditTopic = getIfPresent(AUDIT_TOPIC_KEY, String.class, this.auditTopic);
+    }
+
+    private <T> T getIfPresent(final String key, final Class<T> type, final T defaultValue) {
+        return this.mappedConfig.containsKey(key)
+                ? getFromMappedConfigAsType(this.mappedConfig, Config.getInstance().getMapper(), key, type)
+                : defaultValue;
+    }
+
+    private static Map<String, Object> getLegacyKafkaProperties(final Map<String, Object> mappedConfig) {
+        Map<String, Object> properties = new HashMap<>();
+        copyProperty(mappedConfig, properties, "keySerializer", "key.serializer");
+        copyProperty(mappedConfig, properties, "valueSerializer", "value.serializer");
+        copyProperty(mappedConfig, properties, "acks", "acks");
+        copyProperty(mappedConfig, properties, "bootstrapServers", "bootstrap.servers");
+        copyProperty(mappedConfig, properties, "bufferMemory", "buffer.memory");
+        copyProperty(mappedConfig, properties, "retries", "retries");
+        copyProperty(mappedConfig, properties, "batchSize", "batch.size");
+        copyProperty(mappedConfig, properties, "lingerMs", "linger.ms");
+        copyProperty(mappedConfig, properties, "maxInFlightRequestsPerConnection", "max.in.flight.requests.per.connection");
+        copyProperty(mappedConfig, properties, "enableIdempotence", "enable.idempotence");
+        copyProperty(mappedConfig, properties, "transactionId", "transactional.id");
+        copyProperty(mappedConfig, properties, "transactionTimeoutMs", "transaction.timeout.ms");
+        copyProperty(mappedConfig, properties, "transactionalIdExpirationMs", "transactional.id.expiration.ms");
+        copyProperty(mappedConfig, properties, "schemaRegistryUrl", "schema.registry.url");
+        copyProperty(mappedConfig, properties, "schemaRegistryCache", "schema.registry.cache");
+        copyProperty(mappedConfig, properties, "maxRequestSize", "max.request.size");
+        return properties;
     }
 
     public Map<String, Object> getMappedConfig() {
         return mappedConfig;
     }
 
-    public KafkaProducerPropertiesConfig getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
     }
 
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+    }
+
     public Map<String, Object> getKafkaMapProperties() {
-        return properties.getMergedProperties();
+        return properties;
     }
 
     public String getTopic() {
         return topic;
     }
 
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
     public String getKeyFormat() {
         return keyFormat;
+    }
+
+    public void setKeyFormat(String keyFormat) {
+        this.keyFormat = keyFormat;
     }
 
     public String getValueFormat() {
         return valueFormat;
     }
 
+    public void setValueFormat(String valueFormat) {
+        this.valueFormat = valueFormat;
+    }
+
     public boolean isInjectOpenTracing() {
-        return injectOpenTracing;
+        return Boolean.TRUE.equals(injectOpenTracing);
+    }
+
+    public void setInjectOpenTracing(boolean injectOpenTracing) {
+        this.injectOpenTracing = injectOpenTracing;
     }
 
     public boolean isInjectCallerId() {
-        return injectCallerId;
+        return Boolean.TRUE.equals(injectCallerId);
+    }
+
+    public void setInjectCallerId(boolean injectCallerId) {
+        this.injectCallerId = injectCallerId;
     }
 
     public boolean isAuditEnabled() {
-        return auditEnabled;
+        return Boolean.TRUE.equals(auditEnabled);
+    }
+
+    public void setAuditEnabled(boolean auditEnabled) {
+        this.auditEnabled = auditEnabled;
     }
 
     public String getAuditTarget() {
         return auditTarget;
     }
 
+    public void setAuditTarget(String auditTarget) {
+        this.auditTarget = auditTarget;
+    }
+
     public String getAuditTopic() {
         return auditTopic;
+    }
+
+    public void setAuditTopic(String auditTopic) {
+        this.auditTopic = auditTopic;
     }
 
     public Boolean getInjectOpenTracing() {

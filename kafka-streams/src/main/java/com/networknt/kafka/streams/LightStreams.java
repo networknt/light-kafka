@@ -1,7 +1,9 @@
 package com.networknt.kafka.streams;
 
-import com.networknt.kafka.common.config.KafkaStreamsConfig;
+import com.networknt.config.Config;
+import com.networknt.kafka.common.KafkaStreamsConfig;
 import com.networknt.kafka.entity.StreamsDLQMetadata;
+import com.networknt.server.ModuleRegistry;
 import com.networknt.utility.ObjectUtils;
 import com.networknt.utility.StringUtils;
 import org.apache.kafka.common.serialization.Serdes;
@@ -27,6 +29,18 @@ public interface LightStreams {
      */
     void start(String ip, int port);
     void close();
+
+    /**
+     * Register the streams configuration so it is included in the server info response.
+     */
+    default void registerModule() {
+        List<String> masks = new ArrayList<>();
+        masks.add("basic.auth.user.info");
+        masks.add("sasl.jaas.config");
+        masks.add("schema.registry.ssl.truststore.password");
+        ModuleRegistry.registerModule(KafkaStreamsConfig.CONFIG_NAME, LightStreams.class.getName(),
+                Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(KafkaStreamsConfig.CONFIG_NAME), masks);
+    }
 
     /**
      * Get a value from a ReadOnlyKeyStore based on a given key.

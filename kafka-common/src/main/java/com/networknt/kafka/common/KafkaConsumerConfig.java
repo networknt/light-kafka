@@ -1,4 +1,4 @@
-package com.networknt.kafka.common.config;
+package com.networknt.kafka.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.networknt.config.Config;
@@ -7,10 +7,14 @@ import com.networknt.config.schema.*;
 import com.networknt.server.ModuleRegistry;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.networknt.kafka.common.config.KafkaConfigUtils.getFromMappedConfigAsType;
+import static com.networknt.kafka.common.KafkaConfigUtils.copyProperty;
+import static com.networknt.kafka.common.KafkaConfigUtils.getFromMappedConfigAsType;
+import static com.networknt.kafka.common.KafkaConfigUtils.getJsonMapConfig;
+import static com.networknt.kafka.common.KafkaConfigUtils.sameMappedConfig;
 
 @ConfigSchema(
         configKey = "kafka-consumer",
@@ -58,7 +62,12 @@ public class KafkaConsumerConfig {
             ref = KafkaConsumerPropertiesConfig.class
     )
     @JsonProperty(PROPERTIES_KEY)
-    private KafkaConsumerPropertiesConfig properties = new KafkaConsumerPropertiesConfig();
+    // This typed field is used by schema generation and load(). The 2.3.0-compatible
+    // getProperties()/setProperties(Map) accessors intentionally use the same JSON name.
+    private KafkaConsumerPropertiesConfig propertiesConfig = new KafkaConsumerPropertiesConfig();
+
+    private Map<String, Object> properties;
+    private String groupId;
 
     @BooleanField(
             configFieldName = DEAD_LETTER_ENABLED_KEY,
@@ -237,7 +246,7 @@ public class KafkaConsumerConfig {
             description = "Amount of time to backoff when an iterator runs out of date."
     )
     @JsonProperty(ITERATOR_BACKOFF_MS_KEY)
-    private Integer iteratorBackoffMs = 50;
+    private Integer iteratorBackoffMs;
 
     @BooleanField(
             configFieldName = BACKEND_CONNECTION_RESET_KEY,
@@ -248,7 +257,7 @@ public class KafkaConsumerConfig {
                     "when we receive the response and not wait for FinAck."
     )
     @JsonProperty(BACKEND_CONNECTION_RESET_KEY)
-    private Boolean backendConnectionReset = false;
+    private Boolean backendConnectionReset;
 
     @NumberField(
             configFieldName = MAX_RETRIES_KEY,
@@ -283,18 +292,44 @@ public class KafkaConsumerConfig {
                     "NOTE: Values outside 0–100 are considered invalid and may be rejected by the application or lead to undefined behavior.\n"
     )
     @JsonProperty(BATCH_ROLLBACK_THRESHOLD_KEY)
-    private Integer batchRollbackThreshold = 30;
+    private Integer batchRollbackThreshold;
 
 
     private Map<String, Object> mappedConfig;
     private static volatile KafkaConsumerConfig instance;
 
     public KafkaConsumerConfig() {
-        this(CONFIG_NAME);
     }
 
     public KafkaConsumerConfig(final String configName) {
-        this.mappedConfig = Config.getInstance().getJsonMapConfig(configName);
+        this(configName, getJsonMapConfig(configName, null));
+    }
+
+    private KafkaConsumerConfig(final String configName, final Map<String, Object> mappedConfig) {
+        this.deadLetterEnabled = true;
+        this.deadLetterTopicExt = ".dlq";
+        this.auditEnabled = true;
+        this.auditTarget = "";
+        this.auditTopic = "logfile";
+        this.useNoWrappingAvro = false;
+        this.topic = "test1";
+        this.keyFormat = "jsonschema";
+        this.valueFormat = "jsonschema";
+        this.waitPeriod = 100;
+        this.backendApiHost = "https://localhost:8444";
+        this.backendApiPath = "/kafka/records";
+        this.maxConsumerThreads = 50;
+        this.serverId = "id";
+        this.requestMaxBytes = 102400L;
+        this.requestTimeoutMs = 1000;
+        this.fetchMinBytes = -1;
+        this.instanceTimeoutMs = 300000;
+        this.iteratorBackoffMs = 50;
+        this.backendConnectionReset = false;
+        this.maxRetries = 3;
+        this.retryDelayMs = 1000;
+        this.batchRollbackThreshold = 30;
+        this.mappedConfig = mappedConfig;
         this.setConfigData();
     }
 
@@ -304,16 +339,16 @@ public class KafkaConsumerConfig {
 
     public static KafkaConsumerConfig load(final String configName) {
         if (CONFIG_NAME.equals(configName)) {
-            Map<String, Object> mappedConfig = Config.getInstance().getJsonMapConfig(configName);
-            if (instance != null && instance.getMappedConfig() == mappedConfig) {
+            Map<String, Object> mappedConfig = getJsonMapConfig(configName,
+                    instance == null ? null : instance.getMappedConfig());
+            if (instance != null && sameMappedConfig(instance.getMappedConfig(), mappedConfig)) {
                 return instance;
             }
             synchronized (KafkaConsumerConfig.class) {
-                mappedConfig = Config.getInstance().getJsonMapConfig(configName);
-                if (instance != null && instance.getMappedConfig() == mappedConfig) {
+                if (instance != null && sameMappedConfig(instance.getMappedConfig(), mappedConfig)) {
                     return instance;
                 }
-                instance = new KafkaConsumerConfig(configName);
+                instance = new KafkaConsumerConfig(configName, mappedConfig);
                 ModuleRegistry.registerModule(CONFIG_NAME, KafkaConsumerConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), MASKS);
                 return instance;
             }
@@ -323,30 +358,60 @@ public class KafkaConsumerConfig {
 
     private void setConfigData() {
         final var mapper = Config.getInstance().getMapper();
-        this.properties = getFromMappedConfigAsType(this.mappedConfig, mapper, PROPERTIES_KEY, KafkaConsumerPropertiesConfig.class);
-        this.deadLetterEnabled = getFromMappedConfigAsType(this.mappedConfig, mapper, DEAD_LETTER_ENABLED_KEY, Boolean.class);
-        this.deadLetterTopicExt = getFromMappedConfigAsType(this.mappedConfig, mapper, DEAD_LETTER_TOPIC_EXT_KEY, String.class);
-        this.auditEnabled = getFromMappedConfigAsType(this.mappedConfig, mapper, AUDIT_ENABLED_KEY, Boolean.class);
-        this.auditTarget = getFromMappedConfigAsType(this.mappedConfig, mapper, AUDIT_TARGET_KEY, String.class);
-        this.auditTopic = getFromMappedConfigAsType(this.mappedConfig, mapper, AUDIT_TOPIC_KEY, String.class);
-        this.useNoWrappingAvro = getFromMappedConfigAsType(this.mappedConfig, mapper, USE_NO_WRAPPING_AVRO_KEY, Boolean.class);
-        this.topic = getFromMappedConfigAsType(this.mappedConfig, mapper, TOPIC_KEY, String.class);
-        this.keyFormat = getFromMappedConfigAsType(this.mappedConfig, mapper, KEY_FORMAT_KEY, String.class);
-        this.valueFormat = getFromMappedConfigAsType(this.mappedConfig, mapper, VALUE_FORMAT_KEY, String.class);
-        this.waitPeriod = getFromMappedConfigAsType(this.mappedConfig, mapper, WAIT_PERIOD_KEY, Integer.class);
-        this.backendApiHost = getFromMappedConfigAsType(this.mappedConfig, mapper, BACKEND_API_HOST_KEY, String.class);
-        this.backendApiPath = getFromMappedConfigAsType(this.mappedConfig, mapper, BACKEND_API_PATH_KEY, String.class);
-        this.maxConsumerThreads = getFromMappedConfigAsType(this.mappedConfig, mapper, MAX_CONSUMER_THREADS_KEY, Integer.class);
-        this.serverId = getFromMappedConfigAsType(this.mappedConfig, mapper, SERVER_ID_KEY, String.class);
-        this.requestMaxBytes = getFromMappedConfigAsType(this.mappedConfig, mapper, REQUEST_MAX_BYTES_KEY, Long.class);
-        this.requestTimeoutMs = getFromMappedConfigAsType(this.mappedConfig, mapper, REQUEST_TIMEOUT_MS_KEY, Integer.class);
-        this.fetchMinBytes = getFromMappedConfigAsType(this.mappedConfig, mapper, FETCH_MIN_BYTES_KEY, Integer.class);
-        this.instanceTimeoutMs = getFromMappedConfigAsType(this.mappedConfig, mapper, INSTANCE_TIMEOUT_MS_KEY, Integer.class);
-        this.iteratorBackoffMs = getFromMappedConfigAsType(this.mappedConfig, mapper, ITERATOR_BACKOFF_MS_KEY, Integer.class);
-        this.backendConnectionReset = getFromMappedConfigAsType(this.mappedConfig, mapper, BACKEND_CONNECTION_RESET_KEY, Boolean.class);
-        this.maxRetries = getFromMappedConfigAsType(this.mappedConfig, mapper, MAX_RETRIES_KEY, Integer.class);
-        this.retryDelayMs = getFromMappedConfigAsType(this.mappedConfig, mapper, RETRY_DELAY_MS_KEY, Integer.class);
-        this.batchRollbackThreshold = getFromMappedConfigAsType(this.mappedConfig, mapper, BATCH_ROLLBACK_THRESHOLD_KEY, Integer.class);
+        if (this.mappedConfig.containsKey(PROPERTIES_KEY)) {
+            this.propertiesConfig = getFromMappedConfigAsType(this.mappedConfig, mapper, PROPERTIES_KEY, KafkaConsumerPropertiesConfig.class);
+            this.properties = this.propertiesConfig == null ? new HashMap<>() : this.propertiesConfig.getMergedProperties();
+        } else {
+            this.propertiesConfig = null;
+            this.properties = getLegacyKafkaProperties(this.mappedConfig);
+        }
+        this.groupId = this.mappedConfig.containsKey("groupId")
+                ? (String) this.mappedConfig.get("groupId") : (String) this.properties.get("group.id");
+        if (this.groupId != null) {
+            this.properties.put("group.id", this.groupId);
+        }
+        this.deadLetterEnabled = getIfPresent(DEAD_LETTER_ENABLED_KEY, Boolean.class, this.deadLetterEnabled);
+        this.deadLetterTopicExt = getIfPresent(DEAD_LETTER_TOPIC_EXT_KEY, String.class, this.deadLetterTopicExt);
+        this.auditEnabled = getIfPresent(AUDIT_ENABLED_KEY, Boolean.class, this.auditEnabled);
+        this.auditTarget = getIfPresent(AUDIT_TARGET_KEY, String.class, this.auditTarget);
+        this.auditTopic = getIfPresent(AUDIT_TOPIC_KEY, String.class, this.auditTopic);
+        this.useNoWrappingAvro = getIfPresent(USE_NO_WRAPPING_AVRO_KEY, Boolean.class, this.useNoWrappingAvro);
+        this.topic = getIfPresent(TOPIC_KEY, String.class, this.topic);
+        this.keyFormat = getIfPresent(KEY_FORMAT_KEY, String.class, this.keyFormat);
+        this.valueFormat = getIfPresent(VALUE_FORMAT_KEY, String.class, this.valueFormat);
+        this.waitPeriod = getIfPresent(WAIT_PERIOD_KEY, Integer.class, this.waitPeriod);
+        this.backendApiHost = getIfPresent(BACKEND_API_HOST_KEY, String.class, this.backendApiHost);
+        this.backendApiPath = getIfPresent(BACKEND_API_PATH_KEY, String.class, this.backendApiPath);
+        this.maxConsumerThreads = getIfPresent(MAX_CONSUMER_THREADS_KEY, Integer.class, this.maxConsumerThreads);
+        this.serverId = getIfPresent(SERVER_ID_KEY, String.class, this.serverId);
+        this.requestMaxBytes = getIfPresent(REQUEST_MAX_BYTES_KEY, Long.class, this.requestMaxBytes);
+        this.requestTimeoutMs = getIfPresent(REQUEST_TIMEOUT_MS_KEY, Integer.class, this.requestTimeoutMs);
+        this.fetchMinBytes = getIfPresent(FETCH_MIN_BYTES_KEY, Integer.class, this.fetchMinBytes);
+        this.instanceTimeoutMs = getIfPresent(INSTANCE_TIMEOUT_MS_KEY, Integer.class, this.instanceTimeoutMs);
+        this.iteratorBackoffMs = getIfPresent(ITERATOR_BACKOFF_MS_KEY, Integer.class, this.iteratorBackoffMs);
+        this.backendConnectionReset = getIfPresent(BACKEND_CONNECTION_RESET_KEY, Boolean.class, this.backendConnectionReset);
+        this.maxRetries = getIfPresent(MAX_RETRIES_KEY, Integer.class, this.maxRetries);
+        this.retryDelayMs = getIfPresent(RETRY_DELAY_MS_KEY, Integer.class, this.retryDelayMs);
+        this.batchRollbackThreshold = getIfPresent(BATCH_ROLLBACK_THRESHOLD_KEY, Integer.class, this.batchRollbackThreshold);
+    }
+
+    private <T> T getIfPresent(final String key, final Class<T> type, final T defaultValue) {
+        return this.mappedConfig.containsKey(key)
+                ? getFromMappedConfigAsType(this.mappedConfig, Config.getInstance().getMapper(), key, type)
+                : defaultValue;
+    }
+
+    private static Map<String, Object> getLegacyKafkaProperties(final Map<String, Object> mappedConfig) {
+        Map<String, Object> properties = new HashMap<>();
+        copyProperty(mappedConfig, properties, "bootstrapServers", "bootstrap.servers");
+        copyProperty(mappedConfig, properties, "isolationLevel", "isolation.level");
+        copyProperty(mappedConfig, properties, "enableAutoCommit", "enable.auto.commit");
+        copyProperty(mappedConfig, properties, "autoCommitIntervalMs", "auto.commit.interval.ms");
+        copyProperty(mappedConfig, properties, "autoOffsetReset", "auto.offset.reset");
+        copyProperty(mappedConfig, properties, "keyDeserializer", "key.deserializer");
+        copyProperty(mappedConfig, properties, "valueDeserializer", "value.deserializer");
+        copyProperty(mappedConfig, properties, "groupId", "group.id");
+        return properties;
     }
 
     public Map<String, Object> getMappedConfig() {
@@ -354,95 +419,208 @@ public class KafkaConsumerConfig {
     }
 
     public Map<String, Object> getKafkaMapProperties() {
-        return properties.getMergedProperties();
+        return properties;
     }
 
-    public KafkaConsumerPropertiesConfig getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+        this.groupId = properties == null ? null : (String) properties.get("group.id");
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 
     public Boolean getDeadLetterEnabled() {
         return deadLetterEnabled;
     }
 
+    public boolean isDeadLetterEnabled() {
+        return Boolean.TRUE.equals(deadLetterEnabled);
+    }
+
+    public void setDeadLetterEnabled(boolean deadLetterEnabled) {
+        this.deadLetterEnabled = deadLetterEnabled;
+    }
+
     public String getDeadLetterTopicExt() {
         return deadLetterTopicExt;
+    }
+
+    public void setDeadLetterTopicExt(String deadLetterTopicExt) {
+        this.deadLetterTopicExt = deadLetterTopicExt;
     }
 
     public Boolean getAuditEnabled() {
         return auditEnabled;
     }
 
+    public boolean isAuditEnabled() {
+        return Boolean.TRUE.equals(auditEnabled);
+    }
+
+    public void setAuditEnabled(boolean auditEnabled) {
+        this.auditEnabled = auditEnabled;
+    }
+
     public String getAuditTarget() {
         return auditTarget;
+    }
+
+    public void setAuditTarget(String auditTarget) {
+        this.auditTarget = auditTarget;
     }
 
     public String getAuditTopic() {
         return auditTopic;
     }
 
+    public void setAuditTopic(String auditTopic) {
+        this.auditTopic = auditTopic;
+    }
+
     public Boolean getUseNoWrappingAvro() {
         return useNoWrappingAvro;
+    }
+
+    public boolean isUseNoWrappingAvro() {
+        return Boolean.TRUE.equals(useNoWrappingAvro);
+    }
+
+    public void setUseNoWrappingAvro(boolean useNoWrappingAvro) {
+        this.useNoWrappingAvro = useNoWrappingAvro;
     }
 
     public String getTopic() {
         return topic;
     }
 
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
     public String getKeyFormat() {
         return keyFormat;
+    }
+
+    public void setKeyFormat(String keyFormat) {
+        this.keyFormat = keyFormat;
     }
 
     public String getValueFormat() {
         return valueFormat;
     }
 
-    public Integer getWaitPeriod() {
-        return waitPeriod;
+    public void setValueFormat(String valueFormat) {
+        this.valueFormat = valueFormat;
+    }
+
+    public int getWaitPeriod() {
+        return waitPeriod == null ? 0 : waitPeriod;
+    }
+
+    public void setWaitPeriod(int waitPeriod) {
+        this.waitPeriod = waitPeriod;
     }
 
     public String getBackendApiHost() {
         return backendApiHost;
     }
 
+    public void setBackendApiHost(String backendApiHost) {
+        this.backendApiHost = backendApiHost;
+    }
+
     public String getBackendApiPath() {
         return backendApiPath;
     }
 
-    public Integer getMaxConsumerThreads() {
-        return maxConsumerThreads;
+    public void setBackendApiPath(String backendApiPath) {
+        this.backendApiPath = backendApiPath;
+    }
+
+    public int getMaxConsumerThreads() {
+        return maxConsumerThreads == null ? 0 : maxConsumerThreads;
+    }
+
+    public void setMaxConsumerThreads(int maxConsumerThreads) {
+        this.maxConsumerThreads = maxConsumerThreads;
     }
 
     public String getServerId() {
         return serverId;
     }
 
-    public Long getRequestMaxBytes() {
-        return requestMaxBytes;
+    public void setServerId(String serverId) {
+        this.serverId = serverId;
     }
 
-    public Integer getRequestTimeoutMs() {
-        return requestTimeoutMs;
+    public long getRequestMaxBytes() {
+        return requestMaxBytes == null ? 0L : requestMaxBytes;
     }
 
-    public Integer getFetchMinBytes() {
-        return fetchMinBytes;
+    public void setRequestMaxBytes(long requestMaxBytes) {
+        this.requestMaxBytes = requestMaxBytes;
     }
 
-    public Integer getInstanceTimeoutMs() {
-        return instanceTimeoutMs;
+    public int getRequestTimeoutMs() {
+        return requestTimeoutMs == null ? 0 : requestTimeoutMs;
     }
 
-    public Integer getIteratorBackoffMs() {
-        return iteratorBackoffMs;
+    public void setRequestTimeoutMs(int requestTimeoutMs) {
+        this.requestTimeoutMs = requestTimeoutMs;
+    }
+
+    public int getFetchMinBytes() {
+        return fetchMinBytes == null ? 0 : fetchMinBytes;
+    }
+
+    public void setFetchMinBytes(int fetchMinBytes) {
+        this.fetchMinBytes = fetchMinBytes;
+    }
+
+    public int getInstanceTimeoutMs() {
+        return instanceTimeoutMs == null ? 0 : instanceTimeoutMs;
+    }
+
+    public void setInstanceTimeoutMs(int instanceTimeoutMs) {
+        this.instanceTimeoutMs = instanceTimeoutMs;
+    }
+
+    public int getIteratorBackoffMs() {
+        return iteratorBackoffMs == null ? 0 : iteratorBackoffMs;
+    }
+
+    public void setIteratorBackoffMs(int iteratorBackoffMs) {
+        this.iteratorBackoffMs = iteratorBackoffMs;
     }
 
     public Boolean getBackendConnectionReset() {
         return backendConnectionReset;
     }
 
+    public boolean isBackendConnectionReset() {
+        return Boolean.TRUE.equals(backendConnectionReset);
+    }
+
+    public void setBackendConnectionReset(boolean backendConnectionReset) {
+        this.backendConnectionReset = backendConnectionReset;
+    }
+
     public Integer getMaxRetries() { return maxRetries; }
 
     public Integer getRetryDelayMs() { return retryDelayMs; }
-    public Integer getBatchRollbackThreshold() { return batchRollbackThreshold; }
+    public int getBatchRollbackThreshold() { return batchRollbackThreshold == null ? 0 : batchRollbackThreshold; }
+
+    public void setBatchRollbackThreshold(int batchRollbackThreshold) {
+        this.batchRollbackThreshold = batchRollbackThreshold;
+    }
 }

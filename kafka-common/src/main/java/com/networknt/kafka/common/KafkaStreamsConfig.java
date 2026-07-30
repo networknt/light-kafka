@@ -1,4 +1,4 @@
-package com.networknt.kafka.common.config;
+package com.networknt.kafka.common;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,8 +8,14 @@ import com.networknt.config.schema.*;
 import com.networknt.server.ModuleRegistry;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.networknt.kafka.common.KafkaConfigUtils.copyProperty;
+import static com.networknt.kafka.common.KafkaConfigUtils.getFromMappedConfigAsType;
+import static com.networknt.kafka.common.KafkaConfigUtils.getJsonMapConfig;
+import static com.networknt.kafka.common.KafkaConfigUtils.sameMappedConfig;
 
 @ConfigSchema(
         configName = "kafka-streams",
@@ -21,6 +27,8 @@ import java.util.Map;
 )
 public class KafkaStreamsConfig extends KafkaConfigUtils {
     public static final String CONFIG_NAME = "kafka-streams";
+    public static final String AUDIT_TARGET_TOPIC = "topic";
+    public static final String AUDIT_TARGET_LOGFILE = "logfile";
     private static final List<String> MASKS = Arrays.asList("basic.auth.user.info", "sasl.jaas.config", "schema.registry.ssl.truststore.password");
 
     public static final String PROPERTIES_KEY = "properties";
@@ -40,7 +48,11 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
             ref = KafkaStreamsPropertiesConfig.class
     )
     @JsonProperty(PROPERTIES_KEY)
-    private KafkaStreamsPropertiesConfig properties = new KafkaStreamsPropertiesConfig();
+    // This typed field is used by schema generation and load(). The 2.3.0-compatible
+    // getProperties()/setProperties(Map) accessors intentionally use the same JSON name.
+    private KafkaStreamsPropertiesConfig propertiesConfig = new KafkaStreamsPropertiesConfig();
+
+    private Map<String, Object> properties;
 
     @BooleanField(
             configFieldName = CLEAN_UP_KEY,
@@ -48,7 +60,7 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
             defaultValue = "false",
             description = "Only set to true right after the streams reset and start the server. Once the server is up, shutdown and change this to false and restart."
     )
-    private Boolean cleanUp = false;
+    private Boolean cleanUp;
 
     @BooleanField(
             configFieldName = DEAD_LETTER_ENABLED_KEY,
@@ -58,7 +70,7 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
                     "Indicator if the dead letter topic is enabled."
     )
     @JsonProperty(DEAD_LETTER_ENABLED_KEY)
-    private Boolean deadLetterEnabled = true;
+    private Boolean deadLetterEnabled;
 
     @StringField(
             configFieldName = DEAD_LETTER_TOPIC_EXT_KEY,
@@ -67,7 +79,7 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
             description = "The extension of the dead letter queue(topic) that is added to the original topic to form the dead letter topic"
     )
     @JsonProperty(DEAD_LETTER_TOPIC_EXT_KEY)
-    private String deadLetterTopicExt = ".dlq";
+    private String deadLetterTopicExt;
 
     @BooleanField(
             configFieldName = AUDIT_ENABLED_KEY,
@@ -76,7 +88,7 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
             description = "If audit is enabled, the producer will send the audit message to the audit topic."
     )
     @JsonProperty(AUDIT_ENABLED_KEY)
-    private Boolean auditEnabled = true;
+    private Boolean auditEnabled;
 
     @StringField(
             configFieldName = AUDIT_TARGET_KEY,
@@ -85,7 +97,7 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
             description = "Audit log destination topic or logfile. Default to topic"
     )
     @JsonProperty(AUDIT_TARGET_KEY)
-    private String auditTarget = "logfile";
+    private String auditTarget;
 
     @StringField(
             configFieldName = AUDIT_TOPIC_KEY,
@@ -94,7 +106,7 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
             description = "The consumer audit topic name if the auditTarget is topic"
     )
     @JsonProperty(AUDIT_TOPIC_KEY)
-    private String auditTopic = "sidecar-audit";
+    private String auditTopic;
 
     @StringField(
             configFieldName = DEAD_LETTER_CONTROLLER_TOPIC_KEY,
@@ -103,7 +115,7 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
             description = "The dead letter controller topic, one per environment."
     )
     @JsonProperty(DEAD_LETTER_CONTROLLER_TOPIC_KEY)
-    private String deadLetterControllerTopicKey = "dev.ent.all.kafka.replay.metadata.0";
+    private String deadLetterControllerTopicKey;
 
 
 
@@ -111,11 +123,21 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     private static volatile KafkaStreamsConfig instance;
 
     public KafkaStreamsConfig() {
-        this(CONFIG_NAME);
     }
 
     public KafkaStreamsConfig(final String configName) {
-        this.mappedConfig = Config.getInstance().getJsonMapConfig(configName);
+        this(configName, getJsonMapConfig(configName, null));
+    }
+
+    private KafkaStreamsConfig(final String configName, final Map<String, Object> mappedConfig) {
+        this.cleanUp = false;
+        this.deadLetterEnabled = true;
+        this.deadLetterTopicExt = ".dlq";
+        this.auditEnabled = true;
+        this.auditTarget = "logfile";
+        this.auditTopic = "sidecar-audit";
+        this.deadLetterControllerTopicKey = "dev.ent.all.kafka.replay.metadata.0";
+        this.mappedConfig = mappedConfig;
         this.setConfigData();
     }
 
@@ -125,16 +147,16 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
 
     public static KafkaStreamsConfig load(final String configName) {
         if (CONFIG_NAME.equals(configName)) {
-            Map<String, Object> mappedConfig = Config.getInstance().getJsonMapConfig(configName);
-            if (instance != null && instance.getMappedConfig() == mappedConfig) {
+            Map<String, Object> mappedConfig = getJsonMapConfig(configName,
+                    instance == null ? null : instance.getMappedConfig());
+            if (instance != null && sameMappedConfig(instance.getMappedConfig(), mappedConfig)) {
                 return instance;
             }
             synchronized (KafkaStreamsConfig.class) {
-                mappedConfig = Config.getInstance().getJsonMapConfig(configName);
-                if (instance != null && instance.getMappedConfig() == mappedConfig) {
+                if (instance != null && sameMappedConfig(instance.getMappedConfig(), mappedConfig)) {
                     return instance;
                 }
-                instance = new KafkaStreamsConfig(configName);
+                instance = new KafkaStreamsConfig(configName, mappedConfig);
                 ModuleRegistry.registerModule(CONFIG_NAME, KafkaStreamsConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), MASKS);
                 return instance;
             }
@@ -149,7 +171,7 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     public static void reload(String configName) {
         if (CONFIG_NAME.equals(configName)) {
             synchronized (KafkaStreamsConfig.class) {
-                instance = new KafkaStreamsConfig(configName);
+                instance = new KafkaStreamsConfig(configName, Config.getInstance().getJsonMapConfigNoCache(configName));
                 ModuleRegistry.registerModule(CONFIG_NAME, KafkaStreamsConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), MASKS);
             }
         }
@@ -157,8 +179,39 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
 
     private void setConfigData() {
         final var mapper = Config.getInstance().getMapper();
-        this.properties = getFromMappedConfigAsType(this.mappedConfig, mapper, PROPERTIES_KEY, KafkaStreamsPropertiesConfig.class);
-        this.cleanUp = getFromMappedConfigAsType(this.mappedConfig, mapper, CLEAN_UP_KEY, Boolean.class);
+        if (this.mappedConfig.containsKey(PROPERTIES_KEY)) {
+            this.propertiesConfig = getFromMappedConfigAsType(this.mappedConfig, mapper, PROPERTIES_KEY, KafkaStreamsPropertiesConfig.class);
+            this.properties = this.propertiesConfig == null ? new HashMap<>() : this.propertiesConfig.getMergedProperties();
+        } else {
+            this.propertiesConfig = null;
+            this.properties = getLegacyKafkaProperties(this.mappedConfig);
+        }
+        this.cleanUp = getIfPresent(CLEAN_UP_KEY, Boolean.class, this.cleanUp);
+        this.deadLetterEnabled = getIfPresent(DEAD_LETTER_ENABLED_KEY, Boolean.class, this.deadLetterEnabled);
+        this.deadLetterTopicExt = getIfPresent(DEAD_LETTER_TOPIC_EXT_KEY, String.class, this.deadLetterTopicExt);
+        this.auditEnabled = getIfPresent(AUDIT_ENABLED_KEY, Boolean.class, this.auditEnabled);
+        this.auditTarget = getIfPresent(AUDIT_TARGET_KEY, String.class, this.auditTarget);
+        this.auditTopic = getIfPresent(AUDIT_TOPIC_KEY, String.class, this.auditTopic);
+        this.deadLetterControllerTopicKey = getIfPresent(DEAD_LETTER_CONTROLLER_TOPIC_KEY, String.class,
+                this.deadLetterControllerTopicKey);
+    }
+
+    private <T> T getIfPresent(final String key, final Class<T> type, final T defaultValue) {
+        return this.mappedConfig.containsKey(key)
+                ? getFromMappedConfigAsType(this.mappedConfig, Config.getInstance().getMapper(), key, type)
+                : defaultValue;
+    }
+
+    private static Map<String, Object> getLegacyKafkaProperties(final Map<String, Object> mappedConfig) {
+        Map<String, Object> properties = new HashMap<>();
+        copyProperty(mappedConfig, properties, "bootstrapServers", "bootstrap.servers");
+        copyProperty(mappedConfig, properties, "keyDeserializer", "key.deserializer");
+        copyProperty(mappedConfig, properties, "valueDeserializer", "value.deserializer");
+        copyProperty(mappedConfig, properties, "autoOffsetReset", "auto.offset.reset");
+        copyProperty(mappedConfig, properties, "applicationId", "application.id");
+        copyProperty(mappedConfig, properties, "schemaRegistryUrl", "schema.registry.url");
+        copyProperty(mappedConfig, properties, "stateDir", "state.dir");
+        return properties;
     }
 
     public Map<String, Object> getMappedConfig() {
@@ -166,113 +219,72 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     }
 
     public Map<String, Object> getKafkaMapProperties() {
-        return properties.getMergedProperties();
+        return properties;
     }
 
-    public KafkaStreamsPropertiesConfig getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
     }
 
     public Boolean getCleanUp() {
         return cleanUp;
     }
 
-    public Boolean isAuditEnabled() {
-        return auditEnabled;
+    public boolean isCleanUp() {
+        return Boolean.TRUE.equals(cleanUp);
+    }
+
+    public void setCleanUp(boolean cleanUp) {
+        this.cleanUp = cleanUp;
+    }
+
+    public boolean isAuditEnabled() {
+        return Boolean.TRUE.equals(auditEnabled);
+    }
+
+    public void setAuditEnabled(boolean auditEnabled) {
+        this.auditEnabled = auditEnabled;
     }
 
     public String getAuditTarget() {
         return auditTarget;
     }
 
+    public void setAuditTarget(String auditTarget) {
+        this.auditTarget = auditTarget;
+    }
+
     public String getAuditTopic() {
         return auditTopic;
     }
 
+    public void setAuditTopic(String auditTopic) {
+        this.auditTopic = auditTopic;
+    }
+
     public String getDeadLetterControllerTopic() { return deadLetterControllerTopicKey; }
 
-    public Boolean isDeadLetterEnabled() {
-        return deadLetterEnabled;
+    public void setDeadLetterControllerTopic(String deadLetterControllerTopic) {
+        this.deadLetterControllerTopicKey = deadLetterControllerTopic;
+    }
+
+    public boolean isDeadLetterEnabled() {
+        return Boolean.TRUE.equals(deadLetterEnabled);
+    }
+
+    public void setDeadLetterEnabled(boolean deadLetterEnabled) {
+        this.deadLetterEnabled = deadLetterEnabled;
     }
 
     public String getDeadLetterTopicExt() {
         return deadLetterTopicExt;
     }
 
-    //    public static final String AUDIT_TARGET_TOPIC = "topic";
-//    public static final String AUDIT_TARGET_LOGFILE = "logfile";
-//    private boolean auditEnabled;
-//    private String auditTarget;
-//    private String auditTopic;
-//    private boolean deadLetterEnabled;
-//    private String deadLetterTopicExt;
-//    private String deadLetterControllerTopic;
-
-
-//    public KafkaStreamsConfig() {
-//    }
-//
-//    public boolean isCleanUp() {
-//        return cleanUp;
-//    }
-//
-//    public void setCleanUp(boolean cleanUp) {
-//        this.cleanUp = cleanUp;
-//    }
-//    public boolean isAuditEnabled() {
-//        return auditEnabled;
-//    }
-//
-//    public void setAuditEnabled(boolean auditEnabled) {
-//        this.auditEnabled = auditEnabled;
-//    }
-//
-//    public String getAuditTarget() {
-//        return auditTarget;
-//    }
-//
-//    public void setAuditTarget(String auditTarget) {
-//        this.auditTarget = auditTarget;
-//    }
-//
-//    public String getAuditTopic() {
-//        return auditTopic;
-//    }
-//
-//    public void setAuditTopic(String auditTopic) {
-//        this.auditTopic = auditTopic;
-//    }
-//
-//    public boolean isDeadLetterEnabled() {
-//        return deadLetterEnabled;
-//    }
-//
-//    public void setDeadLetterEnabled(boolean deadLetterEnabled) {
-//        this.deadLetterEnabled = deadLetterEnabled;
-//    }
-//
-//    public String getDeadLetterTopicExt() {
-//        return deadLetterTopicExt;
-//    }
-//
-//    public void setDeadLetterTopicExt(String deadLetterTopicExt) {
-//        this.deadLetterTopicExt = deadLetterTopicExt;
-//    }
-//
-//    public String getDeadLetterControllerTopic() {
-//        return deadLetterControllerTopic;
-//    }
-//
-//    public void setDeadLetterControllerTopic(String deadLetterControllerTopic) {
-//        this.deadLetterControllerTopic = deadLetterControllerTopic;
-//    }
-//
-//
-//    public Map<String, Object> getProperties() {
-//        return properties;
-//    }
-//
-//    public void setProperties(Map<String, Object> properties) {
-//        this.properties = properties;
-//    }
+    public void setDeadLetterTopicExt(String deadLetterTopicExt) {
+        this.deadLetterTopicExt = deadLetterTopicExt;
+    }
 }

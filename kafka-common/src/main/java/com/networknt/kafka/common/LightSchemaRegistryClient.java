@@ -1,9 +1,6 @@
 package com.networknt.kafka.common;
 
 import com.networknt.config.Config;
-import com.networknt.kafka.common.config.KafkaConsumerConfig;
-import com.networknt.kafka.common.config.KafkaProducerConfig;
-import com.networknt.kafka.common.config.KafkaStreamsConfig;
 import io.confluent.kafka.schemaregistry.avro.AvroSchemaProvider;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.RestService;
