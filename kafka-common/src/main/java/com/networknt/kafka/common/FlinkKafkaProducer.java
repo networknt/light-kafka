@@ -36,6 +36,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Wrapper around KafkaProducer that allows to resume transactions in case of node failure, which allows to implement
@@ -249,7 +250,10 @@ public class FlinkKafkaProducer<K, V> implements Producer<K, V> {
         TransactionalRequestResult result = enqueueNewPartitions();
         Object sender = getValue(kafkaProducer, "sender");
         invoke(sender, "wakeup");
-        result.await();
+        result.await(
+                Long.MAX_VALUE,
+                TimeUnit.MILLISECONDS,
+                "Unexpected timeout while adding partitions to the transaction.");
     }
 
     private TransactionalRequestResult enqueueNewPartitions() {
