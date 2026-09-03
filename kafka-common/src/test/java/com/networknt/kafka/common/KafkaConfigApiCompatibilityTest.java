@@ -121,6 +121,34 @@ class KafkaConfigApiCompatibilityTest {
     }
 
     @Test
+    void rootSaslConfigurationTakesPrecedenceOverAdditionalProperties() {
+        Map<String, Object> staleAdditionalProperties = new HashMap<>();
+        staleAdditionalProperties.put("sasl.jaas.config", "STALE");
+
+        Map<String, Object> componentProperties = new HashMap<>();
+        componentProperties.put("additionalKafkaProperties", staleAdditionalProperties);
+        componentProperties.put("sasl.jaas.config.module", "org.example.LoginModule");
+        componentProperties.put("sasl.jaas.config.username", "newuser");
+        componentProperties.put("sasl.jaas.config.password", "newpass");
+
+        KafkaProducerConfig componentsWin = new KafkaProducerConfig();
+        componentsWin.setProperties(componentProperties);
+        assertEquals("org.example.LoginModule required username=\"newuser\" password=\"newpass\";",
+                componentsWin.getProperties().get("sasl.jaas.config"));
+
+        Map<String, Object> explicitProperties = new HashMap<>();
+        explicitProperties.put("additionalKafkaProperties", Map.of(
+                "sasl.jaas.config.module", "org.example.StaleLoginModule",
+                "sasl.jaas.config.username", "staleuser",
+                "sasl.jaas.config.password", "stalepass"));
+        explicitProperties.put("sasl.jaas.config", "ROOT");
+
+        KafkaProducerConfig explicitWins = new KafkaProducerConfig();
+        explicitWins.setProperties(explicitProperties);
+        assertEquals("ROOT", explicitWins.getProperties().get("sasl.jaas.config"));
+    }
+
+    @Test
     void loadsFlat230ConsumerConfiguration() {
         KafkaConsumerConfig consumer = KafkaConsumerConfig.load("kafka-consumer-2.3.0");
 

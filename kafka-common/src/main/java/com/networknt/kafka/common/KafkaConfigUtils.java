@@ -110,7 +110,7 @@ public class KafkaConfigUtils {
         Object module = properties.get(SASL_JAAS_CONFIG_MODULE_KEY);
         Object username = properties.get(SASL_JAAS_CONFIG_USERNAME_KEY);
         Object password = properties.get(SASL_JAAS_CONFIG_PASSWORD_KEY);
-        if (!properties.containsKey(SASL_JAAS_CONFIG_KEY)
+        if (!rawMap.containsKey(SASL_JAAS_CONFIG_KEY)
                 && module != null
                 && username != null
                 && password != null) {

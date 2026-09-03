@@ -225,6 +225,14 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
         return properties;
     }
 
+    /**
+     * Sets the Kafka client properties. Mutable input maps are normalized in place,
+     * so callers observe flattened additional properties, removed null entries, and
+     * synthesized SASL configuration. If the map cannot be modified, this config
+     * stores a normalized copy instead.
+     *
+     * @param properties Kafka client properties, or {@code null}
+     */
     public void setProperties(Map<String, Object> properties) {
         this.properties = properties == null ? null : normalizeKafkaPropertiesInPlace(properties);
     }
