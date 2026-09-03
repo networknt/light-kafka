@@ -15,6 +15,7 @@ import java.util.Map;
 import static com.networknt.kafka.common.KafkaConfigUtils.copyProperty;
 import static com.networknt.kafka.common.KafkaConfigUtils.getFromMappedConfigAsType;
 import static com.networknt.kafka.common.KafkaConfigUtils.getJsonMapConfig;
+import static com.networknt.kafka.common.KafkaConfigUtils.normalizeKafkaProperties;
 import static com.networknt.kafka.common.KafkaConfigUtils.sameMappedConfig;
 
 @ConfigSchema(
@@ -48,8 +49,8 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
             ref = KafkaStreamsPropertiesConfig.class
     )
     @JsonProperty(PROPERTIES_KEY)
-    // This typed field is used by schema generation and load(). The 2.3.0-compatible
-    // getProperties()/setProperties(Map) accessors intentionally use the same JSON name.
+    // This typed field is used by schema generation. Runtime loading retains the raw,
+    // open-ended Kafka property map required by the 2.3.0-compatible accessors.
     private KafkaStreamsPropertiesConfig propertiesConfig = new KafkaStreamsPropertiesConfig();
 
     private Map<String, Object> properties;
@@ -178,10 +179,8 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     }
 
     private void setConfigData() {
-        final var mapper = Config.getInstance().getMapper();
         if (this.mappedConfig.containsKey(PROPERTIES_KEY)) {
-            this.propertiesConfig = getFromMappedConfigAsType(this.mappedConfig, mapper, PROPERTIES_KEY, KafkaStreamsPropertiesConfig.class);
-            this.properties = this.propertiesConfig == null ? new HashMap<>() : this.propertiesConfig.getMergedProperties();
+            this.properties = normalizeKafkaProperties(this.mappedConfig.get(PROPERTIES_KEY));
         } else {
             this.propertiesConfig = null;
             this.properties = getLegacyKafkaProperties(this.mappedConfig);
@@ -227,7 +226,7 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     }
 
     public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
+        this.properties = properties == null ? null : normalizeKafkaProperties(properties);
     }
 
     public Boolean getCleanUp() {

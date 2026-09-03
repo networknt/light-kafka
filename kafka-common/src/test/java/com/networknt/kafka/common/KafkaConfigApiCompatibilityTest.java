@@ -17,17 +17,23 @@ class KafkaConfigApiCompatibilityTest {
     void noArgConstructorsRetain230PojoDefaults() {
         KafkaConsumerConfig consumer = new KafkaConsumerConfig();
         assertNull(consumer.getProperties());
+        consumer.setProperties(null);
+        assertNull(consumer.getProperties());
         assertEquals(0, consumer.getMaxConsumerThreads());
         assertEquals(0L, consumer.getRequestMaxBytes());
         assertFalse(consumer.isAuditEnabled());
 
         KafkaProducerConfig producer = new KafkaProducerConfig();
         assertNull(producer.getProperties());
+        producer.setProperties(null);
+        assertNull(producer.getProperties());
         assertNull(producer.getTopic());
         assertFalse(producer.isInjectOpenTracing());
         assertFalse(producer.isAuditEnabled());
 
         KafkaStreamsConfig streams = new KafkaStreamsConfig();
+        assertNull(streams.getProperties());
+        streams.setProperties(null);
         assertNull(streams.getProperties());
         assertFalse(streams.isCleanUp());
         assertFalse(streams.isDeadLetterEnabled());
@@ -48,6 +54,30 @@ class KafkaConfigApiCompatibilityTest {
         KafkaStreamsConfig streams = (KafkaStreamsConfig) Config.getInstance()
                 .getJsonObjectConfig(KafkaStreamsConfig.CONFIG_NAME, KafkaStreamsConfig.class);
         assertEquals("http://localhost:8081", streams.getProperties().get("schema.registry.url"));
+    }
+
+    @Test
+    void legacyJsonObjectLoadingNormalizesOpenEndedProperties() {
+        KafkaConsumerConfig consumer = (KafkaConsumerConfig) Config.getInstance()
+                .getJsonObjectConfigNoCache("kafka-consumer-open-ended", KafkaConsumerConfig.class);
+        assertEquals("inline-consumer-value", consumer.getProperties().get("inline.custom.property"));
+        assertEquals("myNewValue", consumer.getProperties().get("myNewProperty"));
+        assertEquals("http://localhost:8081", consumer.getProperties().get("schema.registry.url"));
+        assertFalse(consumer.getProperties().containsKey("additionalKafkaProperties"));
+
+        KafkaProducerConfig producer = (KafkaProducerConfig) Config.getInstance()
+                .getJsonObjectConfigNoCache("kafka-producer-additionalProps", KafkaProducerConfig.class);
+        assertEquals("inline-producer-value", producer.getProperties().get("inline.custom.property"));
+        assertEquals("myNewValue", producer.getProperties().get("myNewProperty"));
+        assertEquals("http://localhost:8081", producer.getProperties().get("schema.registry.url"));
+        assertFalse(producer.getProperties().containsKey("additionalKafkaProperties"));
+
+        KafkaStreamsConfig streams = (KafkaStreamsConfig) Config.getInstance()
+                .getJsonObjectConfigNoCache("kafka-streams-additionalProps", KafkaStreamsConfig.class);
+        assertEquals("inline-streams-value", streams.getProperties().get("inline.custom.property"));
+        assertEquals("myNewValue", streams.getProperties().get("myNewProperty"));
+        assertEquals("http://localhost:8081", streams.getProperties().get("schema.registry.url"));
+        assertFalse(streams.getProperties().containsKey("additionalKafkaProperties"));
     }
 
     @Test

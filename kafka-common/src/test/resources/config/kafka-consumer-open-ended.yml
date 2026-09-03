@@ -1,0 +1,10 @@
+properties:
+  bootstrap.servers: localhost:9092
+  group.id: object-loading-group
+  schema.registry.url: http://localhost:8081
+  inline.custom.property: inline-consumer-value
+  additionalKafkaProperties:
+    myNewProperty: myNewValue
+    schema.registry.url: attemptedOverwrite
+
+deadLetterEnabled: true
