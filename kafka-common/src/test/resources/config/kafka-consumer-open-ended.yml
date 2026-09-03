@@ -1,10 +1,14 @@
 properties:
   bootstrap.servers: localhost:9092
-  group.id: object-loading-group
+  group.id: 1001
   schema.registry.url: http://localhost:8081
+  max.poll.records:
   inline.custom.property: inline-consumer-value
   additionalKafkaProperties:
     myNewProperty: myNewValue
     schema.registry.url: attemptedOverwrite
+    sasl.jaas.config.module: org.apache.kafka.common.security.plain.PlainLoginModule
+    sasl.jaas.config.username: 12345
+    sasl.jaas.config.password: 67890
 
 deadLetterEnabled: true

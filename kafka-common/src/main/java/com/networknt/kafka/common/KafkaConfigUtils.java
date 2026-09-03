@@ -12,6 +12,7 @@ public class KafkaConfigUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaConfigUtils.class);
     private static final String ADDITIONAL_KAFKA_PROPERTIES_KEY = "additionalKafkaProperties";
+    private static final String GROUP_ID_KEY = "group.id";
     private static final String SASL_JAAS_CONFIG_KEY = "sasl.jaas.config";
     private static final String SASL_JAAS_CONFIG_MODULE_KEY = "sasl.jaas.config.module";
     private static final String SASL_JAAS_CONFIG_USERNAME_KEY = "sasl.jaas.config.username";
@@ -97,20 +98,25 @@ public class KafkaConfigUtils {
         for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
             if (entry.getKey() instanceof String key
                     && !ADDITIONAL_KAFKA_PROPERTIES_KEY.equals(key)
-                    && !isSaslJaasComponent(key)) {
+                    && entry.getValue() != null) {
                 properties.put(key, entry.getValue());
             }
         }
 
-        Object module = rawMap.get(SASL_JAAS_CONFIG_MODULE_KEY);
-        Object username = rawMap.get(SASL_JAAS_CONFIG_USERNAME_KEY);
-        Object password = rawMap.get(SASL_JAAS_CONFIG_PASSWORD_KEY);
-        if (!rawMap.containsKey(SASL_JAAS_CONFIG_KEY)
-                && module instanceof String moduleValue
-                && username instanceof String usernameValue
-                && password instanceof String passwordValue) {
+        if (properties.containsKey(GROUP_ID_KEY)) {
+            properties.put(GROUP_ID_KEY, String.valueOf(properties.get(GROUP_ID_KEY)));
+        }
+
+        Object module = properties.get(SASL_JAAS_CONFIG_MODULE_KEY);
+        Object username = properties.get(SASL_JAAS_CONFIG_USERNAME_KEY);
+        Object password = properties.get(SASL_JAAS_CONFIG_PASSWORD_KEY);
+        if (!properties.containsKey(SASL_JAAS_CONFIG_KEY)
+                && module != null
+                && username != null
+                && password != null) {
             properties.put(SASL_JAAS_CONFIG_KEY,
-                    createSaslJaasConfigProperty(moduleValue, usernameValue, passwordValue));
+                    createSaslJaasConfigProperty(
+                            String.valueOf(module), String.valueOf(username), String.valueOf(password)));
         }
 
         properties.remove(SASL_JAAS_CONFIG_MODULE_KEY);
@@ -119,18 +125,30 @@ public class KafkaConfigUtils {
         return properties;
     }
 
-    private static void copyStringEntries(final Map<?, ?> source, final Map<String, Object> target) {
-        for (Map.Entry<?, ?> entry : source.entrySet()) {
-            if (entry.getKey() instanceof String key) {
-                target.put(key, entry.getValue());
-            }
+    /**
+     * Normalizes a public setter value while retaining the caller's mutable map
+     * instance, as the 2.3.0 configuration API did.
+     */
+    static Map<String, Object> normalizeKafkaPropertiesInPlace(final Map<String, Object> rawProperties) {
+        Map<String, Object> normalized = normalizeKafkaProperties(rawProperties);
+        if (rawProperties.equals(normalized)) {
+            return rawProperties;
+        }
+        try {
+            rawProperties.clear();
+            rawProperties.putAll(normalized);
+            return rawProperties;
+        } catch (UnsupportedOperationException e) {
+            return normalized;
         }
     }
 
-    private static boolean isSaslJaasComponent(final String key) {
-        return SASL_JAAS_CONFIG_MODULE_KEY.equals(key)
-                || SASL_JAAS_CONFIG_USERNAME_KEY.equals(key)
-                || SASL_JAAS_CONFIG_PASSWORD_KEY.equals(key);
+    private static void copyStringEntries(final Map<?, ?> source, final Map<String, Object> target) {
+        for (Map.Entry<?, ?> entry : source.entrySet()) {
+            if (entry.getKey() instanceof String key) {
+                addIfSet(target, key, entry.getValue());
+            }
+        }
     }
 
     public static String createSaslJaasConfigProperty(final String module, final String username, final String password) {

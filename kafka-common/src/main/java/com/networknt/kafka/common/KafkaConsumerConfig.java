@@ -15,6 +15,7 @@ import static com.networknt.kafka.common.KafkaConfigUtils.copyProperty;
 import static com.networknt.kafka.common.KafkaConfigUtils.getFromMappedConfigAsType;
 import static com.networknt.kafka.common.KafkaConfigUtils.getJsonMapConfig;
 import static com.networknt.kafka.common.KafkaConfigUtils.normalizeKafkaProperties;
+import static com.networknt.kafka.common.KafkaConfigUtils.normalizeKafkaPropertiesInPlace;
 import static com.networknt.kafka.common.KafkaConfigUtils.sameMappedConfig;
 
 @ConfigSchema(
@@ -361,11 +362,11 @@ public class KafkaConsumerConfig {
         if (this.mappedConfig.containsKey(PROPERTIES_KEY)) {
             this.properties = normalizeKafkaProperties(this.mappedConfig.get(PROPERTIES_KEY));
         } else {
-            this.propertiesConfig = null;
             this.properties = getLegacyKafkaProperties(this.mappedConfig);
         }
-        this.groupId = this.mappedConfig.containsKey("groupId")
-                ? (String) this.mappedConfig.get("groupId") : (String) this.properties.get("group.id");
+        Object configuredGroupId = this.mappedConfig.containsKey("groupId")
+                ? this.mappedConfig.get("groupId") : this.properties.get("group.id");
+        this.groupId = configuredGroupId == null ? null : String.valueOf(configuredGroupId);
         if (this.groupId != null) {
             this.properties.put("group.id", this.groupId);
         }
@@ -426,8 +427,9 @@ public class KafkaConsumerConfig {
     }
 
     public void setProperties(Map<String, Object> properties) {
-        this.properties = properties == null ? null : normalizeKafkaProperties(properties);
-        this.groupId = this.properties == null ? null : (String) this.properties.get("group.id");
+        this.properties = properties == null ? null : normalizeKafkaPropertiesInPlace(properties);
+        Object configuredGroupId = this.properties == null ? null : this.properties.get("group.id");
+        this.groupId = configuredGroupId == null ? null : String.valueOf(configuredGroupId);
     }
 
     public String getGroupId() {

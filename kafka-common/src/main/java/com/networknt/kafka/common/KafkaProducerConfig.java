@@ -15,6 +15,7 @@ import static com.networknt.kafka.common.KafkaConfigUtils.copyProperty;
 import static com.networknt.kafka.common.KafkaConfigUtils.getFromMappedConfigAsType;
 import static com.networknt.kafka.common.KafkaConfigUtils.getJsonMapConfig;
 import static com.networknt.kafka.common.KafkaConfigUtils.normalizeKafkaProperties;
+import static com.networknt.kafka.common.KafkaConfigUtils.normalizeKafkaPropertiesInPlace;
 import static com.networknt.kafka.common.KafkaConfigUtils.sameMappedConfig;
 
 /**
@@ -198,7 +199,6 @@ public class KafkaProducerConfig {
         if (this.mappedConfig.containsKey(PROPERTIES_KEY)) {
             this.properties = normalizeKafkaProperties(this.mappedConfig.get(PROPERTIES_KEY));
         } else {
-            this.propertiesConfig = null;
             this.properties = getLegacyKafkaProperties(this.mappedConfig);
         }
         this.topic = getIfPresent(TOPIC_KEY, String.class, this.topic);
@@ -247,7 +247,7 @@ public class KafkaProducerConfig {
     }
 
     public void setProperties(Map<String, Object> properties) {
-        this.properties = properties == null ? null : normalizeKafkaProperties(properties);
+        this.properties = properties == null ? null : normalizeKafkaPropertiesInPlace(properties);
     }
 
     public Map<String, Object> getKafkaMapProperties() {

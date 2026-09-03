@@ -16,6 +16,7 @@ import static com.networknt.kafka.common.KafkaConfigUtils.copyProperty;
 import static com.networknt.kafka.common.KafkaConfigUtils.getFromMappedConfigAsType;
 import static com.networknt.kafka.common.KafkaConfigUtils.getJsonMapConfig;
 import static com.networknt.kafka.common.KafkaConfigUtils.normalizeKafkaProperties;
+import static com.networknt.kafka.common.KafkaConfigUtils.normalizeKafkaPropertiesInPlace;
 import static com.networknt.kafka.common.KafkaConfigUtils.sameMappedConfig;
 
 @ConfigSchema(
@@ -182,7 +183,6 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
         if (this.mappedConfig.containsKey(PROPERTIES_KEY)) {
             this.properties = normalizeKafkaProperties(this.mappedConfig.get(PROPERTIES_KEY));
         } else {
-            this.propertiesConfig = null;
             this.properties = getLegacyKafkaProperties(this.mappedConfig);
         }
         this.cleanUp = getIfPresent(CLEAN_UP_KEY, Boolean.class, this.cleanUp);
@@ -226,7 +226,7 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     }
 
     public void setProperties(Map<String, Object> properties) {
-        this.properties = properties == null ? null : normalizeKafkaProperties(properties);
+        this.properties = properties == null ? null : normalizeKafkaPropertiesInPlace(properties);
     }
 
     public Boolean getCleanUp() {
