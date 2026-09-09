@@ -14,6 +14,8 @@ import java.util.Map;
 import static com.networknt.kafka.common.KafkaConfigUtils.copyProperty;
 import static com.networknt.kafka.common.KafkaConfigUtils.getFromMappedConfigAsType;
 import static com.networknt.kafka.common.KafkaConfigUtils.getJsonMapConfig;
+import static com.networknt.kafka.common.KafkaConfigUtils.normalizeKafkaProperties;
+import static com.networknt.kafka.common.KafkaConfigUtils.normalizeKafkaPropertiesInPlace;
 import static com.networknt.kafka.common.KafkaConfigUtils.sameMappedConfig;
 
 @ConfigSchema(
@@ -62,8 +64,8 @@ public class KafkaConsumerConfig {
             ref = KafkaConsumerPropertiesConfig.class
     )
     @JsonProperty(PROPERTIES_KEY)
-    // This typed field is used by schema generation and load(). The 2.3.0-compatible
-    // getProperties()/setProperties(Map) accessors intentionally use the same JSON name.
+    // This typed field is used by schema generation. Runtime loading retains the raw,
+    // open-ended Kafka property map required by the 2.3.0-compatible accessors.
     private KafkaConsumerPropertiesConfig propertiesConfig = new KafkaConsumerPropertiesConfig();
 
     private Map<String, Object> properties;
@@ -357,16 +359,14 @@ public class KafkaConsumerConfig {
     }
 
     private void setConfigData() {
-        final var mapper = Config.getInstance().getMapper();
         if (this.mappedConfig.containsKey(PROPERTIES_KEY)) {
-            this.propertiesConfig = getFromMappedConfigAsType(this.mappedConfig, mapper, PROPERTIES_KEY, KafkaConsumerPropertiesConfig.class);
-            this.properties = this.propertiesConfig == null ? new HashMap<>() : this.propertiesConfig.getMergedProperties();
+            this.properties = normalizeKafkaProperties(this.mappedConfig.get(PROPERTIES_KEY));
         } else {
-            this.propertiesConfig = null;
             this.properties = getLegacyKafkaProperties(this.mappedConfig);
         }
-        this.groupId = this.mappedConfig.containsKey("groupId")
-                ? (String) this.mappedConfig.get("groupId") : (String) this.properties.get("group.id");
+        Object configuredGroupId = this.mappedConfig.containsKey("groupId")
+                ? this.mappedConfig.get("groupId") : this.properties.get("group.id");
+        this.groupId = configuredGroupId == null ? null : String.valueOf(configuredGroupId);
         if (this.groupId != null) {
             this.properties.put("group.id", this.groupId);
         }
@@ -426,9 +426,18 @@ public class KafkaConsumerConfig {
         return properties;
     }
 
+    /**
+     * Sets the Kafka client properties. Mutable input maps are normalized in place,
+     * so callers observe flattened additional properties, removed null entries, and
+     * synthesized SASL configuration. If the map cannot be modified, this config
+     * stores a normalized copy instead.
+     *
+     * @param properties Kafka client properties, or {@code null}
+     */
     public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
-        this.groupId = properties == null ? null : (String) properties.get("group.id");
+        this.properties = properties == null ? null : normalizeKafkaPropertiesInPlace(properties);
+        Object configuredGroupId = this.properties == null ? null : this.properties.get("group.id");
+        this.groupId = configuredGroupId == null ? null : String.valueOf(configuredGroupId);
     }
 
     public String getGroupId() {

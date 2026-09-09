@@ -13,6 +13,7 @@ properties:
   schema.registry.cache: 100
   schema.registry.auto.register.schemas: true
   max.request.size: 1048576
+  inline.custom.property: inline-producer-value
   additionalKafkaProperties:
     # This property will be loaded
     myNewProperty: "myNewValue"

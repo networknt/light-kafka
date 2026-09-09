@@ -4,18 +4,51 @@ import com.networknt.config.Config;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 class KafkaConfigApiCompatibilityTest {
 
     @Test
+    void mixedCachedAndUncachedLoadsPreserveKafkaProperties() throws Exception {
+        Config config = Config.getInstance();
+        for (Class<?> type : new Class<?>[]{KafkaConsumerConfig.class, KafkaProducerConfig.class, KafkaStreamsConfig.class}) {
+            String name = (String) type.getField("CONFIG_NAME").get(null);
+            try {
+                for (boolean mapFirst : new boolean[]{true, false}) {
+                    config.clearConfigCache(name);
+                    if (mapFirst) {
+                        type.getMethod("load").invoke(null);
+                    } else {
+                        config.getJsonObjectConfig(name, type);
+                    }
+                    Object uncached = config.getJsonObjectConfigNoCache(name, type);
+                    Object cached = config.getJsonObjectConfig(name, type);
+                    assertEquals(type, cached.getClass());
+                    Method properties = type.getMethod("getProperties");
+                    assertEquals(properties.invoke(uncached), properties.invoke(cached));
+                    assertEquals(properties.invoke(uncached), properties.invoke(type.getMethod("load").invoke(null)));
+                    Map<String, Object> raw = config.getJsonMapConfig(name);
+                    assertNotNull(raw.get("properties"));
+                    assertEquals(properties.invoke(cached), properties.invoke(config.getJsonObjectConfig(name, type)));
+                }
+            } finally {
+                config.clearConfigCache(name);
+            }
+        }
+    }
+
+    @Test
     void noArgConstructorsRetain230PojoDefaults() {
         KafkaConsumerConfig consumer = new KafkaConsumerConfig();
+        assertNull(consumer.getProperties());
+        consumer.setProperties(null);
         assertNull(consumer.getProperties());
         assertEquals(0, consumer.getMaxConsumerThreads());
         assertEquals(0L, consumer.getRequestMaxBytes());
@@ -23,11 +56,15 @@ class KafkaConfigApiCompatibilityTest {
 
         KafkaProducerConfig producer = new KafkaProducerConfig();
         assertNull(producer.getProperties());
+        producer.setProperties(null);
+        assertNull(producer.getProperties());
         assertNull(producer.getTopic());
         assertFalse(producer.isInjectOpenTracing());
         assertFalse(producer.isAuditEnabled());
 
         KafkaStreamsConfig streams = new KafkaStreamsConfig();
+        assertNull(streams.getProperties());
+        streams.setProperties(null);
         assertNull(streams.getProperties());
         assertFalse(streams.isCleanUp());
         assertFalse(streams.isDeadLetterEnabled());
@@ -48,6 +85,96 @@ class KafkaConfigApiCompatibilityTest {
         KafkaStreamsConfig streams = (KafkaStreamsConfig) Config.getInstance()
                 .getJsonObjectConfig(KafkaStreamsConfig.CONFIG_NAME, KafkaStreamsConfig.class);
         assertEquals("http://localhost:8081", streams.getProperties().get("schema.registry.url"));
+    }
+
+    @Test
+    void legacyJsonObjectLoadingNormalizesOpenEndedProperties() {
+        KafkaConsumerConfig consumer = (KafkaConsumerConfig) Config.getInstance()
+                .getJsonObjectConfigNoCache("kafka-consumer-open-ended", KafkaConsumerConfig.class);
+        assertEquals("1001", consumer.getGroupId());
+        assertEquals("1001", consumer.getProperties().get("group.id"));
+        assertEquals("inline-consumer-value", consumer.getProperties().get("inline.custom.property"));
+        assertEquals("myNewValue", consumer.getProperties().get("myNewProperty"));
+        assertEquals("http://localhost:8081", consumer.getProperties().get("schema.registry.url"));
+        assertFalse(consumer.getProperties().containsKey("max.poll.records"));
+        assertEquals("org.apache.kafka.common.security.plain.PlainLoginModule required username=\"12345\" password=\"67890\";",
+                consumer.getProperties().get("sasl.jaas.config"));
+        assertFalse(consumer.getProperties().containsKey("sasl.jaas.config.module"));
+        assertFalse(consumer.getProperties().containsKey("additionalKafkaProperties"));
+
+        KafkaProducerConfig producer = (KafkaProducerConfig) Config.getInstance()
+                .getJsonObjectConfigNoCache("kafka-producer-additionalProps", KafkaProducerConfig.class);
+        assertEquals("inline-producer-value", producer.getProperties().get("inline.custom.property"));
+        assertEquals("myNewValue", producer.getProperties().get("myNewProperty"));
+        assertEquals("http://localhost:8081", producer.getProperties().get("schema.registry.url"));
+        assertFalse(producer.getProperties().containsKey("additionalKafkaProperties"));
+
+        KafkaStreamsConfig streams = (KafkaStreamsConfig) Config.getInstance()
+                .getJsonObjectConfigNoCache("kafka-streams-additionalProps", KafkaStreamsConfig.class);
+        assertEquals("inline-streams-value", streams.getProperties().get("inline.custom.property"));
+        assertEquals("myNewValue", streams.getProperties().get("myNewProperty"));
+        assertEquals("http://localhost:8081", streams.getProperties().get("schema.registry.url"));
+        assertFalse(streams.getProperties().containsKey("additionalKafkaProperties"));
+    }
+
+    @Test
+    void propertySettersRetainMutableMapAliases() {
+        Map<String, Object> consumerProperties = new HashMap<>();
+        consumerProperties.put("group.id", 1001);
+        KafkaConsumerConfig consumer = new KafkaConsumerConfig();
+        consumer.setProperties(consumerProperties);
+        assertSame(consumerProperties, consumer.getProperties());
+        assertEquals("1001", consumer.getGroupId());
+        consumerProperties.put("bootstrap.servers", "consumer:9092");
+        assertEquals("consumer:9092", consumer.getProperties().get("bootstrap.servers"));
+
+        Map<String, Object> producerProperties = new HashMap<>();
+        producerProperties.put("sasl.jaas.config.module", "org.example.LoginModule");
+        producerProperties.put("sasl.jaas.config.username", 12345);
+        producerProperties.put("sasl.jaas.config.password", 67890);
+        KafkaProducerConfig producer = new KafkaProducerConfig();
+        producer.setProperties(producerProperties);
+        assertSame(producerProperties, producer.getProperties());
+        assertEquals("org.example.LoginModule required username=\"12345\" password=\"67890\";",
+                producer.getProperties().get("sasl.jaas.config"));
+        assertFalse(producer.getProperties().containsKey("sasl.jaas.config.username"));
+        producerProperties.put("bootstrap.servers", "producer:9092");
+        assertEquals("producer:9092", producer.getProperties().get("bootstrap.servers"));
+
+        Map<String, Object> streamsProperties = new HashMap<>();
+        KafkaStreamsConfig streams = new KafkaStreamsConfig();
+        streams.setProperties(streamsProperties);
+        assertSame(streamsProperties, streams.getProperties());
+        streamsProperties.put("bootstrap.servers", "streams:9092");
+        assertEquals("streams:9092", streams.getProperties().get("bootstrap.servers"));
+    }
+
+    @Test
+    void rootSaslConfigurationTakesPrecedenceOverAdditionalProperties() {
+        Map<String, Object> staleAdditionalProperties = new HashMap<>();
+        staleAdditionalProperties.put("sasl.jaas.config", "STALE");
+
+        Map<String, Object> componentProperties = new HashMap<>();
+        componentProperties.put("additionalKafkaProperties", staleAdditionalProperties);
+        componentProperties.put("sasl.jaas.config.module", "org.example.LoginModule");
+        componentProperties.put("sasl.jaas.config.username", "newuser");
+        componentProperties.put("sasl.jaas.config.password", "newpass");
+
+        KafkaProducerConfig componentsWin = new KafkaProducerConfig();
+        componentsWin.setProperties(componentProperties);
+        assertEquals("org.example.LoginModule required username=\"newuser\" password=\"newpass\";",
+                componentsWin.getProperties().get("sasl.jaas.config"));
+
+        Map<String, Object> explicitProperties = new HashMap<>();
+        explicitProperties.put("additionalKafkaProperties", Map.of(
+                "sasl.jaas.config.module", "org.example.StaleLoginModule",
+                "sasl.jaas.config.username", "staleuser",
+                "sasl.jaas.config.password", "stalepass"));
+        explicitProperties.put("sasl.jaas.config", "ROOT");
+
+        KafkaProducerConfig explicitWins = new KafkaProducerConfig();
+        explicitWins.setProperties(explicitProperties);
+        assertEquals("ROOT", explicitWins.getProperties().get("sasl.jaas.config"));
     }
 
     @Test

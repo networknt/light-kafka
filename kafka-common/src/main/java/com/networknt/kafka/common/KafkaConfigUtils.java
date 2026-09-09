@@ -5,11 +5,18 @@ import com.networknt.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class KafkaConfigUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaConfigUtils.class);
+    private static final String ADDITIONAL_KAFKA_PROPERTIES_KEY = "additionalKafkaProperties";
+    private static final String GROUP_ID_KEY = "group.id";
+    private static final String SASL_JAAS_CONFIG_KEY = "sasl.jaas.config";
+    private static final String SASL_JAAS_CONFIG_MODULE_KEY = "sasl.jaas.config.module";
+    private static final String SASL_JAAS_CONFIG_USERNAME_KEY = "sasl.jaas.config.username";
+    private static final String SASL_JAAS_CONFIG_PASSWORD_KEY = "sasl.jaas.config.password";
 
     protected KafkaConfigUtils() {
         // Utility class
@@ -65,6 +72,82 @@ public class KafkaConfigUtils {
                              final String sourceKey, final String targetKey) {
         if (source.containsKey(sourceKey)) {
             target.put(targetKey, source.get(sourceKey));
+        }
+    }
+
+    /**
+     * Normalizes the raw Kafka properties used by both Config object mapping and the
+     * explicit Kafka configuration loaders. Kafka client properties are intentionally
+     * open-ended, so unknown keys must be preserved instead of being rejected by a
+     * typed configuration class.
+     *
+     * @param rawProperties raw value of the {@code properties} configuration field
+     * @return normalized Kafka client properties
+     */
+    static Map<String, Object> normalizeKafkaProperties(final Object rawProperties) {
+        Map<String, Object> properties = new HashMap<>();
+        if (!(rawProperties instanceof Map<?, ?> rawMap)) {
+            return properties;
+        }
+
+        Object additionalProperties = rawMap.get(ADDITIONAL_KAFKA_PROPERTIES_KEY);
+        if (additionalProperties instanceof Map<?, ?> additionalMap) {
+            copyStringEntries(additionalMap, properties);
+        }
+
+        for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
+            if (entry.getKey() instanceof String key
+                    && !ADDITIONAL_KAFKA_PROPERTIES_KEY.equals(key)
+                    && entry.getValue() != null) {
+                properties.put(key, entry.getValue());
+            }
+        }
+
+        if (properties.containsKey(GROUP_ID_KEY)) {
+            properties.put(GROUP_ID_KEY, String.valueOf(properties.get(GROUP_ID_KEY)));
+        }
+
+        Object module = properties.get(SASL_JAAS_CONFIG_MODULE_KEY);
+        Object username = properties.get(SASL_JAAS_CONFIG_USERNAME_KEY);
+        Object password = properties.get(SASL_JAAS_CONFIG_PASSWORD_KEY);
+        if (!rawMap.containsKey(SASL_JAAS_CONFIG_KEY)
+                && module != null
+                && username != null
+                && password != null) {
+            properties.put(SASL_JAAS_CONFIG_KEY,
+                    createSaslJaasConfigProperty(
+                            String.valueOf(module), String.valueOf(username), String.valueOf(password)));
+        }
+
+        properties.remove(SASL_JAAS_CONFIG_MODULE_KEY);
+        properties.remove(SASL_JAAS_CONFIG_USERNAME_KEY);
+        properties.remove(SASL_JAAS_CONFIG_PASSWORD_KEY);
+        return properties;
+    }
+
+    /**
+     * Normalizes a public setter value while retaining the caller's mutable map
+     * instance, as the 2.3.0 configuration API did.
+     */
+    static Map<String, Object> normalizeKafkaPropertiesInPlace(final Map<String, Object> rawProperties) {
+        Map<String, Object> normalized = normalizeKafkaProperties(rawProperties);
+        if (rawProperties.equals(normalized)) {
+            return rawProperties;
+        }
+        try {
+            rawProperties.clear();
+            rawProperties.putAll(normalized);
+            return rawProperties;
+        } catch (UnsupportedOperationException e) {
+            return normalized;
+        }
+    }
+
+    private static void copyStringEntries(final Map<?, ?> source, final Map<String, Object> target) {
+        for (Map.Entry<?, ?> entry : source.entrySet()) {
+            if (entry.getKey() instanceof String key) {
+                addIfSet(target, key, entry.getValue());
+            }
         }
     }
 
