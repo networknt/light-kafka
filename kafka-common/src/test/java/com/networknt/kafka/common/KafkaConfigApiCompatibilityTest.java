@@ -16,6 +16,35 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 class KafkaConfigApiCompatibilityTest {
 
     @Test
+    void mixedCachedAndUncachedLoadsPreserveKafkaProperties() throws Exception {
+        Config config = Config.getInstance();
+        for (Class<?> type : new Class<?>[]{KafkaConsumerConfig.class, KafkaProducerConfig.class, KafkaStreamsConfig.class}) {
+            String name = (String) type.getField("CONFIG_NAME").get(null);
+            try {
+                for (boolean mapFirst : new boolean[]{true, false}) {
+                    config.clearConfigCache(name);
+                    if (mapFirst) {
+                        type.getMethod("load").invoke(null);
+                    } else {
+                        config.getJsonObjectConfig(name, type);
+                    }
+                    Object uncached = config.getJsonObjectConfigNoCache(name, type);
+                    Object cached = config.getJsonObjectConfig(name, type);
+                    assertEquals(type, cached.getClass());
+                    Method properties = type.getMethod("getProperties");
+                    assertEquals(properties.invoke(uncached), properties.invoke(cached));
+                    assertEquals(properties.invoke(uncached), properties.invoke(type.getMethod("load").invoke(null)));
+                    Map<String, Object> raw = config.getJsonMapConfig(name);
+                    assertNotNull(raw.get("properties"));
+                    assertEquals(properties.invoke(cached), properties.invoke(config.getJsonObjectConfig(name, type)));
+                }
+            } finally {
+                config.clearConfigCache(name);
+            }
+        }
+    }
+
+    @Test
     void noArgConstructorsRetain230PojoDefaults() {
         KafkaConsumerConfig consumer = new KafkaConsumerConfig();
         assertNull(consumer.getProperties());
