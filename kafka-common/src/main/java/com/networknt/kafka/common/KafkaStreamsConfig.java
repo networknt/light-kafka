@@ -155,6 +155,9 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
                 return instance;
             }
             synchronized (KafkaStreamsConfig.class) {
+                // A reload may have replaced the shared map while this load waited.
+                mappedConfig = getJsonMapConfig(configName,
+                        instance == null ? null : instance.getMappedConfig());
                 if (instance != null && sameMappedConfig(instance.getMappedConfig(), mappedConfig)) {
                     return instance;
                 }
@@ -173,7 +176,8 @@ public class KafkaStreamsConfig extends KafkaConfigUtils {
     public static void reload(String configName) {
         if (CONFIG_NAME.equals(configName)) {
             synchronized (KafkaStreamsConfig.class) {
-                instance = new KafkaStreamsConfig(configName, Config.getInstance().getJsonMapConfigNoCache(configName));
+                Config.getInstance().clearConfigCache(configName);
+                instance = new KafkaStreamsConfig(configName, getJsonMapConfig(configName, null));
                 ModuleRegistry.registerModule(CONFIG_NAME, KafkaStreamsConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), MASKS);
             }
         }

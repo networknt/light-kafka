@@ -171,6 +171,9 @@ public class KafkaProducerConfig {
                 return instance;
             }
             synchronized (KafkaProducerConfig.class) {
+                // A reload may have replaced the shared map while this load waited.
+                mappedConfig = getJsonMapConfig(configName,
+                        instance == null ? null : instance.getMappedConfig());
                 if (instance != null && sameMappedConfig(instance.getMappedConfig(), mappedConfig)) {
                     return instance;
                 }
@@ -189,7 +192,8 @@ public class KafkaProducerConfig {
     public static void reload(String configName) {
         if (CONFIG_NAME.equals(configName)) {
             synchronized (KafkaProducerConfig.class) {
-                instance = new KafkaProducerConfig(configName, Config.getInstance().getJsonMapConfigNoCache(configName));
+                Config.getInstance().clearConfigCache(configName);
+                instance = new KafkaProducerConfig(configName, getJsonMapConfig(configName, null));
                 ModuleRegistry.registerModule(CONFIG_NAME, KafkaProducerConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), null);
             }
         }
