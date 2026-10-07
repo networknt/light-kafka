@@ -1,5 +1,31 @@
 # Change Log
 
+## [2.4.0](https://github.com/networknt/light-kafka/tree/2.4.0) (2026-10-07)
+
+**Commits:**
+
+- upgrade to version 2.4.0 before release in master branch ([07afc76](https://github.com/networknt/light-kafka/commit/07afc76fd57f7d59a9fddcce1585d0c328b89284)) (by Steve Hu)
+- upgrade confluent to 8.3.2 from 8.3.1 ([f03754c](https://github.com/networknt/light-kafka/commit/f03754c26ea9817e83ec20173dd5cc76f809d1b1)) (by Steve Hu)
+- upgrade maven-javadoc to 3.12.0 from 3.4.1 ([9dd24a3](https://github.com/networknt/light-kafka/commit/9dd24a30c279f81deb493200797ce1bb645b0cf9)) (by Steve Hu)
+- upgrade maven-version to 2.22.0 from 2.4 ([e7effa0](https://github.com/networknt/light-kafka/commit/e7effa06ab41e3cabd0525466ccb2c1cdc921e1f)) (by Steve Hu)
+- upgrade mockito to 5.24.0 ([00981d0](https://github.com/networknt/light-kafka/commit/00981d0adae8fc1a734c724747bb3b3199e3fafb)) (by Steve Hu)
+- upgrade slf4j to 2.0.20 from 2.0.19 ([52a25f4](https://github.com/networknt/light-kafka/commit/52a25f40e8c6b2cdd9b2682de26986fbc66dd4d6)) (by Steve Hu)
+- upgrade jackson to 2.22.3 from 2.22.1 ([7196110](https://github.com/networknt/light-kafka/commit/7196110e1c5ca2cc7fc1d535c79853f3ca76d76b)) (by Steve Hu)
+- upgrade to version 2.3.8-SNAPSHOT after release in master branch ([02a4956](https://github.com/networknt/light-kafka/commit/02a4956ab924e439f0e70e4431e4f8680a9e23f8)) (by Steve Hu)
+- upgrade slf4j to 2.0.19 from 2.0.17 ([f3651b1](https://github.com/networknt/light-kafka/commit/f3651b1d5ca620239d18fb71d8594e587824bca5)) (by Steve Hu)
+- upgrade maven-surefire to 3.6.0 ([f02baff](https://github.com/networknt/light-kafka/commit/f02baff420fe2334fe8e21d70e89d847b9ede482)) (by Steve Hu)
+- upgrade logback to 1.6.3 from 1.5.37 ([99c0e79](https://github.com/networknt/light-kafka/commit/99c0e79accd599f12fb52792dfb88692ce5c37c4)) (by Steve Hu)
+- Remove obsolete javadoc-packagelist-maven-plugin workaround ([7aeea93](https://github.com/networknt/light-kafka/commit/7aeea9368365e83c9f6df683792ec718f9cb758a)) (by Steve Hu)
+- upgrade central-publishing-maven to 0.11.0 from 0.7.0 ([3e812c3](https://github.com/networknt/light-kafka/commit/3e812c3a9193f7684ecf9ea94f941f3df325ba76)) (by Steve Hu)
+- fixes #259 Producer and Streams reload() changes are discarded by the next load() ([9fe50ba](https://github.com/networknt/light-kafka/commit/9fe50baeac723059fb2a5d098753eb4ac60c12eb)) (by Steve Hu)
+- add a test case after the light-4j fix ([60032e8](https://github.com/networknt/light-kafka/commit/60032e89b5d5b9e3bb59f2f4093101051b3045e5)) (by Steve Hu)
+- fix SASL property precedence ([def6fd5](https://github.com/networknt/light-kafka/commit/def6fd56144d216d6af1c9f8b7bfa03067aafafc)) (by Steve Hu)
+- fix Kafka property normalization compatibility ([189c30c](https://github.com/networknt/light-kafka/commit/189c30cd960c0b4f1e0cc714c50493e40832675f)) (by Steve Hu)
+- fixes #257 preserve Kafka properties during loading ([d61b059](https://github.com/networknt/light-kafka/commit/d61b059928750980e0ba1318ba98f019b2528d6d)) (by Steve Hu)
+- fixes #256 upgrade to kafka 4.3.1 ([ba9d331](https://github.com/networknt/light-kafka/commit/ba9d33132daec6895b0c8d29ce26fe6ed69f136e)) (by Steve Hu)
+- update kafka and confluent version to 4.3.1 and 8.3.1 ([785546c](https://github.com/networknt/light-kafka/commit/785546c657a755533e0104227a1d67e8665aa3c6)) (by Steve Hu)
+- upgrade to version 2.3.8-SNAPSHOT after release in master branch ([3f79148](https://github.com/networknt/light-kafka/commit/3f791480e47533647d3c4f167ee292af1ad224a9)) (by Steve Hu)
+
 ## [2.3.7](https://github.com/networknt/light-kafka/tree/2.3.7) (2026-08-12)
 
 
