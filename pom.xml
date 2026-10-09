@@ -110,7 +110,7 @@
         <version.kafka>4.3.1</version.kafka>
         <version.confluent>8.3.2</version.confluent>
         <version.logback>1.6.5</version.logback>
-        <version.junit>5.11.4</version.junit>
+        <version.junit>6.1.3</version.junit>
         <version.undertow>2.4.4.Final</version.undertow>
         <version.avro>1.12.1</version.avro>
         <version.schemaConverter>0.2.9</version.schemaConverter>
@@ -133,6 +133,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${version.junit}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
@@ -280,12 +287,6 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${version.logback}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
-                <version>${version.junit}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
