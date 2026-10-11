@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.4.1](https://github.com/networknt/light-kafka/tree/2.4.1) (2026-10-11)
+
+**Commits:**
+
+- upgrade to version 2.4.1 before release in master branch ([b7fd6a3](https://github.com/networknt/light-kafka/commit/b7fd6a3a56b23da3a2bc38c0e4292297295884ab)) (by Steve Hu)
+- upgrade maven-gpg to 3.2.8 from 3.2.7 ([b3aa851](https://github.com/networknt/light-kafka/commit/b3aa851c8e6d46bed589dbc352524f06ba52a1be)) (by Steve Hu)
+- build: upgrade JUnit to 6.1.3 ([c996614](https://github.com/networknt/light-kafka/commit/c9966146f0e20e6838de085a27b7789f2e332219)) (by Steve Hu)
+- remove version.hamcrest property as it is not used ([c8f3674](https://github.com/networknt/light-kafka/commit/c8f3674af623633c863c7eff51d63a2f68803589)) (by Steve Hu)
+- upgrade udertow to 2.4.4.Final from 2.4.1.Final ([f8ea1b0](https://github.com/networknt/light-kafka/commit/f8ea1b0b1ef8e707f557718ed1a7f653ca7bd2aa)) (by Steve Hu)
+- upgrade logback to 1.6.5 from 1.6.3 ([92e4620](https://github.com/networknt/light-kafka/commit/92e46202d48ca2e16e175557058dd8d3725db71a)) (by Steve Hu)
+- upgrade to version 2.4.1-SNAPSHOT after release in master branch ([a45c066](https://github.com/networknt/light-kafka/commit/a45c066f766acd1a732f78d36d8062521e1de939)) (by Steve Hu)
+
 ## [2.4.0](https://github.com/networknt/light-kafka/tree/2.4.0) (2026-10-07)
 
 **Commits:**
