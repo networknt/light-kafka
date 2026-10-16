@@ -115,7 +115,7 @@
         <version.avro>1.12.1</version.avro>
         <version.schemaConverter>0.2.9</version.schemaConverter>
         <version.mockito>5.24.0</version.mockito>
-        <versions.maven-version>2.22.0</versions.maven-version>
+        <versions.maven-version>2.23.0</versions.maven-version>
         <version.maven-javadoc>3.12.0</version.maven-javadoc>
         <version.nexus-staging-maven>1.7.0</version.nexus-staging-maven>
         <version.maven-surefire>3.6.0</version.maven-surefire>
