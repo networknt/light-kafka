@@ -54,7 +54,8 @@ def main():
     # Dependencies only: the extracted Jackson 2 classes take precedence over
     # the installed Jackson 3 entity dependency. No current producer code is loaded.
     run(["mvn", "-o", f"-Dmaven.repo.local={cache}", "-pl", "kafka-producer",
-         "dependency:build-classpath", f"-Dmdep.outputFile={classpath_file}"], folder / "dependencies.log")
+         "org.apache.maven.plugins:maven-dependency-plugin:3.7.0:build-classpath",
+         f"-Dmdep.outputFile={classpath_file}"], folder / "dependencies.log")
     classpath = classpath_file.read_text().strip()
     generator = ROOT / "kafka-producer/src/test/baseline/Jackson2WireBaseline.java"
     run(["javac", "-cp", classpath, "-d", str(classes), *files, str(generator), str(ROOT / "kafka-producer/src/test/java/com/networknt/kafka/producer/WireCorpus.java"),

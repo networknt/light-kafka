@@ -18,13 +18,18 @@ Reproduce without changing the frozen file (Java 25, Python 3.9+ and Maven):
 # Use a fresh external evidence directory and the isolated source-build cache.
 git fetch origin 7b25cfaf641ed46003bde59e9f8b6ec39f7bb24a
 mvn -Dmaven.repo.local=/absolute/path/to/private-m2 clean install
+mvn -Dmaven.repo.local=/absolute/path/to/private-m2 -pl kafka-producer \
+  org.apache.maven.plugins:maven-dependency-plugin:3.7.0:build-classpath \
+  -Dmdep.outputFile=/absolute/path/to/bootstrap.classpath
 python3 scripts/verify-jackson2-wire-baseline.py \
   --maven-repo /absolute/path/to/private-m2 \
   --output-dir /absolute/path/to/new-evidence-directory
 ```
 
 Run from the repository root. The verifier uses Maven offline after the source
-build. It extracts seven original serializer/entity classes from that exact
+build and explicit plugin preparation above. A clean install alone does not resolve
+Maven’s dependency plugin; the verifier pins 3.7.0 and does not use plugin-prefix
+lookup in offline mode. It extracts seven original serializer/entity classes from that exact
 commit, compiles them with the committed
 `kafka-producer/src/test/baseline/Jackson2WireBaseline.java`, and starts a separate
 Jackson 2 JVM. Extracted classes precede dependency jars on the classpath; no
