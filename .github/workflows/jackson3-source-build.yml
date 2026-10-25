@@ -81,6 +81,8 @@ jobs:
           set -euo pipefail
           bash sources/light-4j/scripts/verify-jackson3-bootstrap.sh 2>&1 | tee source-build.log
           mvn -f consumer/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
+          git -C consumer fetch --no-tags origin 7b25cfaf641ed46003bde59e9f8b6ec39f7bb24a
+          python3 consumer/scripts/verify-jackson2-wire-baseline.py --maven-repo "$JACKSON3_MAVEN_REPO" --output-dir "$RUNNER_TEMP/wire-baseline" 2>&1 | tee -a source-build.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -89,4 +91,5 @@ jobs:
             source-build.log
             source-commits.txt
             source-refs.json
+            ${{ runner.temp }}/wire-baseline
             **/target/surefire-reports/**
