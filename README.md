@@ -20,8 +20,9 @@ Jackson 3 mappers are immutable: configure a builder rather than calling mapper
 handled-error boundaries and catch `JacksonException` alongside checked I/O where
 both operations occur. Annotations stay in `com.fasterxml.jackson.annotation`.
 
-Confluent 8.3.2 remains Jackson 2. The `kafka-common` and `kafka-producer` POMs
-explicitly pin Jackson 2 databind 2.22.3 for that boundary; the parent manages both
+Confluent 8.3.2 remains Jackson 2. Only `kafka-producer` declares Jackson 2 databind directly for that boundary;
+`kafka-common` receives it transitively from Confluent. The parent pins 2.22.3
+and manages both
 distinct Jackson BOMs. Their runtime dependencies are inherited by consumers,
 so dependency trees contain both Jackson versions. Do not remove Jackson 2 from
 the runtime classpath while using Confluent. All application/REST tree types
@@ -46,3 +47,22 @@ an older Jackson 2 artifact in a clean published-artifact build; no snapshots
 are deployed here. `ConfluentBoundaryTest` uses Confluent's in-memory mock registry,
 not a broker or running schema registry. Tests cover raw JSON options, schema
 serialization, conversion errors and numeric/Unicode/null round trips.
+
+The source-build workflow resolves prerequisites to full commit SHAs before
+checkout, builds with a fresh Maven repository, and uploads `source-refs.json`,
+`source-commits.txt`, logs and test reports. Manual `source_refs` replay becomes
+available after the workflow reaches the default branch; before merge, reproduce
+locally using those recorded SHAs. No remote snapshot deployment is required.
+
+`Jackson3GoldenWireTest` compares 20 records with frozen output from the `2.x`
+source, including exact Avro, JSON Schema and Protobuf frames. Expected bytes are
+not generated through the bridge. The bridge is forward-only; decimal repair
+updates only decimal leaves rather than rewriting every field.
+
+Downstream migration remains required: a targeted compile of Portal’s
+`SidecarFailureEnvelopePublisher` fails at its Jackson 2 mapper assignment and
+Jackson 2 nodes passed to `ProduceRecord.create`. `user-query` also uses the Kafka
+consumer API; `maproot-query` uses streams and `schedule-query` declares Kafka
+dependencies. These consumers must be qualified in Phase 7, with Portal last.
+The unchanged snapshot coordinates must not be treated as a compatible 2.x
+release; publication/version coordination is required before downstream rollout.

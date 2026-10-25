@@ -76,9 +76,14 @@ class ConfluentBoundaryTest {
         byte[] bytes = serialize(EmbeddedFormat.JSONSCHEMA, schema, input);
         try (var decoder = new KafkaJsonSchemaDeserializer<com.fasterxml.jackson.databind.JsonNode>(
                 registry, CONFIG, com.fasterxml.jackson.databind.JsonNode.class)) {
-            // Confluent normalizes numeric node types; compare the decoded JSON value.
-            JsonNode decoded = Jackson2Bridge.toJackson3(decoder.deserialize(TOPIC, bytes));
-            assertEquals(input, Jackson2Defaults.mapper().readTree(decoded.toString()));
+            var decoded = decoder.deserialize(TOPIC, bytes);
+            assertEquals("雪", decoded.get("name").asText());
+            assertEquals(7, decoded.get("qty").intValue());
+            assertTrue(decoded.get("nested").get(0).isNull());
+            assertTrue(decoded.get("nested").get(1).booleanValue());
+            assertEquals(new java.math.BigDecimal("1.25"), decoded.get("nested").get(2).decimalValue());
+            assertEquals(new java.math.BigInteger("123456789012345678901234567890"),
+                    decoded.get("nested").get(3).get("large").bigIntegerValue());
         }
     }
 
@@ -115,7 +120,7 @@ class ConfluentBoundaryTest {
             var legacy = new io.confluent.kafka.serializers.KafkaJsonSerializer<com.fasterxml.jackson.databind.JsonNode>();
             legacy.configure(config, false);
             try {
-                byte[] expected = legacy.serialize("", Jackson2Bridge.toJackson2(input));
+                byte[] expected = legacy.serialize("", new com.fasterxml.jackson.databind.ObjectMapper().readTree(input.toString()));
                 byte[] actual = raw.serialize(0, EmbeddedFormat.JSON, input).orElseThrow().toByteArray();
                 assertArrayEquals(expected, actual);
             } finally {
