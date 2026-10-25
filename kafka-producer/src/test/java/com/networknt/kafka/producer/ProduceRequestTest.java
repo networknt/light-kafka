@@ -1,8 +1,8 @@
 package com.networknt.kafka.producer;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import com.networknt.config.Jackson2Defaults;
 import com.networknt.kafka.entity.ProduceRecord;
 import com.networknt.kafka.entity.ProduceRequest;
 import org.junit.jupiter.api.*;
@@ -18,9 +18,8 @@ import java.util.Optional;
  */
 public class ProduceRequestTest {
     @Test
-    public void testToJson() throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new Jdk8Module());
+    public void testToJson() throws JacksonException {
+        ObjectMapper mapper = Jackson2Defaults.mapper();
         String json = "{\"key1\":\"value1\",\"key2\":\"value2\"}";
         JsonNode jsonNode = mapper.readTree(json);
         ProduceRecord produceRecord = new ProduceRecord();

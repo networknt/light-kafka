@@ -1,7 +1,8 @@
 package com.networknt.kafka.entity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import com.networknt.config.Jackson2Defaults;
 import kotlin.jvm.internal.TypeReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +25,8 @@ public class HeaderSerializationTest {
     String produceString= "{\"partition\": 1,\"key\": \"abc\", \"value\": {\"def\": 123},\"traceabilityId\": \"trace123\",\"correlationId\": \"corr123\",\"headers\": {\"timestamp\": 123456899},\"timestamp\": 1234567899}";
 
     @BeforeEach
-    public void initialize() throws JsonProcessingException {
-        mapper = new ObjectMapper();
+    public void initialize() throws JacksonException {
+        mapper = Jackson2Defaults.mapper();
         Map headers = new HashMap();
         headers.put("timestamp", Instant.now().toString());
         this.produceRecord = new ProduceRecord(Optional.of(1),Optional.of(mapper.readTree(mapper.writeValueAsString("abc"))),
@@ -36,7 +37,7 @@ public class HeaderSerializationTest {
     }
 
     @Test
-    public void serializationTest() throws JsonProcessingException {
+    public void serializationTest() throws JacksonException {
         Assertions.assertNotNull(produceRecord);
         Assertions.assertNotNull(fromJsonRead5Params);
         Assertions.assertNotNull(fromJsonRead7Params);

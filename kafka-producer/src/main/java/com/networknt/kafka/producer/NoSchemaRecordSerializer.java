@@ -16,7 +16,7 @@ package com.networknt.kafka.producer;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import com.google.common.io.BaseEncoding;
 import com.google.protobuf.ByteString;
 import io.confluent.kafka.serializers.KafkaJsonSerializer;
@@ -97,14 +97,14 @@ public class NoSchemaRecordSerializer {
         }
     }
 
-    private static final class JsonSerializer extends KafkaJsonSerializer<JsonNode> {
+    private static final class JsonSerializer extends KafkaJsonSerializer<com.fasterxml.jackson.databind.JsonNode> {
 
         private JsonSerializer(Map<String, Object> configs) {
             configure(new KafkaJsonSerializerConfig(configs));
         }
 
-        private byte[] serialize(JsonNode data) {
-            return serialize(/* topic= */ "", data);
+        private byte[] serialize(JsonNode data) throws java.io.IOException {
+            return serialize(/* topic= */ "", Jackson2Bridge.toJackson2(data));
         }
     }
 }

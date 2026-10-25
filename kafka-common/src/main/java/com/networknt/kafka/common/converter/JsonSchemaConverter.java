@@ -15,7 +15,9 @@
 
 package com.networknt.kafka.common.converter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import com.networknt.config.Jackson2Defaults;
 import io.confluent.kafka.schemaregistry.json.JsonSchemaUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +31,7 @@ public final class JsonSchemaConverter implements SchemaConverter {
 
   private static final Logger log = LoggerFactory.getLogger(JsonSchemaConverter.class);
 
-  private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+  private static final ObjectMapper JSON_MAPPER = Jackson2Defaults.mapper();
 
   /**
    * Converts JSON Schema data to their equivalent JsonNode representation.
@@ -46,7 +48,7 @@ public final class JsonSchemaConverter implements SchemaConverter {
         return new JsonNodeAndSize(null, 0);
       }
       return new JsonNodeAndSize(JSON_MAPPER.readTree(bytes), bytes.length);
-    } catch (IOException e) {
+    } catch (IOException | JacksonException e) {
       log.error("Jackson failed to deserialize JSON: ", e);
       throw new ConversionException("Failed to convert JSON Schema to JSON: " + e.getMessage());
     } catch (RuntimeException e) {

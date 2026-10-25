@@ -1,6 +1,6 @@
 package com.networknt.kafka.producer;
 
-import com.fasterxml.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.NullNode;
 import com.google.protobuf.ByteString;
 import com.networknt.exception.FrameworkException;
 import com.networknt.kafka.common.KafkaProducerConfig;

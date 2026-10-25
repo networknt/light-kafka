@@ -15,7 +15,8 @@
 
 package com.networknt.kafka.producer;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.core.JacksonException;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Message;
 import com.networknt.exception.FrameworkException;
@@ -98,8 +99,8 @@ public class SchemaRecordSerializer {
         AvroSchema avroSchema = (AvroSchema) schema.getSchema();
         Object record;
         try {
-            record = AvroSchemaUtils.toObject(data, avroSchema);
-        } catch (AvroTypeException | IOException e) {
+            record = AvroSchemaUtils.toObject(Jackson2Bridge.toJackson2(data), avroSchema);
+        } catch (AvroTypeException | IOException | JacksonException e) {
             logger.error("Exception for data at index: " + index +" with schemaId: " + schema.getSchemaId());
             Status status = new Status(SERIALIZE_SCHEMA_EXCEPTION, "avro , index in batch : "+ index, e.getMessage());
             throw new FrameworkException(status);
@@ -111,8 +112,8 @@ public class SchemaRecordSerializer {
         JsonSchema jsonSchema = (JsonSchema) schema.getSchema();
         Object record;
         try {
-            record = JsonSchemaUtils.toObject(data, jsonSchema);
-        } catch (IOException | ValidationException e) {
+            record = JsonSchemaUtils.toObject(Jackson2Bridge.toJackson2(data), jsonSchema);
+        } catch (IOException | ValidationException | JacksonException e) {
             logger.error("Exception for data at index: " + index +" with schemaId: " + schema.getSchemaId());
             Status status = new Status(SERIALIZE_SCHEMA_EXCEPTION, "jsonschema , index in batch : "+ index, e.getMessage());
             throw new FrameworkException(status);
@@ -125,8 +126,8 @@ public class SchemaRecordSerializer {
         ProtobufSchema protobufSchema = (ProtobufSchema) schema.getSchema();
         Message record;
         try {
-            record = (Message) ProtobufSchemaUtils.toObject(data, protobufSchema);
-        } catch (IOException e) {
+            record = (Message) ProtobufSchemaUtils.toObject(Jackson2Bridge.toJackson2(data), protobufSchema);
+        } catch (IOException | JacksonException e) {
             logger.error("Exception for data with schemaId: " + schema.getSchemaId());
             Status status = new Status(SERIALIZE_SCHEMA_EXCEPTION, "protobuf", e.getMessage());
             throw new FrameworkException(status);

@@ -31,6 +31,12 @@
     <description>A common module shared between other kafka modules..</description>
 
     <dependencies>
+        <!-- Confluent 8.3.2 accepts Jackson 2 objects internally; application APIs use Jackson 3. -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${version.jackson2}</version>
+        </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>utility</artifactId>
@@ -49,7 +55,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
