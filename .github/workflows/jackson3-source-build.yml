@@ -1,0 +1,97 @@
+name: Jackson 3 source build
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      source_refs:
+        description: JSON map of prerequisite repositories to full commit SHAs
+        type: string
+        default: '{}'
+  push:
+    branches: [master]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: consumer
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Resolve prerequisite commits
+        id: prerequisites
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_REFS: ${{ inputs.source_refs || '{}' }}
+        shell: bash
+        run: |
+          jq -e 'type == "object" and all(to_entries[]; (.key | IN("yaml-rule", "http-client", "light-4j")) and (.value | type == "string" and test("^[0-9a-f]{40}$")))' <<< "$SOURCE_REFS"
+          resolve() {
+            local repo=$1 pr=${2:-} ref
+            ref=$(jq -r --arg repo "$repo" '.[$repo] // empty' <<< "$SOURCE_REFS")
+            if [[ -z "$ref" ]]; then
+              if [[ -n "$pr" ]]; then
+                ref=$(gh api "repos/networknt/$repo/pulls/$pr" --jq 'if .merged then .base.ref elif .state == "open" then .head.sha else error("Prerequisite PR closed unmerged") end')
+              else
+                ref=master
+              fi
+            fi
+            ref=$(gh api "repos/networknt/$repo/commits/$ref" --jq .sha)
+            echo "${repo//-/_}=$ref" >> "$GITHUB_OUTPUT"
+          }
+          resolve yaml-rule
+          resolve http-client
+          resolve light-4j
+      - uses: actions/checkout@v4
+        with:
+          repository: networknt/yaml-rule
+          ref: ${{ steps.prerequisites.outputs.yaml_rule }}
+          path: sources/yaml-rule
+      - uses: actions/checkout@v4
+        with:
+          repository: networknt/http-client
+          ref: ${{ steps.prerequisites.outputs.http_client }}
+          path: sources/http-client
+      - uses: actions/checkout@v4
+        with:
+          repository: networknt/light-4j
+          ref: ${{ steps.prerequisites.outputs.light_4j }}
+          path: sources/light-4j
+      - name: Record source commits
+        shell: bash
+        run: |
+          for source in consumer sources/*; do
+            echo "$source $(git -C "$source" rev-parse HEAD)"
+          done | tee source-commits.txt
+          for source in sources/*; do
+            printf '{"key":"%s","value":"%s"}\n' "${source##*/}" "$(git -C "$source" rev-parse HEAD)"
+          done | jq -s from_entries | tee source-refs.json
+      - name: Build prerequisites and run full tests
+        shell: bash
+        env:
+          JACKSON3_MAVEN_REPO: ${{ runner.temp }}/m2
+          JACKSON3_YAML_RULE: ${{ github.workspace }}/sources/yaml-rule
+          JACKSON3_HTTP_CLIENT: ${{ github.workspace }}/sources/http-client
+        run: |
+          set -euo pipefail
+          bash sources/light-4j/scripts/verify-jackson3-bootstrap.sh 2>&1 | tee source-build.log
+          mvn -f consumer/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" clean install 2>&1 | tee -a source-build.log
+          git -C consumer fetch --no-tags origin 7b25cfaf641ed46003bde59e9f8b6ec39f7bb24a
+          # clean install does not resolve this plugin. Prepare its exact version before offline verification.
+          mvn -f consumer/pom.xml "-Dmaven.repo.local=$JACKSON3_MAVEN_REPO" -pl kafka-producer org.apache.maven.plugins:maven-dependency-plugin:3.7.0:build-classpath "-Dmdep.outputFile=$RUNNER_TEMP/baseline-bootstrap.classpath" 2>&1 | tee -a source-build.log
+          python3 consumer/scripts/verify-jackson2-wire-baseline.py --maven-repo "$JACKSON3_MAVEN_REPO" --output-dir "$RUNNER_TEMP/wire-baseline" 2>&1 | tee -a source-build.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: source-build-reports
+          path: |
+            source-build.log
+            source-commits.txt
+            source-refs.json
+            ${{ runner.temp }}/wire-baseline
+            **/target/surefire-reports/**
