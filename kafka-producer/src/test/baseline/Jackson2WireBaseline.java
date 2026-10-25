@@ -1,50 +1,21 @@
 package com.networknt.kafka.producer;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.networknt.exception.FrameworkException;
-import com.networknt.kafka.entity.AuditRecord;
+import com.google.protobuf.ByteString;
 import com.networknt.kafka.entity.EmbeddedFormat;
 import com.networknt.kafka.entity.ProduceRecord;
-import com.networknt.kafka.entity.ProduceRequest;
-import io.confluent.kafka.schemaregistry.ParsedSchema;
-import io.confluent.kafka.schemaregistry.avro.AvroSchema;
-import io.confluent.kafka.schemaregistry.avro.AvroSchemaProvider;
-import io.confluent.kafka.schemaregistry.client.MockSchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.json.JsonSchema;
-import io.confluent.kafka.schemaregistry.json.JsonSchemaProvider;
-import io.confluent.kafka.schemaregistry.protobuf.ProtobufSchema;
-import io.confluent.kafka.schemaregistry.protobuf.ProtobufSchemaProvider;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
+import static com.networknt.kafka.producer.WireCorpus.WIRE_KEYS;
 
-public class Jackson2WireBaseline {
+public class Jackson2WireBaseline extends WireScenario<JsonNode> {
     private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module());
-    private static final List<String> CORPUS = List.of(
-            "{\"text\":\"雪\",\"array\":[null,true,1.25,123456789012345678901234567890]}",
-            "[1.0,-0.0,1.0E20]", "null", "42", "\"hello\"");
-    private static final List<EmbeddedFormat> FORMATS = List.of(
-            EmbeddedFormat.AVRO, EmbeddedFormat.JSONSCHEMA, EmbeddedFormat.PROTOBUF);
-    private MockSchemaRegistryClient registry;
-
-    void resetRegistry() {
-        if (registry != null) registry.reset();
-    }
 
     public static void main(String[] args) throws Exception {
         var generator = new Jackson2WireBaseline();
-        for (String key : List.of(
-                "json-false-0", "json-false-1", "json-false-2", "json-false-3",
-                "json-false-4", "json-true-0", "json-true-1", "json-true-2",
-                "json-true-3", "json-true-4", "precise-decimal", "binary",
-                "string", "audit", "produce-request", "AVRO",
-                "JSONSCHEMA", "PROTOBUF", "bad-binary", "bad-schema")) {
+        for (String key : WIRE_KEYS) {
             try {
                 System.out.println("WIRE|" + key + "|" + generator.actualWireValue(key));
             } finally {
@@ -53,129 +24,35 @@ public class Jackson2WireBaseline {
         }
     }
 
-    private String actualWireValue(String key) throws Exception {
-        if (key.startsWith("json-")) return rawJson(key);
-        if (FORMATS.stream().anyMatch(format -> format.name().equals(key))) {
-            return schemaWireValue(EmbeddedFormat.valueOf(key));
-        }
-        return switch (key) {
-            case "precise-decimal" -> preciseDecimal();
-            case "binary" -> rawValue(EmbeddedFormat.BINARY, "\"AAH/\"");
-            case "string" -> rawValue(EmbeddedFormat.STRING, "\"雪\"");
-            case "audit" -> auditJson();
-            case "produce-request" -> produceRequestJson();
-            case "bad-binary" -> badBinary();
-            case "bad-schema" -> badSchema();
-            default -> throw new IllegalArgumentException("Unknown frozen wire key: " + key);
-        };
+    @Override
+    JsonNode readTree(String json) throws Exception {
+        return MAPPER.readTree(json);
     }
 
-    private String rawJson(String key) throws IOException {
-        String[] parts = key.split("-");
-        int index = Integer.parseInt(parts[2]);
-        var serializer = new NoSchemaRecordSerializer(Map.of("json.indent.output", Boolean.parseBoolean(parts[1])));
-        var value = serializer.serialize(index, EmbeddedFormat.JSON, MAPPER.readTree(CORPUS.get(index)));
-        return value.isEmpty() ? "NULL" : encode(value.get().toByteArray());
+    @Override
+    JsonNode decimalTree() {
+        return MAPPER.createObjectNode().put("decimal", WireCorpus.PRECISE_DECIMAL);
     }
 
-    private String rawValue(EmbeddedFormat format, String json) throws IOException {
-        var serializer = new NoSchemaRecordSerializer(Map.of());
-        return encode(serializer.serialize(0, format, MAPPER.readTree(json)).orElseThrow().toByteArray());
+    @Override
+    byte[] writeValueAsBytes(Object value) throws Exception {
+        return MAPPER.writeValueAsBytes(value);
     }
 
-    private String preciseDecimal() throws IOException {
-        var precise = MAPPER.createObjectNode();
-        precise.put("decimal", new BigDecimal("0.1234567890123456789012345678900"));
-        var serializer = new NoSchemaRecordSerializer(Map.of());
-        return encode(serializer.serialize(0, EmbeddedFormat.JSON, precise).orElseThrow().toByteArray());
+    @Override
+    ProduceRecord createRecord(JsonNode key, JsonNode value) {
+        return ProduceRecord.create(key, value);
     }
 
-    private String auditJson() throws Exception {
-        var audit = new AuditRecord();
-        audit.setId("fixed");
-        audit.setTopic("events");
-        audit.setTimestamp(123L);
-        audit.setAuditType(AuditRecord.AuditType.ACTIVE_CONSUMER);
-        audit.setAuditStatus(AuditRecord.AuditStatus.SUCCESS);
-        return encode(MAPPER.writeValueAsBytes(audit));
+    @Override
+    Optional<ByteString> serializeRaw(NoSchemaRecordSerializer serializer, int index,
+                                       EmbeddedFormat format, JsonNode node) throws Exception {
+        return serializer.serialize(index, format, node);
     }
 
-    private String produceRequestJson() throws Exception {
-        var record = ProduceRecord.create(MAPPER.readTree("1"), MAPPER.readTree(CORPUS.get(0)));
-        record.setHeaders(Optional.of(Map.of("x", "y")));
-        record.setTimestamp(Optional.of(123L));
-        var request = new ProduceRequest();
-        request.setRecords(List.of(record));
-        return encode(MAPPER.writeValueAsBytes(request));
-    }
-
-    private SchemaRecordSerializer schemaSerializer() {
-        registry = new MockSchemaRegistryClient(List.of(
-                new AvroSchemaProvider(), new JsonSchemaProvider(), new ProtobufSchemaProvider()));
-        var config = Map.<String, Object>of("schema.registry.url", "mock://parity");
-        return new SchemaRecordSerializer(registry, config, config, config);
-    }
-
-    private List<ParsedSchema> schemas() {
-        return List.of(
-                new AvroSchema("{\"type\":\"record\",\"name\":\"Item\",\"fields\":["
-                        + "{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"qty\",\"type\":\"int\"}]}"),
-                new JsonSchema("{\"type\":\"object\"}"),
-                new ProtobufSchema("syntax=\"proto3\"; message Item {string name=1; int32 qty=2;}"));
-    }
-
-    private String schemaWireValue(EmbeddedFormat format) throws Exception {
-        var serializer = schemaSerializer();
-        var schemas = schemas();
-        String result = null;
-        // Register in baseline order so the exact wire IDs remain 1, 2 and 3.
-        for (int i = 0; i < FORMATS.size(); i++) {
-            String topic = "events" + i;
-            String subject = topic + "-value";
-            int id = registry.register(subject, schemas.get(i));
-            if (FORMATS.get(i) == format) {
-                var schema = new RegisteredSchema(subject, id, 1, schemas.get(i));
-                String input = i == 1 ? CORPUS.get(0) : "{\"name\":\"雪\",\"qty\":7}";
-                result = encode(serializer.serialize(0, format, topic, Optional.of(schema),
-                        MAPPER.readTree(input), false).orElseThrow().toByteArray());
-            }
-        }
-        return result;
-    }
-
-    private String badBinary() {
-        var serializer = new NoSchemaRecordSerializer(Map.of());
-        var error = expectFailure(RuntimeException.class,
-                () -> serializer.serialize(3, EmbeddedFormat.BINARY, MAPPER.readTree("\"!\"")));
-        return error.getClass().getName() + "|" + error.getMessage();
-    }
-
-    private String badSchema() throws Exception {
-        var serializer = schemaSerializer();
-        var schema = new JsonSchema("{\"type\":\"integer\"}");
-        int id = registry.register("bad-value", schema);
-        var registered = new RegisteredSchema("bad-value", id, 1, schema);
-        var error = expectFailure(FrameworkException.class, () -> serializer.serialize(0,
-                EmbeddedFormat.JSONSCHEMA, "bad", Optional.of(registered), MAPPER.readTree("\"invalid\""), false));
-        return error.getStatus().getCode();
-    }
-
-    @FunctionalInterface
-    private interface ThrowingAction {
-        void run() throws Exception;
-    }
-
-    private static <T extends Throwable> T expectFailure(Class<T> type, ThrowingAction action) {
-        try {
-            action.run();
-        } catch (Throwable failure) {
-            if (type.isInstance(failure)) return type.cast(failure);
-            throw new AssertionError("Unexpected failure type", failure);
-        }
-        throw new AssertionError("Expected " + type.getName());
-    }
-
-    private static String encode(byte[] bytes) {
-        return Base64.getEncoder().encodeToString(bytes);
+    @Override
+    Optional<ByteString> serializeSchema(SchemaRecordSerializer serializer, EmbeddedFormat format,
+                                          String topic, RegisteredSchema schema, JsonNode node) throws Exception {
+        return serializer.serialize(0, format, topic, Optional.of(schema), node, false);
     }
 }

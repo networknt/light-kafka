@@ -38,3 +38,10 @@ and regenerated `wire.txt` outside the checkout, compares all 20 records, and
 fails on any mismatch. It never overwrites the committed fixture. The generator
 is outside Maven's test source root because it requires Jackson 2 APIs. No broker
 or external registry is used. Do not regenerate expected bytes from Jackson 3.
+
+`WireCorpus` and `WireScenario` share the input corpus, exact key manifest, schema
+setup and wire-operation driver across both JVMs. Only the small typed Jackson 2
+and Jackson 3 adapters differ. The verifier compiles this common driver separately
+with the extracted original serializers; it does not load current producer code.
+The golden factory checks the exact 20-key set before returning any test cases,
+rejecting empty/truncated, malformed, duplicate and unknown records.

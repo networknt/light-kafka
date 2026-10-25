@@ -57,7 +57,8 @@ def main():
          "dependency:build-classpath", f"-Dmdep.outputFile={classpath_file}"], folder / "dependencies.log")
     classpath = classpath_file.read_text().strip()
     generator = ROOT / "kafka-producer/src/test/baseline/Jackson2WireBaseline.java"
-    run(["javac", "-cp", classpath, "-d", str(classes), *files, str(generator)], folder / "compile.log")
+    run(["javac", "-cp", classpath, "-d", str(classes), *files, str(generator), str(ROOT / "kafka-producer/src/test/java/com/networknt/kafka/producer/WireCorpus.java"),
+         str(ROOT / "kafka-producer/src/test/java/com/networknt/kafka/producer/WireScenario.java")], folder / "compile.log")
     runtime = str(classes) + os.pathsep + classpath
     run(["java", "-cp", runtime, "com.networknt.kafka.producer.Jackson2WireBaseline"], folder / "run.log")
     actual = "\n".join(line for line in (folder / "run.log").read_text().splitlines()
