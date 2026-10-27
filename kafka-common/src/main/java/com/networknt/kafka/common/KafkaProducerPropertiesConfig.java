@@ -26,7 +26,7 @@ public class KafkaProducerPropertiesConfig {
     private static final String ENABLE_IDEMPOTENCE_KEY = "enable.idempotence";
     private static final String SCHEMA_REGISTRY_URL_KEY = "schema.registry.url";
     private static final String SCHEMA_REGISTRY_CACHE_KEY = "schema.registry.cache";
-    private static final String SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY = "schema.registry.auto.register.schemas";
+    private static final String SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY = "auto.register.schemas";
     private static final String MAX_REQUEST_SIZE_KEY = "max.request.size";
     private static final String ADDITIONAL_KAFKA_PROPERTIES_KEY = "additionalKafkaProperties";
 
@@ -155,13 +155,16 @@ public class KafkaProducerPropertiesConfig {
 
     @BooleanField(
             configFieldName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
-            externalizedKeyName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
+            externalizedKeyName = "schema.registry.auto.register.schemas",
             defaultValue = "true",
             description = "Schema registry auto register schema indicator for streams application.\n" +
                     "If true, the first request will register the schema auto automatically."
     )
     @JsonProperty(SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY)
     private Boolean schemaRegistryAutoRegisterSchemas;
+
+    @JsonProperty("schema.registry.auto.register.schemas")
+    private Boolean legacySchemaRegistryAutoRegisterSchemas;
 
     @StringField(
             configFieldName = SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY,
@@ -316,6 +319,7 @@ public class KafkaProducerPropertiesConfig {
         addIfSet(properties, ENABLE_IDEMPOTENCE_KEY, enableIdempotence);
         addIfSet(properties, SCHEMA_REGISTRY_URL_KEY, schemaRegistryUrl);
         addIfSet(properties, SCHEMA_REGISTRY_CACHE_KEY, schemaRegistryCache);
+        addIfSet(properties, KafkaConfigUtils.LEGACY_AUTO_REGISTER_SCHEMAS, legacySchemaRegistryAutoRegisterSchemas);
         addIfSet(properties, SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY, schemaRegistryAutoRegisterSchemas);
         addIfSet(properties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY, schemaRegistrySslTruststoreLocation);
         addIfSet(properties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY, schemaRegistrySslTruststorePassword);
@@ -333,6 +337,7 @@ public class KafkaProducerPropertiesConfig {
         addIfSet(properties, BASIC_AUTH_USER_INFO_KEY, basicAuthUserInfo);
         addIfSet(properties, BASIC_AUTH_CREDENTIALS_SOURCE_KEY, basicAuthCredentialsSource);
         addIfSet(properties, MAX_REQUEST_SIZE_KEY, maxRequestSize);
+        KafkaConfigUtils.normalizeAutoRegisterSchemas(properties);
         return properties;
     }
 
@@ -385,7 +390,8 @@ public class KafkaProducerPropertiesConfig {
     }
 
     public Boolean getSchemaRegistryAutoRegisterSchemas() {
-        return schemaRegistryAutoRegisterSchemas;
+        return schemaRegistryAutoRegisterSchemas != null
+                ? schemaRegistryAutoRegisterSchemas : legacySchemaRegistryAutoRegisterSchemas;
     }
 
     public String getSchemaRegistrySslTruststoreLocation() {

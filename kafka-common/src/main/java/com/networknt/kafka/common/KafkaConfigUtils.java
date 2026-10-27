@@ -12,6 +12,8 @@ public class KafkaConfigUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaConfigUtils.class);
     private static final String ADDITIONAL_KAFKA_PROPERTIES_KEY = "additionalKafkaProperties";
+    static final String AUTO_REGISTER_SCHEMAS = "auto.register.schemas";
+    static final String LEGACY_AUTO_REGISTER_SCHEMAS = "schema.registry.auto.register.schemas";
     private static final String GROUP_ID_KEY = "group.id";
     private static final String SASL_JAAS_CONFIG_KEY = "sasl.jaas.config";
     private static final String SASL_JAAS_CONFIG_MODULE_KEY = "sasl.jaas.config.module";
@@ -103,6 +105,8 @@ public class KafkaConfigUtils {
             }
         }
 
+        normalizeAutoRegisterSchemas(properties);
+
         if (properties.containsKey(GROUP_ID_KEY)) {
             properties.put(GROUP_ID_KEY, String.valueOf(properties.get(GROUP_ID_KEY)));
         }
@@ -123,6 +127,33 @@ public class KafkaConfigUtils {
         properties.remove(SASL_JAAS_CONFIG_USERNAME_KEY);
         properties.remove(SASL_JAAS_CONFIG_PASSWORD_KEY);
         return properties;
+    }
+
+    /** Canonical spelling wins over the deprecated alias, independent of map order. */
+    static void normalizeAutoRegisterSchemas(Map<String, Object> properties) {
+        if (properties.get(AUTO_REGISTER_SCHEMAS) != null
+                || properties.get(LEGACY_AUTO_REGISTER_SCHEMAS) != null) {
+            properties.put(AUTO_REGISTER_SCHEMAS, autoRegisterSchemas(properties));
+        }
+        properties.remove(LEGACY_AUTO_REGISTER_SCHEMAS);
+    }
+
+    static boolean autoRegisterSchemas(Map<String, Object> properties) {
+        Object value = properties.get(AUTO_REGISTER_SCHEMAS);
+        if (value == null) {
+            value = properties.get(LEGACY_AUTO_REGISTER_SCHEMAS);
+        }
+        if (value == null) {
+            return true;
+        }
+        if (value instanceof Boolean flag) {
+            return flag;
+        }
+        if (value instanceof String text) {
+            if ("true".equalsIgnoreCase(text.trim())) return true;
+            if ("false".equalsIgnoreCase(text.trim())) return false;
+        }
+        throw new IllegalArgumentException(AUTO_REGISTER_SCHEMAS + " must be true or false");
     }
 
     /**

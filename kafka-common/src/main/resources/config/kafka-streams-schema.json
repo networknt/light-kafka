@@ -37,7 +37,7 @@
           "description" : "SSchema registry url",
           "default" : "http://localhost:8081"
         },
-        "schema.registry.auto.register.schemas" : {
+        "auto.register.schemas" : {
           "type" : "boolean",
           "description" : "Schema registry auto register schema indicator for streams application. If true, the first request will register the schema auto automatically.",
           "default" : true
