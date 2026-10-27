@@ -16,8 +16,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.AUTO_REGISTER_SCHEMAS;
-
 public abstract class AbstractAvroSerializer extends AbstractAvroSerDe {
     static final Logger logger = LoggerFactory.getLogger(AbstractAvroSerializer.class);
 
@@ -38,8 +36,7 @@ public abstract class AbstractAvroSerializer extends AbstractAvroSerDe {
             int id;
             schema = AvroSchemaUtils.getSchema(object);
             String subject = schema.getFullName();
-            Boolean autoRegistry = (Boolean)config.get("schema.registry.auto.register.schemas");
-            if (autoRegistry.booleanValue()) {
+            if (KafkaConfigUtils.autoRegisterSchemas(config)) {
                 restClientErrorMsg = "Error registering Avro schema: ";
                 id = schemaRegistry.register(subject, new AvroSchema(schema));
             } else {

@@ -73,7 +73,7 @@
           "default" : 100.0,
           "format" : "float32"
         },
-        "schema.registry.auto.register.schemas" : {
+        "auto.register.schemas" : {
           "type" : "boolean",
           "description" : "Schema registry auto register schema indicator for streams application.\nIf true, the first request will register the schema auto automatically.",
           "default" : true

@@ -23,7 +23,7 @@ public class KafkaConsumerPropertiesConfig {
     private static final String AUTO_OFFSET_RESET_KEY = "auto.offset.reset";
     private static final String GROUP_ID_KEY = "group.id";
     private static final String SCHEMA_REGISTRY_URL_KEY = "schema.registry.url";
-    private static final String SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY = "schema.registry.auto.register.schemas";
+    private static final String SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY = "auto.register.schemas";
     private static final String SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY = "schema.registry.ssl.truststore.location";
     private static final String SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY = "schema.registry.ssl.truststore.password";
     private static final String ADDITIONAL_KAFKA_PROPERTIES_KEY = "additionalKafkaProperties";
@@ -107,13 +107,16 @@ public class KafkaConsumerPropertiesConfig {
 
     @BooleanField(
             configFieldName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
-            externalizedKeyName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
+            externalizedKeyName = "schema.registry.auto.register.schemas",
             defaultValue = "true",
             description = "Schema registry auto register schema indicator for streams application. " +
                     "If true, the first request will register the schema auto automatically."
     )
     @JsonProperty(SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY)
     private Boolean schemaRegistryAutoRegisterSchemas;
+
+    @JsonProperty("schema.registry.auto.register.schemas")
+    private Boolean legacySchemaRegistryAutoRegisterSchemas;
 
     @StringField(
             configFieldName = SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY,
@@ -288,6 +291,7 @@ public class KafkaConsumerPropertiesConfig {
         addIfSet(properties, AUTO_OFFSET_RESET_KEY, autoOffsetReset);
         addIfSet(properties, GROUP_ID_KEY, groupId);
         addIfSet(properties, SCHEMA_REGISTRY_URL_KEY, schemaRegistryUrl);
+        addIfSet(properties, KafkaConfigUtils.LEGACY_AUTO_REGISTER_SCHEMAS, legacySchemaRegistryAutoRegisterSchemas);
         addIfSet(properties, SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY, schemaRegistryAutoRegisterSchemas);
         addIfSet(properties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY, schemaRegistrySslTruststoreLocation);
         addIfSet(properties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY, schemaRegistrySslTruststorePassword);
@@ -307,6 +311,7 @@ public class KafkaConsumerPropertiesConfig {
         addIfSet(properties, FETCH_MAX_BYTES_KEY, fetchMaxBytes);
         addIfSet(properties, MAX_POLL_RECORDS_KEY, maxPollRecords);
         addIfSet(properties, MAX_PARTITION_FETCH_BYTES_KEY, maxPartitionFetchBytes);
+        KafkaConfigUtils.normalizeAutoRegisterSchemas(properties);
         return properties;
     }
 
@@ -339,7 +344,8 @@ public class KafkaConsumerPropertiesConfig {
     }
 
     public Boolean getSchemaRegistryAutoRegisterSchemas() {
-        return schemaRegistryAutoRegisterSchemas;
+        return schemaRegistryAutoRegisterSchemas != null
+                ? schemaRegistryAutoRegisterSchemas : legacySchemaRegistryAutoRegisterSchemas;
     }
 
     public String getSchemaRegistrySslTruststoreLocation() {
