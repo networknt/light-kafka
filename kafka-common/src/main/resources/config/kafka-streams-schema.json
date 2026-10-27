@@ -39,7 +39,7 @@
         },
         "auto.register.schemas" : {
           "type" : "boolean",
-          "description" : "Schema registry auto register schema indicator for streams application. If true, the first request will register the schema auto automatically.",
+          "description" : "Controls automatic schema registration during serialization; defaults to true. Applies to Streams output and internal records.",
           "default" : true
         },
         "schema.registry.ssl.truststore.location" : {

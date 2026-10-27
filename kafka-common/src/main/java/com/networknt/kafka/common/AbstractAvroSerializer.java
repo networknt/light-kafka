@@ -20,6 +20,8 @@ public abstract class AbstractAvroSerializer extends AbstractAvroSerDe {
     static final Logger logger = LoggerFactory.getLogger(AbstractAvroSerializer.class);
 
     private final EncoderFactory encoderFactory = EncoderFactory.get();
+    // The superclass builds this serializer's configuration snapshot once.
+    private final boolean autoRegisterSchemas = KafkaConfigUtils.autoRegisterSchemas(config);
 
     protected byte[] serializeImpl(Object object)  {
         Schema schema = null;
@@ -36,7 +38,7 @@ public abstract class AbstractAvroSerializer extends AbstractAvroSerDe {
             int id;
             schema = AvroSchemaUtils.getSchema(object);
             String subject = schema.getFullName();
-            if (KafkaConfigUtils.autoRegisterSchemas(config)) {
+            if (autoRegisterSchemas) {
                 restClientErrorMsg = "Error registering Avro schema: ";
                 id = schemaRegistry.register(subject, new AvroSchema(schema));
             } else {
