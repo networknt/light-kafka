@@ -4,7 +4,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import com.networknt.config.Config;
 import io.confluent.kafka.schemaregistry.avro.AvroSchema;
 import io.confluent.kafka.schemaregistry.client.MockSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
@@ -74,8 +73,8 @@ class AutoRegisterSchemasTest {
                 ILoggingEvent event = appender.list.get(i);
                 assertEquals(Level.WARN, event.getLevel());
                 assertEquals(i < 3
-                        ? LEGACY + " is deprecated; use " + KEY + ". Its value is now honored by Confluent serializers"
-                        : LEGACY + " is deprecated and ignored because " + KEY + " is also supplied",
+                        ? LEGACY + " is deprecated; use " + KEY + ". It is translated to the canonical serializer property"
+                        : LEGACY + " is deprecated; " + KEY + " takes precedence when both are supplied",
                         event.getFormattedMessage());
             }
         } finally {
@@ -152,17 +151,10 @@ class AutoRegisterSchemasTest {
     }
 
     private static AvroSerializer lightSerializer(Map<String, Object> settings, MockSchemaRegistryClient registry) {
-        Config config = Config.getInstance();
-        Map<String, Object> source = new HashMap<>(settings);
-        source.put("custom.setting", "present"); // Prevent empty properties from falling through to producer defaults.
-        config.putInConfigCache("kafka-streams", Map.of("properties", source));
-        try {
-            AvroSerializer serializer = new AvroSerializer();
-            serializer.schemaRegistry = registry;
-            return serializer;
-        } finally {
-            config.clearConfigCache("kafka-streams");
-        }
+        AvroSerializer serializer = new AvroSerializer();
+        serializer.config = KafkaConfigUtils.normalizeKafkaProperties(settings);
+        serializer.schemaRegistry = registry;
+        return serializer;
     }
 
     private static Map<String, Object> confluentSettings(Map<String, Object> properties) {
