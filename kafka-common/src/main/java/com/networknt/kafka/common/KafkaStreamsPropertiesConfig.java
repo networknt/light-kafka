@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.networknt.kafka.common.KafkaConfigUtils.AUTO_REGISTER_SCHEMAS;
-import static com.networknt.kafka.common.KafkaConfigUtils.AUTO_REGISTER_SCHEMAS_OVERRIDE;
 import static com.networknt.kafka.common.KafkaConfigUtils.addIfSet;
 
 public class KafkaStreamsPropertiesConfig {
@@ -95,7 +94,7 @@ public class KafkaStreamsPropertiesConfig {
 
     @BooleanField(
             configFieldName = AUTO_REGISTER_SCHEMAS,
-            externalizedKeyName = AUTO_REGISTER_SCHEMAS_OVERRIDE,
+            externalizedKeyName = AUTO_REGISTER_SCHEMAS,
             defaultValue = "true",
             description = "Controls automatic schema registration during serialization; defaults to true. Applies to Streams output and internal records."
     )

@@ -45,7 +45,7 @@ class KafkaConfigApiCompatibilityTest {
     }
 
     @Test
-    void jsonObjectLoadingNormalizesLegacyAutoRegistrationFromFile() throws Exception {
+    void jsonObjectLoadingPreservesLegacyAutoRegistrationWithoutTranslatingIt() throws Exception {
         Config config = Config.getInstance();
         String name = "kafka-auto-register-legacy";
         try {
@@ -54,8 +54,8 @@ class KafkaConfigApiCompatibilityTest {
                 for (Object loaded : new Object[]{config.getJsonObjectConfig(name, type),
                         config.getJsonObjectConfigNoCache(name, type)}) {
                     Map<?, ?> properties = (Map<?, ?>) type.getMethod("getProperties").invoke(loaded);
-                    assertEquals(false, properties.get("auto.register.schemas"));
-                    assertFalse(properties.containsKey("schema.registry.auto.register.schemas"));
+                    assertEquals(false, properties.get("schema.registry.auto.register.schemas"));
+                    assertFalse(properties.containsKey("auto.register.schemas"));
                     assertEquals("preserved", properties.get("custom.setting"));
                 }
             }

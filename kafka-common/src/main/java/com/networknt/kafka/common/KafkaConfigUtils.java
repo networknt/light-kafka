@@ -14,8 +14,6 @@ public class KafkaConfigUtils {
     private static final String ADDITIONAL_KAFKA_PROPERTIES_KEY = "additionalKafkaProperties";
     static final String AUTO_REGISTER_SCHEMAS = "auto.register.schemas";
     static final String LEGACY_AUTO_REGISTER_SCHEMAS = "schema.registry.auto.register.schemas";
-    // Stable values.yml override name; unlike the Kafka property alias, this is not deprecated.
-    static final String AUTO_REGISTER_SCHEMAS_OVERRIDE = "schema.registry.auto.register.schemas";
     private static final String GROUP_ID_KEY = "group.id";
     private static final String SASL_JAAS_CONFIG_KEY = "sasl.jaas.config";
     private static final String SASL_JAAS_CONFIG_MODULE_KEY = "sasl.jaas.config.module";
@@ -107,16 +105,9 @@ public class KafkaConfigUtils {
             }
         }
 
-        Object legacy = properties.remove(LEGACY_AUTO_REGISTER_SCHEMAS);
-        if (legacy != null) {
-            if (properties.containsKey(AUTO_REGISTER_SCHEMAS)) {
-                LOG.warn("{} is deprecated; {} takes precedence when both are supplied",
-                        LEGACY_AUTO_REGISTER_SCHEMAS, AUTO_REGISTER_SCHEMAS);
-            } else {
-                LOG.warn("{} is deprecated; use {}. It is translated to the canonical serializer property",
-                        LEGACY_AUTO_REGISTER_SCHEMAS, AUTO_REGISTER_SCHEMAS);
-            }
-            properties.putIfAbsent(AUTO_REGISTER_SCHEMAS, legacy);
+        if (properties.containsKey(LEGACY_AUTO_REGISTER_SCHEMAS)) {
+            LOG.warn("{} has no effect on Confluent serializers; use {}. Only Light's Avro serializer supports the old key",
+                    LEGACY_AUTO_REGISTER_SCHEMAS, AUTO_REGISTER_SCHEMAS);
         }
 
         if (properties.containsKey(GROUP_ID_KEY)) {
@@ -139,22 +130,6 @@ public class KafkaConfigUtils {
         properties.remove(SASL_JAAS_CONFIG_USERNAME_KEY);
         properties.remove(SASL_JAAS_CONFIG_PASSWORD_KEY);
         return properties;
-    }
-
-    static boolean autoRegisterSchemas(Map<String, Object> properties) {
-        Object value = properties.get(AUTO_REGISTER_SCHEMAS);
-        if (value == null) {
-            return true;
-        }
-        if (value instanceof Boolean flag) {
-            return flag;
-        }
-        if (value instanceof String text) {
-            if ("true".equalsIgnoreCase(text.trim())) return true;
-            if ("false".equalsIgnoreCase(text.trim())) return false;
-        }
-        throw new IllegalArgumentException("Invalid value '" + value + "' for "
-                + AUTO_REGISTER_SCHEMAS + "; expected true or false");
     }
 
     /**

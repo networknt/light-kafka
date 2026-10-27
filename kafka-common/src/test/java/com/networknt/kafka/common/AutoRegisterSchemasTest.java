@@ -4,6 +4,8 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import com.networknt.config.Config;
+import com.networknt.config.ConfigInjection;
 import io.confluent.kafka.schemaregistry.avro.AvroSchema;
 import io.confluent.kafka.schemaregistry.client.MockSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
@@ -25,32 +27,37 @@ class AutoRegisterSchemasTest {
     private static final String KEY = "auto.register.schemas";
     private static final String LEGACY = "schema.registry.auto.register.schemas";
 
-    private record Scenario(Map<String, Object> input, Object normalized, boolean registers) { }
+    private record Scenario(Map<String, Object> input, Object canonical, boolean confluentRegisters, boolean lightRegisters) { }
 
     private static List<Scenario> scenarios() {
         return List.of(
-                new Scenario(Map.of(KEY, false), false, false),
-                new Scenario(Map.of(LEGACY, false), false, false),
-                new Scenario(Map.of(KEY, "false"), "false", false),
-                new Scenario(Map.of(LEGACY, "false"), "false", false),
-                new Scenario(Map.of(KEY, false, LEGACY, true), false, false),
-                new Scenario(Map.of(KEY, true, LEGACY, false), true, true),
-                new Scenario(Map.of(KEY, " TRUE ", LEGACY, "false"), " TRUE ", true),
-                new Scenario(Map.of(LEGACY, "TrUe"), "TrUe", true),
-                new Scenario(Map.of("additionalKafkaProperties", Map.of(LEGACY, false)), false, false),
-                new Scenario(Map.of(LEGACY, true, "additionalKafkaProperties", Map.of(KEY, false)), false, false),
-                new Scenario(Map.of(), null, true));
+                new Scenario(Map.of(KEY, false), false, false, false),
+                new Scenario(Map.of(LEGACY, false), null, true, false),
+                new Scenario(Map.of(KEY, "false"), "false", false, false),
+                new Scenario(Map.of(LEGACY, "false"), null, true, false),
+                new Scenario(Map.of(KEY, false, LEGACY, true), false, false, false),
+                new Scenario(Map.of(KEY, true, LEGACY, false), true, true, true),
+                new Scenario(Map.of(KEY, " TRUE ", LEGACY, "false"), " TRUE ", true, true),
+                new Scenario(Map.of(KEY, false, LEGACY, "yes"), false, false, false),
+                new Scenario(Map.of(LEGACY, "TrUe"), null, true, true),
+                new Scenario(Map.of("additionalKafkaProperties", Map.of(LEGACY, false)), null, true, false),
+                new Scenario(Map.of(LEGACY, true, "additionalKafkaProperties", Map.of(KEY, false)), false, false, false),
+                new Scenario(Map.of(), null, true, true));
     }
 
     @Test
-    void allClientsNormalizeAliasesAndPreserveRawAndUnrelatedProperties() {
+    void allClientsPreserveLegacyWithoutTranslatingItAndKeepCanonicalSettings() {
         for (Scenario scenario : scenarios()) {
             Map<String, Object> source = new HashMap<>(scenario.input());
             source.put("custom.setting", "preserved");
             for (Map<String, Object> properties : clientProperties(source)) {
-                assertEquals(scenario.normalized(), properties.get(KEY));
-                assertEquals(scenario.normalized() != null, properties.containsKey(KEY));
-                assertFalse(properties.containsKey(LEGACY));
+                assertEquals(scenario.canonical(), properties.get(KEY));
+                assertEquals(scenario.canonical() != null, properties.containsKey(KEY));
+                Object legacy = scenario.input().get(LEGACY);
+                if (legacy == null && scenario.input().get("additionalKafkaProperties") instanceof Map<?, ?> additional) {
+                    legacy = additional.get(LEGACY);
+                }
+                assertEquals(legacy, properties.get(LEGACY));
                 assertFalse(properties.containsKey("additionalKafkaProperties"));
                 assertEquals("preserved", properties.get("custom.setting"));
             }
@@ -58,7 +65,7 @@ class AutoRegisterSchemasTest {
     }
 
     @Test
-    void aliasAndConflictWarningsExplainWhichKeyIsEffective() {
+    void legacyWarningExplainsConfluentDoesNotSupportTheKey() {
         Logger logger = (Logger) LoggerFactory.getLogger(KafkaConfigUtils.class);
         ListAppender<ILoggingEvent> appender = new ListAppender<>();
         appender.start();
@@ -72,9 +79,8 @@ class AutoRegisterSchemasTest {
             for (int i = 0; i < appender.list.size(); i++) {
                 ILoggingEvent event = appender.list.get(i);
                 assertEquals(Level.WARN, event.getLevel());
-                assertEquals(i < 3
-                        ? LEGACY + " is deprecated; use " + KEY + ". It is translated to the canonical serializer property"
-                        : LEGACY + " is deprecated; " + KEY + " takes precedence when both are supplied",
+                assertEquals(LEGACY + " has no effect on Confluent serializers; use " + KEY
+                        + ". Only Light's Avro serializer supports the old key",
                         event.getFormattedMessage());
             }
         } finally {
@@ -91,7 +97,7 @@ class AutoRegisterSchemasTest {
                 try (KafkaAvroSerializer serializer = new KafkaAvroSerializer(registry)) {
                     serializer.configure(confluentSettings(properties), false);
                     GenericData.Record record = record();
-                    if (!scenario.registers()) {
+                    if (!scenario.confluentRegisters()) {
                         assertThrows(SerializationException.class, () -> serializer.serialize("events", record));
                         assertUnregistered(registry, "events-value");
                         registry.register("events-value", new AvroSchema(record.getSchema()));
@@ -104,12 +110,12 @@ class AutoRegisterSchemasTest {
     }
 
     @Test
-    void lightSerializerUsesNormalizedFlagAndDefaultsToRegistration() throws Exception {
+    void lightSerializerAloneRetainsLegacyFallbackWithCanonicalPrecedence() throws Exception {
         for (Scenario scenario : scenarios()) {
             MockSchemaRegistryClient registry = new MockSchemaRegistryClient();
             AvroSerializer serializer = lightSerializer(scenario.input(), registry);
             GenericData.Record record = record();
-            if (!scenario.registers()) {
+            if (!scenario.lightRegisters()) {
                 RuntimeException error = assertThrows(RuntimeException.class, () -> serializer.serialize(record));
                 assertInstanceOf(RestClientException.class, error.getCause());
                 assertUnregistered(registry, record.getSchema().getFullName());
@@ -126,17 +132,49 @@ class AutoRegisterSchemasTest {
             for (Object value : List.of("yes", 1)) {
                 Map<String, Object> input = Map.of(key, value);
                 for (Map<String, Object> properties : clientProperties(input)) {
-                    assertEquals(value, properties.get(KEY));
+                    assertEquals(value, properties.get(key));
                     try (KafkaAvroSerializer serializer = new KafkaAvroSerializer(new MockSchemaRegistryClient())) {
-                        assertThrows(ConfigException.class, () -> serializer.configure(confluentSettings(properties), false));
+                        if (KEY.equals(key)) {
+                            assertThrows(ConfigException.class, () -> serializer.configure(confluentSettings(properties), false));
+                        } else {
+                            // The unsupported legacy value must not change Confluent's default.
+                            serializer.configure(confluentSettings(properties), false);
+                            assertNotNull(serializer.serialize("events", record()));
+                        }
                     }
                 }
                 AvroSerializer serializer = lightSerializer(input, new MockSchemaRegistryClient());
                 RuntimeException error = assertThrows(RuntimeException.class, () -> serializer.serialize(record()));
                 IllegalArgumentException cause = assertInstanceOf(IllegalArgumentException.class, error.getCause());
-                // Normalization discards the source spelling; report only the effective key.
-                assertEquals("Invalid value '" + value + "' for " + KEY + "; expected true or false", cause.getMessage());
+                assertEquals("Invalid value '" + value + "' for " + key + "; expected true or false", cause.getMessage());
             }
+        }
+    }
+
+    @Test
+    void canonicalValuesOverridesWorkAndOldOverridesLeaveTheDefaultUnchanged() {
+        Map<String, Object> original = ConfigInjection.getDecryptedValueMap();
+        Map<String, Object> overrides = original == null ? new HashMap<>() : new HashMap<>(original);
+        List<String> clients = List.of("kafka-producer", "kafka-consumer", "kafka-streams");
+        try {
+            for (String client : clients) {
+                overrides.remove(client + "." + KEY);
+                overrides.put(client + "." + LEGACY, false);
+            }
+            ConfigInjection.setDecryptedValueMap(overrides);
+            for (String client : clients) {
+                Map<?, ?> properties = (Map<?, ?>) Config.getInstance().getJsonMapConfigNoCache(client).get("properties");
+                assertEquals(true, properties.get(KEY), "Old override should not populate the new placeholder");
+                assertFalse(properties.containsKey(LEGACY));
+            }
+            for (String client : clients) overrides.put(client + "." + KEY, false);
+            ConfigInjection.setDecryptedValueMap(overrides);
+            for (String client : clients) {
+                Map<?, ?> properties = (Map<?, ?>) Config.getInstance().getJsonMapConfigNoCache(client).get("properties");
+                assertEquals(false, properties.get(KEY));
+            }
+        } finally {
+            ConfigInjection.setDecryptedValueMap(original);
         }
     }
 
