@@ -26,6 +26,10 @@ serializer defaults to `true` when neither spelling is present, matching Conflue
 This setting controls serialization, including Streams output, rather than
 consumer deserialization.
 
+Light's Avro serializer captures the effective auto-registration flag when the
+serializer is constructed. Later configuration reloads or map changes do not change
+that instance's flag; construct a new serializer to apply an updated setting.
+
 The bundled templates intentionally retain the existing external override names
 `kafka-producer.schema.registry.auto.register.schemas`,
 `kafka-consumer.schema.registry.auto.register.schemas`, and
