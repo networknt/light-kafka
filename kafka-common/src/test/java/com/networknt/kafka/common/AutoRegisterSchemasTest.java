@@ -174,6 +174,49 @@ class AutoRegisterSchemasTest {
     }
 
     @Test
+    void realReloadKeepsExistingSerializerSnapshotAndNewSerializerUsesUpdatedFlag() {
+        for (boolean initiallyEnabled : new boolean[]{false, true}) {
+            AtomicReference<String> yaml = new AtomicReference<>(
+                    "properties:\n  " + LEGACY + ": " + initiallyEnabled + "\n");
+            withConfigSource(yaml, () -> assertDoesNotThrow(() -> {
+                KafkaStreamsConfig initialConfig = KafkaStreamsConfig.load();
+                assertEquals(initiallyEnabled, initialConfig.getProperties().get(KEY));
+                MockSchemaRegistryClient originalRegistry = new MockSchemaRegistryClient();
+                AvroSerializer original = new AvroSerializer();
+                original.schemaRegistry = originalRegistry;
+
+                yaml.set("properties:\n  " + KEY + ": " + !initiallyEnabled + "\n");
+                KafkaStreamsConfig.reload();
+                KafkaStreamsConfig updatedConfig = KafkaStreamsConfig.load();
+                assertNotSame(initialConfig, updatedConfig);
+                assertEquals(!initiallyEnabled, updatedConfig.getProperties().get(KEY));
+
+                MockSchemaRegistryClient updatedRegistry = new MockSchemaRegistryClient();
+                AvroSerializer updated = new AvroSerializer();
+                updated.schemaRegistry = updatedRegistry;
+
+                // Observe actual registration/lookup after reload; neither serializer's map
+                // is overwritten and neither expected result uses the production resolver.
+                assertRegistrationBehavior(original, originalRegistry, initiallyEnabled);
+                assertRegistrationBehavior(updated, updatedRegistry, !initiallyEnabled);
+            }));
+        }
+    }
+
+    private static void assertRegistrationBehavior(AvroSerializer serializer,
+                                                    MockSchemaRegistryClient registry,
+                                                    boolean registrationExpected) throws Exception {
+        GenericData.Record record = record();
+        if (!registrationExpected) {
+            assertThrows(RuntimeException.class, () -> serializer.serialize(record));
+            assertUnregistered(registry, record.getSchema().getFullName());
+            registry.register(record.getSchema().getFullName(), new AvroSchema(record.getSchema()));
+        }
+        assertNotNull(serializer.serialize(record));
+        assertEquals(1, registry.getAllSubjects().size());
+    }
+
+    @Test
     void invalidValuesDoNotPoisonRealLoadsReloadsOrLaterRecovery() {
         for (String key : List.of(KEY, LEGACY)) {
             AtomicReference<String> yaml = new AtomicReference<>(
