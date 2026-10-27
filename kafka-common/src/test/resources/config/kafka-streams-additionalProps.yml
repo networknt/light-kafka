@@ -6,7 +6,7 @@ properties:
   auto.offset.reset: earliest
   application.id: placeholder
   schema.registry.url: http://localhost:8081
-  schema.registry.auto.register.schemas: true
+  auto.register.schemas: true
   inline.custom.property: inline-streams-value
   additionalKafkaProperties:
     # This property will be loaded

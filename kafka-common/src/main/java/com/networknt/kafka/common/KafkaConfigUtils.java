@@ -12,6 +12,8 @@ public class KafkaConfigUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaConfigUtils.class);
     private static final String ADDITIONAL_KAFKA_PROPERTIES_KEY = "additionalKafkaProperties";
+    static final String AUTO_REGISTER_SCHEMAS = "auto.register.schemas";
+    static final String LEGACY_AUTO_REGISTER_SCHEMAS = "schema.registry.auto.register.schemas";
     private static final String GROUP_ID_KEY = "group.id";
     private static final String SASL_JAAS_CONFIG_KEY = "sasl.jaas.config";
     private static final String SASL_JAAS_CONFIG_MODULE_KEY = "sasl.jaas.config.module";
@@ -101,6 +103,11 @@ public class KafkaConfigUtils {
                     && entry.getValue() != null) {
                 properties.put(key, entry.getValue());
             }
+        }
+
+        if (properties.containsKey(LEGACY_AUTO_REGISTER_SCHEMAS)) {
+            LOG.warn("{} has no effect on Confluent serializers; use {}. Only Light's Avro serializer supports the old key",
+                    LEGACY_AUTO_REGISTER_SCHEMAS, AUTO_REGISTER_SCHEMAS);
         }
 
         if (properties.containsKey(GROUP_ID_KEY)) {

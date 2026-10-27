@@ -10,6 +10,7 @@ import com.networknt.config.schema.StringField;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.networknt.kafka.common.KafkaConfigUtils.AUTO_REGISTER_SCHEMAS;
 import static com.networknt.kafka.common.KafkaConfigUtils.addIfSet;
 
 public class KafkaProducerPropertiesConfig {
@@ -26,7 +27,6 @@ public class KafkaProducerPropertiesConfig {
     private static final String ENABLE_IDEMPOTENCE_KEY = "enable.idempotence";
     private static final String SCHEMA_REGISTRY_URL_KEY = "schema.registry.url";
     private static final String SCHEMA_REGISTRY_CACHE_KEY = "schema.registry.cache";
-    private static final String SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY = "schema.registry.auto.register.schemas";
     private static final String MAX_REQUEST_SIZE_KEY = "max.request.size";
     private static final String ADDITIONAL_KAFKA_PROPERTIES_KEY = "additionalKafkaProperties";
 
@@ -154,13 +154,12 @@ public class KafkaProducerPropertiesConfig {
     private Integer schemaRegistryCache;
 
     @BooleanField(
-            configFieldName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
-            externalizedKeyName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
+            configFieldName = AUTO_REGISTER_SCHEMAS,
+            externalizedKeyName = AUTO_REGISTER_SCHEMAS,
             defaultValue = "true",
-            description = "Schema registry auto register schema indicator for streams application.\n" +
-                    "If true, the first request will register the schema auto automatically."
+            description = "Controls automatic schema registration during serialization; defaults to true. If false, schemas must already be registered."
     )
-    @JsonProperty(SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY)
+    @JsonProperty(AUTO_REGISTER_SCHEMAS)
     private Boolean schemaRegistryAutoRegisterSchemas;
 
     @StringField(
@@ -316,7 +315,7 @@ public class KafkaProducerPropertiesConfig {
         addIfSet(properties, ENABLE_IDEMPOTENCE_KEY, enableIdempotence);
         addIfSet(properties, SCHEMA_REGISTRY_URL_KEY, schemaRegistryUrl);
         addIfSet(properties, SCHEMA_REGISTRY_CACHE_KEY, schemaRegistryCache);
-        addIfSet(properties, SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY, schemaRegistryAutoRegisterSchemas);
+        addIfSet(properties, AUTO_REGISTER_SCHEMAS, schemaRegistryAutoRegisterSchemas);
         addIfSet(properties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY, schemaRegistrySslTruststoreLocation);
         addIfSet(properties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY, schemaRegistrySslTruststorePassword);
         addIfSet(properties, SECURITY_PROTOCOL_KEY, securityProtocol);

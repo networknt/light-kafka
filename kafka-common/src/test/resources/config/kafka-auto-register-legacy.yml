@@ -1,0 +1,5 @@
+properties:
+  schema.registry.auto.register.schemas: false
+  custom.setting: preserved
+  additionalKafkaProperties:
+    schema.registry.auto.register.schemas: true

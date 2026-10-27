@@ -6,7 +6,7 @@ properties:
   auto.offset.reset: earliest
   group.id: group1
   schema.registry.url: http://localhost:8081
-  schema.registry.auto.register.schemas: true
+  auto.register.schemas: true
   fetch.max.bytes: 102400
   max.poll.records: 100
   inline.custom.property: inline-consumer-value
