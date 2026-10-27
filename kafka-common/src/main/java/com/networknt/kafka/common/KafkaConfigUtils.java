@@ -110,10 +110,10 @@ public class KafkaConfigUtils {
         Object legacy = properties.remove(LEGACY_AUTO_REGISTER_SCHEMAS);
         if (legacy != null) {
             if (properties.containsKey(AUTO_REGISTER_SCHEMAS)) {
-                LOG.warn("{} is deprecated and ignored because {} is also supplied",
+                LOG.warn("{} is deprecated; {} takes precedence when both are supplied",
                         LEGACY_AUTO_REGISTER_SCHEMAS, AUTO_REGISTER_SCHEMAS);
             } else {
-                LOG.warn("{} is deprecated; use {}. Its value is now honored by Confluent serializers",
+                LOG.warn("{} is deprecated; use {}. It is translated to the canonical serializer property",
                         LEGACY_AUTO_REGISTER_SCHEMAS, AUTO_REGISTER_SCHEMAS);
             }
             properties.putIfAbsent(AUTO_REGISTER_SCHEMAS, legacy);
