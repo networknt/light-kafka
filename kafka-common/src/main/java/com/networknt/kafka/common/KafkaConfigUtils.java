@@ -14,6 +14,8 @@ public class KafkaConfigUtils {
     private static final String ADDITIONAL_KAFKA_PROPERTIES_KEY = "additionalKafkaProperties";
     static final String AUTO_REGISTER_SCHEMAS = "auto.register.schemas";
     static final String LEGACY_AUTO_REGISTER_SCHEMAS = "schema.registry.auto.register.schemas";
+    // Stable values.yml override name; unlike the Kafka property alias, this is not deprecated.
+    static final String AUTO_REGISTER_SCHEMAS_OVERRIDE = "schema.registry.auto.register.schemas";
     private static final String GROUP_ID_KEY = "group.id";
     private static final String SASL_JAAS_CONFIG_KEY = "sasl.jaas.config";
     private static final String SASL_JAAS_CONFIG_MODULE_KEY = "sasl.jaas.config.module";
@@ -105,7 +107,17 @@ public class KafkaConfigUtils {
             }
         }
 
-        normalizeAutoRegisterSchemas(properties);
+        Object legacy = properties.remove(LEGACY_AUTO_REGISTER_SCHEMAS);
+        if (legacy != null) {
+            if (properties.containsKey(AUTO_REGISTER_SCHEMAS)) {
+                LOG.warn("{} is deprecated and ignored because {} is also supplied",
+                        LEGACY_AUTO_REGISTER_SCHEMAS, AUTO_REGISTER_SCHEMAS);
+            } else {
+                LOG.warn("{} is deprecated; use {}. Its value is now honored by Confluent serializers",
+                        LEGACY_AUTO_REGISTER_SCHEMAS, AUTO_REGISTER_SCHEMAS);
+            }
+            properties.putIfAbsent(AUTO_REGISTER_SCHEMAS, legacy);
+        }
 
         if (properties.containsKey(GROUP_ID_KEY)) {
             properties.put(GROUP_ID_KEY, String.valueOf(properties.get(GROUP_ID_KEY)));
@@ -129,23 +141,8 @@ public class KafkaConfigUtils {
         return properties;
     }
 
-    /** Canonical spelling wins over the deprecated alias, independent of map order. */
-    static void normalizeAutoRegisterSchemas(Map<String, Object> properties) {
-        if (properties.get(AUTO_REGISTER_SCHEMAS) != null
-                || properties.get(LEGACY_AUTO_REGISTER_SCHEMAS) != null) {
-            // Keep raw values open-ended, like other Kafka properties. Validation belongs
-            // to serializer configuration, not shared config load/reload or setters.
-            Object value = properties.get(AUTO_REGISTER_SCHEMAS);
-            properties.put(AUTO_REGISTER_SCHEMAS,
-                    value != null ? value : properties.get(LEGACY_AUTO_REGISTER_SCHEMAS));
-        }
-        properties.remove(LEGACY_AUTO_REGISTER_SCHEMAS);
-    }
-
     static boolean autoRegisterSchemas(Map<String, Object> properties) {
-        String key = properties.get(AUTO_REGISTER_SCHEMAS) != null
-                ? AUTO_REGISTER_SCHEMAS : LEGACY_AUTO_REGISTER_SCHEMAS;
-        Object value = properties.get(key);
+        Object value = properties.get(AUTO_REGISTER_SCHEMAS);
         if (value == null) {
             return true;
         }
@@ -156,13 +153,8 @@ public class KafkaConfigUtils {
             if ("true".equalsIgnoreCase(text.trim())) return true;
             if ("false".equalsIgnoreCase(text.trim())) return false;
         }
-        throw new IllegalArgumentException("Invalid value '" + value + "' for " + key
-                + "; expected true or false (canonical: " + AUTO_REGISTER_SCHEMAS
-                + ", deprecated alias: " + LEGACY_AUTO_REGISTER_SCHEMAS + ")");
-    }
-
-    static Boolean resolveAutoRegisterSchemas(Boolean canonical, Boolean legacy) {
-        return canonical != null ? canonical : legacy;
+        throw new IllegalArgumentException("Invalid value '" + value + "' for "
+                + AUTO_REGISTER_SCHEMAS + "; expected true or false");
     }
 
     /**

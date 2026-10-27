@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.networknt.kafka.common.KafkaConfigUtils.AUTO_REGISTER_SCHEMAS;
-import static com.networknt.kafka.common.KafkaConfigUtils.LEGACY_AUTO_REGISTER_SCHEMAS;
+import static com.networknt.kafka.common.KafkaConfigUtils.AUTO_REGISTER_SCHEMAS_OVERRIDE;
 import static com.networknt.kafka.common.KafkaConfigUtils.addIfSet;
 
 public class KafkaConsumerPropertiesConfig {
@@ -108,15 +108,12 @@ public class KafkaConsumerPropertiesConfig {
 
     @BooleanField(
             configFieldName = AUTO_REGISTER_SCHEMAS,
-            externalizedKeyName = LEGACY_AUTO_REGISTER_SCHEMAS,
+            externalizedKeyName = AUTO_REGISTER_SCHEMAS_OVERRIDE,
             defaultValue = "true",
             description = "Controls automatic schema registration during serialization; defaults to true. Not used by consumer deserialization."
     )
     @JsonProperty(AUTO_REGISTER_SCHEMAS)
     private Boolean schemaRegistryAutoRegisterSchemas;
-
-    @JsonProperty(LEGACY_AUTO_REGISTER_SCHEMAS)
-    private Boolean legacySchemaRegistryAutoRegisterSchemas;
 
     @StringField(
             configFieldName = SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY,
@@ -291,7 +288,6 @@ public class KafkaConsumerPropertiesConfig {
         addIfSet(properties, AUTO_OFFSET_RESET_KEY, autoOffsetReset);
         addIfSet(properties, GROUP_ID_KEY, groupId);
         addIfSet(properties, SCHEMA_REGISTRY_URL_KEY, schemaRegistryUrl);
-        addIfSet(properties, LEGACY_AUTO_REGISTER_SCHEMAS, legacySchemaRegistryAutoRegisterSchemas);
         addIfSet(properties, AUTO_REGISTER_SCHEMAS, schemaRegistryAutoRegisterSchemas);
         addIfSet(properties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY, schemaRegistrySslTruststoreLocation);
         addIfSet(properties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY, schemaRegistrySslTruststorePassword);
@@ -311,7 +307,6 @@ public class KafkaConsumerPropertiesConfig {
         addIfSet(properties, FETCH_MAX_BYTES_KEY, fetchMaxBytes);
         addIfSet(properties, MAX_POLL_RECORDS_KEY, maxPollRecords);
         addIfSet(properties, MAX_PARTITION_FETCH_BYTES_KEY, maxPartitionFetchBytes);
-        KafkaConfigUtils.normalizeAutoRegisterSchemas(properties);
         return properties;
     }
 
@@ -344,8 +339,7 @@ public class KafkaConsumerPropertiesConfig {
     }
 
     public Boolean getSchemaRegistryAutoRegisterSchemas() {
-        return KafkaConfigUtils.resolveAutoRegisterSchemas(
-                schemaRegistryAutoRegisterSchemas, legacySchemaRegistryAutoRegisterSchemas);
+        return schemaRegistryAutoRegisterSchemas;
     }
 
     public String getSchemaRegistrySslTruststoreLocation() {
