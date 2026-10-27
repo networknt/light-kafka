@@ -133,16 +133,19 @@ public class KafkaConfigUtils {
     static void normalizeAutoRegisterSchemas(Map<String, Object> properties) {
         if (properties.get(AUTO_REGISTER_SCHEMAS) != null
                 || properties.get(LEGACY_AUTO_REGISTER_SCHEMAS) != null) {
-            properties.put(AUTO_REGISTER_SCHEMAS, autoRegisterSchemas(properties));
+            // Keep raw values open-ended, like other Kafka properties. Validation belongs
+            // to serializer configuration, not shared config load/reload or setters.
+            Object value = properties.get(AUTO_REGISTER_SCHEMAS);
+            properties.put(AUTO_REGISTER_SCHEMAS,
+                    value != null ? value : properties.get(LEGACY_AUTO_REGISTER_SCHEMAS));
         }
         properties.remove(LEGACY_AUTO_REGISTER_SCHEMAS);
     }
 
     static boolean autoRegisterSchemas(Map<String, Object> properties) {
-        Object value = properties.get(AUTO_REGISTER_SCHEMAS);
-        if (value == null) {
-            value = properties.get(LEGACY_AUTO_REGISTER_SCHEMAS);
-        }
+        String key = properties.get(AUTO_REGISTER_SCHEMAS) != null
+                ? AUTO_REGISTER_SCHEMAS : LEGACY_AUTO_REGISTER_SCHEMAS;
+        Object value = properties.get(key);
         if (value == null) {
             return true;
         }
@@ -153,7 +156,13 @@ public class KafkaConfigUtils {
             if ("true".equalsIgnoreCase(text.trim())) return true;
             if ("false".equalsIgnoreCase(text.trim())) return false;
         }
-        throw new IllegalArgumentException(AUTO_REGISTER_SCHEMAS + " must be true or false");
+        throw new IllegalArgumentException("Invalid value '" + value + "' for " + key
+                + "; expected true or false (canonical: " + AUTO_REGISTER_SCHEMAS
+                + ", deprecated alias: " + LEGACY_AUTO_REGISTER_SCHEMAS + ")");
+    }
+
+    static Boolean resolveAutoRegisterSchemas(Boolean canonical, Boolean legacy) {
+        return canonical != null ? canonical : legacy;
     }
 
     /**

@@ -80,7 +80,10 @@ properties:
 The deprecated `schema.registry.auto.register.schemas` spelling remains accepted
 as an input alias. Client property maps emit only `auto.register.schemas`; when
 both spellings are supplied, the canonical spelling wins. Boolean values and
-strings `true`/`false` are accepted; other values are rejected. Light's Avro
+strings `true`/`false` are accepted. Shared configuration loading, reloading, and
+`setProperties` translate the alias but preserve raw values, as they do for other
+Kafka properties. Invalid values are rejected when configuring Confluent's
+serializer or constructing Light's Avro serializer, with no default substituted. Light's Avro
 serializer defaults to `true` when neither spelling is present, matching Confluent.
 This setting controls serialization, including Streams output, rather than
 consumer deserialization.
@@ -92,3 +95,10 @@ The bundled templates intentionally retain the existing external override names
 external overrides continue to work. Those placeholders now populate the
 canonical Kafka property. Custom templates should likewise emit the canonical
 property while retaining any external override names their deployments require.
+
+**Upgrade behavior:** deployments that set the deprecated key to `false` while
+using Confluent serializers may previously have auto-registered schemas because
+Confluent ignored that key and defaulted to `true`. After this fix those deployments
+switch to lookup-only serialization. Register the required schemas before upgrading,
+or explicitly set `auto.register.schemas: true` if registration is intended. Light's
+own Avro serializer already honored the deprecated key; that case does not change.

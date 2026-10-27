@@ -8,6 +8,8 @@ import com.networknt.config.schema.StringField;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.networknt.kafka.common.KafkaConfigUtils.AUTO_REGISTER_SCHEMAS;
+import static com.networknt.kafka.common.KafkaConfigUtils.LEGACY_AUTO_REGISTER_SCHEMAS;
 import static com.networknt.kafka.common.KafkaConfigUtils.addIfSet;
 
 public class KafkaStreamsPropertiesConfig {
@@ -18,7 +20,6 @@ public class KafkaStreamsPropertiesConfig {
     private static final String AUTO_OFFSET_RESET_KEY = "auto.offset.reset";
     private static final String APPLICATION_ID_KEY = "application.id";
     private static final String SCHEMA_REGISTRY_URL_KEY = "schema.registry.url";
-    private static final String SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY = "auto.register.schemas";
     private static final String STATE_DIR_KEY = "state.dir";
     private static final String ADDITIONAL_KAFKA_PROPERTIES_KEY = "additionalKafkaProperties";
 
@@ -93,15 +94,15 @@ public class KafkaStreamsPropertiesConfig {
     private String schemaRegistryUrl;
 
     @BooleanField(
-            configFieldName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
-            externalizedKeyName = "schema.registry.auto.register.schemas",
+            configFieldName = AUTO_REGISTER_SCHEMAS,
+            externalizedKeyName = LEGACY_AUTO_REGISTER_SCHEMAS,
             defaultValue = "true",
-            description = "Schema registry auto register schema indicator for streams application. If true, the first request will register the schema auto automatically."
+            description = "Controls automatic schema registration during serialization; defaults to true. Applies to Streams output and internal records."
     )
-    @JsonProperty(SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY)
+    @JsonProperty(AUTO_REGISTER_SCHEMAS)
     private Boolean schemaRegistryAutoRegisterSchemas;
 
-    @JsonProperty("schema.registry.auto.register.schemas")
+    @JsonProperty(LEGACY_AUTO_REGISTER_SCHEMAS)
     private Boolean legacySchemaRegistryAutoRegisterSchemas;
 
     @StringField(
@@ -251,8 +252,8 @@ public class KafkaStreamsPropertiesConfig {
         addIfSet(mergedProperties, AUTO_OFFSET_RESET_KEY, autoOffsetReset);
         addIfSet(mergedProperties, APPLICATION_ID_KEY, applicationId);
         addIfSet(mergedProperties, SCHEMA_REGISTRY_URL_KEY, schemaRegistryUrl);
-        addIfSet(mergedProperties, KafkaConfigUtils.LEGACY_AUTO_REGISTER_SCHEMAS, legacySchemaRegistryAutoRegisterSchemas);
-        addIfSet(mergedProperties, SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY, schemaRegistryAutoRegisterSchemas);
+        addIfSet(mergedProperties, LEGACY_AUTO_REGISTER_SCHEMAS, legacySchemaRegistryAutoRegisterSchemas);
+        addIfSet(mergedProperties, AUTO_REGISTER_SCHEMAS, schemaRegistryAutoRegisterSchemas);
         addIfSet(mergedProperties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY, schemaRegistrySslTruststoreLocation);
         addIfSet(mergedProperties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY, schemaRegistrySslTruststorePassword);
         addIfSet(mergedProperties, SECURITY_PROTOCOL_KEY, securityProtocol);
@@ -298,8 +299,8 @@ public class KafkaStreamsPropertiesConfig {
     }
 
     public Boolean getSchemaRegistryAutoRegisterSchemas() {
-        return schemaRegistryAutoRegisterSchemas != null
-                ? schemaRegistryAutoRegisterSchemas : legacySchemaRegistryAutoRegisterSchemas;
+        return KafkaConfigUtils.resolveAutoRegisterSchemas(
+                schemaRegistryAutoRegisterSchemas, legacySchemaRegistryAutoRegisterSchemas);
     }
 
     public String getSchemaRegistrySslTruststoreLocation() {

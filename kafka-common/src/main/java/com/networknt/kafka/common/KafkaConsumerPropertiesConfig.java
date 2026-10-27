@@ -9,6 +9,8 @@ import com.networknt.config.schema.StringField;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.networknt.kafka.common.KafkaConfigUtils.AUTO_REGISTER_SCHEMAS;
+import static com.networknt.kafka.common.KafkaConfigUtils.LEGACY_AUTO_REGISTER_SCHEMAS;
 import static com.networknt.kafka.common.KafkaConfigUtils.addIfSet;
 
 public class KafkaConsumerPropertiesConfig {
@@ -23,7 +25,6 @@ public class KafkaConsumerPropertiesConfig {
     private static final String AUTO_OFFSET_RESET_KEY = "auto.offset.reset";
     private static final String GROUP_ID_KEY = "group.id";
     private static final String SCHEMA_REGISTRY_URL_KEY = "schema.registry.url";
-    private static final String SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY = "auto.register.schemas";
     private static final String SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY = "schema.registry.ssl.truststore.location";
     private static final String SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY = "schema.registry.ssl.truststore.password";
     private static final String ADDITIONAL_KAFKA_PROPERTIES_KEY = "additionalKafkaProperties";
@@ -106,16 +107,15 @@ public class KafkaConsumerPropertiesConfig {
     private String schemaRegistryUrl;
 
     @BooleanField(
-            configFieldName = SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY,
-            externalizedKeyName = "schema.registry.auto.register.schemas",
+            configFieldName = AUTO_REGISTER_SCHEMAS,
+            externalizedKeyName = LEGACY_AUTO_REGISTER_SCHEMAS,
             defaultValue = "true",
-            description = "Schema registry auto register schema indicator for streams application. " +
-                    "If true, the first request will register the schema auto automatically."
+            description = "Controls automatic schema registration during serialization; defaults to true. Not used by consumer deserialization."
     )
-    @JsonProperty(SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY)
+    @JsonProperty(AUTO_REGISTER_SCHEMAS)
     private Boolean schemaRegistryAutoRegisterSchemas;
 
-    @JsonProperty("schema.registry.auto.register.schemas")
+    @JsonProperty(LEGACY_AUTO_REGISTER_SCHEMAS)
     private Boolean legacySchemaRegistryAutoRegisterSchemas;
 
     @StringField(
@@ -291,8 +291,8 @@ public class KafkaConsumerPropertiesConfig {
         addIfSet(properties, AUTO_OFFSET_RESET_KEY, autoOffsetReset);
         addIfSet(properties, GROUP_ID_KEY, groupId);
         addIfSet(properties, SCHEMA_REGISTRY_URL_KEY, schemaRegistryUrl);
-        addIfSet(properties, KafkaConfigUtils.LEGACY_AUTO_REGISTER_SCHEMAS, legacySchemaRegistryAutoRegisterSchemas);
-        addIfSet(properties, SCHEMA_REGISTRY_AUTO_REGISTER_SCHEMAS_KEY, schemaRegistryAutoRegisterSchemas);
+        addIfSet(properties, LEGACY_AUTO_REGISTER_SCHEMAS, legacySchemaRegistryAutoRegisterSchemas);
+        addIfSet(properties, AUTO_REGISTER_SCHEMAS, schemaRegistryAutoRegisterSchemas);
         addIfSet(properties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION_KEY, schemaRegistrySslTruststoreLocation);
         addIfSet(properties, SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD_KEY, schemaRegistrySslTruststorePassword);
         addIfSet(properties, SECURITY_PROTOCOL_KEY, securityProtocol);
@@ -344,8 +344,8 @@ public class KafkaConsumerPropertiesConfig {
     }
 
     public Boolean getSchemaRegistryAutoRegisterSchemas() {
-        return schemaRegistryAutoRegisterSchemas != null
-                ? schemaRegistryAutoRegisterSchemas : legacySchemaRegistryAutoRegisterSchemas;
+        return KafkaConfigUtils.resolveAutoRegisterSchemas(
+                schemaRegistryAutoRegisterSchemas, legacySchemaRegistryAutoRegisterSchemas);
     }
 
     public String getSchemaRegistrySslTruststoreLocation() {
