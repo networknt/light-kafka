@@ -69,20 +69,19 @@ release; publication/version coordination is required before downstream rollout.
 
 ### Schema auto-registration
 
-Set `properties.auto.register.schemas` in `kafka-producer.yml`, `kafka-consumer.yml`,
-or `kafka-streams.yml` (for example, `properties: {auto.register.schemas: false}`).
-This controls serialization, not consumer deserialization; the default is `true`.
-The old Kafka property `schema.registry.auto.register.schemas` remains an input
-alias with a warning. If both are supplied, `auto.register.schemas` wins and the
-warning says the alias is ignored. Invalid values are rejected by the serializer.
+Use `properties.auto.register.schemas` in producer, consumer, or Streams configuration;
+this controls serialization, not consumer deserialization, and defaults to `true`.
+The bundled templates use `kafka-producer.auto.register.schemas`,
+`kafka-consumer.auto.register.schemas`, and `kafka-streams.auto.register.schemas`
+in `values.yml`. Rename any old `kafka-*.schema.registry.auto.register.schemas`
+overrides to these names; old overrides are unused and the default remains `true`.
+To request lookup-only behavior explicitly, set the canonical property to `false`.
 
-The bundled templates retain the supported `values.yml` override names
-`kafka-producer.schema.registry.auto.register.schemas`,
-`kafka-consumer.schema.registry.auto.register.schemas`, and
-`kafka-streams.schema.registry.auto.register.schemas`. Those names are not deprecated.
-
-**Upgrade:** Confluent previously ignored the old Kafka property, so deployments
-setting it to `false` may have auto-registered schemas. They now switch to lookup-only:
-pre-register required schemas (including Streams internal subjects), or explicitly
-set `auto.register.schemas: true` if registration is intended. Light's own Avro
-serializer already honored the old spelling.
+Confluent ignores the old Kafka property `schema.registry.auto.register.schemas`;
+Light logs a warning but does not translate it. Light's own Avro serializer is the
+exception: it historically supported that spelling and retains it as a fallback
+when the canonical key is absent. The canonical key wins when both are supplied.
+Light strictly validates Boolean or true/false string values during serialization.
+Users of Light's serializer should migrate old overrides explicitly, especially
+`false` values: renaming the bundled template placeholder otherwise restores the
+`true` default. Pre-register required schemas before switching to lookup-only mode.

@@ -16,6 +16,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import static com.networknt.kafka.common.KafkaConfigUtils.AUTO_REGISTER_SCHEMAS;
+import static com.networknt.kafka.common.KafkaConfigUtils.LEGACY_AUTO_REGISTER_SCHEMAS;
+
 public abstract class AbstractAvroSerializer extends AbstractAvroSerDe {
     static final Logger logger = LoggerFactory.getLogger(AbstractAvroSerializer.class);
 
@@ -36,7 +39,7 @@ public abstract class AbstractAvroSerializer extends AbstractAvroSerDe {
             int id;
             schema = AvroSchemaUtils.getSchema(object);
             String subject = schema.getFullName();
-            if (KafkaConfigUtils.autoRegisterSchemas(config)) {
+            if (autoRegisterSchemas()) {
                 restClientErrorMsg = "Error registering Avro schema: ";
                 id = schemaRegistry.register(subject, new AvroSchema(schema));
             } else {
@@ -72,4 +75,18 @@ public abstract class AbstractAvroSerializer extends AbstractAvroSerDe {
             throw new RuntimeException(restClientErrorMsg + schema, e);
         }
     }
+    // Light historically supported the prefixed spelling; Confluent does not.
+    private boolean autoRegisterSchemas() {
+        String key = config.get(AUTO_REGISTER_SCHEMAS) != null
+                ? AUTO_REGISTER_SCHEMAS : LEGACY_AUTO_REGISTER_SCHEMAS;
+        Object value = config.get(key);
+        if (value == null) return true;
+        if (value instanceof Boolean flag) return flag;
+        if (value instanceof String text) {
+            if ("true".equalsIgnoreCase(text.trim())) return true;
+            if ("false".equalsIgnoreCase(text.trim())) return false;
+        }
+        throw new IllegalArgumentException("Invalid value '" + value + "' for " + key + "; expected true or false");
+    }
+
 }

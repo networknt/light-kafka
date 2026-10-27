@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.networknt.kafka.common.KafkaConfigUtils.AUTO_REGISTER_SCHEMAS;
-import static com.networknt.kafka.common.KafkaConfigUtils.AUTO_REGISTER_SCHEMAS_OVERRIDE;
 import static com.networknt.kafka.common.KafkaConfigUtils.addIfSet;
 
 public class KafkaConsumerPropertiesConfig {
@@ -108,7 +107,7 @@ public class KafkaConsumerPropertiesConfig {
 
     @BooleanField(
             configFieldName = AUTO_REGISTER_SCHEMAS,
-            externalizedKeyName = AUTO_REGISTER_SCHEMAS_OVERRIDE,
+            externalizedKeyName = AUTO_REGISTER_SCHEMAS,
             defaultValue = "true",
             description = "Controls automatic schema registration during serialization; defaults to true. Not used by consumer deserialization."
     )
