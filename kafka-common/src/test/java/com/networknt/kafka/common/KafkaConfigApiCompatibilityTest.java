@@ -45,6 +45,26 @@ class KafkaConfigApiCompatibilityTest {
     }
 
     @Test
+    void jsonObjectLoadingPreservesLegacyAutoRegistrationWithoutTranslatingIt() throws Exception {
+        Config config = Config.getInstance();
+        String name = "kafka-auto-register-legacy";
+        try {
+            for (Class<?> type : new Class<?>[]{KafkaConsumerConfig.class, KafkaProducerConfig.class, KafkaStreamsConfig.class}) {
+                config.clearConfigCache(name);
+                for (Object loaded : new Object[]{config.getJsonObjectConfig(name, type),
+                        config.getJsonObjectConfigNoCache(name, type)}) {
+                    Map<?, ?> properties = (Map<?, ?>) type.getMethod("getProperties").invoke(loaded);
+                    assertEquals(false, properties.get("schema.registry.auto.register.schemas"));
+                    assertFalse(properties.containsKey("auto.register.schemas"));
+                    assertEquals("preserved", properties.get("custom.setting"));
+                }
+            }
+        } finally {
+            config.clearConfigCache(name);
+        }
+    }
+
+    @Test
     void noArgConstructorsRetain230PojoDefaults() {
         KafkaConsumerConfig consumer = new KafkaConsumerConfig();
         assertNull(consumer.getProperties());

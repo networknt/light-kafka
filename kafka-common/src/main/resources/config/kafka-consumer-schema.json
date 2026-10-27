@@ -42,9 +42,9 @@
           "description" : "Schema registry url",
           "default" : "http://localhost:8081"
         },
-        "schema.registry.auto.register.schemas" : {
+        "auto.register.schemas" : {
           "type" : "boolean",
-          "description" : "Schema registry auto register schema indicator for streams application. If true, the first request will register the schema auto automatically.",
+          "description" : "Controls automatic schema registration during serialization; defaults to true. Not used by consumer deserialization.",
           "default" : true
         },
         "schema.registry.ssl.truststore.location" : {
