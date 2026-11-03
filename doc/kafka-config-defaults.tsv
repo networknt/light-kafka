@@ -1,0 +1,76 @@
+model	property	framework default	upstream definition	upstream default
+KafkaConsumerPropertiesConfig	additionalKafkaProperties	<empty>	Framework	<framework-only>
+KafkaConsumerPropertiesConfig	auto.offset.reset	earliest	Kafka	latest
+KafkaConsumerPropertiesConfig	auto.register.schemas	true	Confluent	true
+KafkaConsumerPropertiesConfig	basic.auth.credentials.source	USER_INFO	Confluent	URL
+KafkaConsumerPropertiesConfig	basic.auth.user.info	${kafka-consumer.username:username}:${kafka-consumer.password:password}	Confluent	<empty>
+KafkaConsumerPropertiesConfig	bootstrap.servers	localhost:9092	Kafka	<required>
+KafkaConsumerPropertiesConfig	client.rack	rack1	Kafka	<empty>
+KafkaConsumerPropertiesConfig	enable.auto.commit	false	Kafka	true
+KafkaConsumerPropertiesConfig	fetch.max.bytes	102400	Kafka	52428800
+KafkaConsumerPropertiesConfig	group.id	group1	Kafka	<null>
+KafkaConsumerPropertiesConfig	key.deserializer	org.apache.kafka.common.serialization.ByteArrayDeserializer	Kafka	<required>
+KafkaConsumerPropertiesConfig	max.partition.fetch.bytes	100	Kafka	1048576
+KafkaConsumerPropertiesConfig	max.poll.records	100	Kafka	500
+KafkaConsumerPropertiesConfig	sasl.jaas.config.module	org.apache.kafka.common.security.plain.PlainLoginModule	Framework	<framework-only>
+KafkaConsumerPropertiesConfig	sasl.jaas.config.password	<empty>	Framework	<framework-only>
+KafkaConsumerPropertiesConfig	sasl.jaas.config.username	<empty>	Framework	<framework-only>
+KafkaConsumerPropertiesConfig	sasl.mechanism	PLAIN	Kafka	GSSAPI
+KafkaConsumerPropertiesConfig	schema.registry.ssl.truststore.location	/config/client.truststore	Confluent	<null>
+KafkaConsumerPropertiesConfig	schema.registry.ssl.truststore.password	password	Confluent	<null>
+KafkaConsumerPropertiesConfig	schema.registry.url	http://localhost:8081	Confluent	<required>
+KafkaConsumerPropertiesConfig	security.protocol	SASL_SSL	Kafka	PLAINTEXT
+KafkaConsumerPropertiesConfig	ssl.endpoint.identification.algorithm	https	Kafka	https
+KafkaConsumerPropertiesConfig	ssl.truststore.location	/config/client.truststore	Kafka	<null>
+KafkaConsumerPropertiesConfig	ssl.truststore.password	password	Kafka	<null>
+KafkaConsumerPropertiesConfig	value.deserializer	org.apache.kafka.common.serialization.ByteArrayDeserializer	Kafka	<required>
+KafkaProducerPropertiesConfig	acks	all	Kafka	all
+KafkaProducerPropertiesConfig	additionalKafkaProperties	<empty>	Framework	<framework-only>
+KafkaProducerPropertiesConfig	auto.register.schemas	true	Confluent	true
+KafkaProducerPropertiesConfig	basic.auth.credentials.source	USER_INFO	Confluent	URL
+KafkaProducerPropertiesConfig	basic.auth.user.info	${kafka-producer.username:username}:${kafka-producer.password:password}	Confluent	<empty>
+KafkaProducerPropertiesConfig	batch.size	16384	Kafka	16384
+KafkaProducerPropertiesConfig	bootstrap.servers	localhost:9092	Kafka	<required>
+KafkaProducerPropertiesConfig	buffer.memory	33554432	Kafka	33554432
+KafkaProducerPropertiesConfig	client.rack	rack1	Framework	<framework-only>
+KafkaProducerPropertiesConfig	enable.idempotence	false	Kafka	true
+KafkaProducerPropertiesConfig	key.serializer	org.apache.kafka.common.serialization.ByteArraySerializer	Kafka	<required>
+KafkaProducerPropertiesConfig	linger.ms	1	Kafka	5
+KafkaProducerPropertiesConfig	max.in.flight.requests.per.connection	5	Kafka	5
+KafkaProducerPropertiesConfig	max.request.size	1048576	Kafka	1048576
+KafkaProducerPropertiesConfig	retries	3	Kafka	2147483647
+KafkaProducerPropertiesConfig	sasl.jaas.config.module	org.apache.kafka.common.security.plain.PlainLoginModule	Framework	<framework-only>
+KafkaProducerPropertiesConfig	sasl.jaas.config.password	<empty>	Framework	<framework-only>
+KafkaProducerPropertiesConfig	sasl.jaas.config.username	<empty>	Framework	<framework-only>
+KafkaProducerPropertiesConfig	sasl.mechanism	PLAIN	Kafka	GSSAPI
+KafkaProducerPropertiesConfig	schema.registry.cache	100	Framework	<framework-only>
+KafkaProducerPropertiesConfig	schema.registry.ssl.truststore.location	/config/client.truststore	Confluent	<null>
+KafkaProducerPropertiesConfig	schema.registry.ssl.truststore.password	password	Confluent	<null>
+KafkaProducerPropertiesConfig	schema.registry.url	http://localhost:8081	Confluent	<required>
+KafkaProducerPropertiesConfig	security.protocol	SASL_SSL	Kafka	PLAINTEXT
+KafkaProducerPropertiesConfig	ssl.endpoint.identification.algorithm	https	Kafka	https
+KafkaProducerPropertiesConfig	ssl.truststore.location	/config/client.truststore	Kafka	<null>
+KafkaProducerPropertiesConfig	ssl.truststore.password	password	Kafka	<null>
+KafkaProducerPropertiesConfig	value.serializer	org.apache.kafka.common.serialization.ByteArraySerializer	Kafka	<required>
+KafkaStreamsPropertiesConfig	additionalKafkaProperties	<empty>	Framework	<framework-only>
+KafkaStreamsPropertiesConfig	application.id	placeholder	Kafka	<required>
+KafkaStreamsPropertiesConfig	auto.offset.reset	earliest	Kafka consumer (Streams forwarding)	latest
+KafkaStreamsPropertiesConfig	auto.register.schemas	true	Confluent	true
+KafkaStreamsPropertiesConfig	basic.auth.credentials.source	USER_INFO	Confluent	URL
+KafkaStreamsPropertiesConfig	basic.auth.user.info	${kafka-streams.username:username}:${kafka-streams.password:password}	Confluent	<empty>
+KafkaStreamsPropertiesConfig	bootstrap.servers	localhost:9092	Kafka	<required>
+KafkaStreamsPropertiesConfig	client.rack	rack1	Kafka consumer (Streams forwarding)	<empty>
+KafkaStreamsPropertiesConfig	key.deserializer	org.apache.kafka.common.serialization.ByteArrayDeserializer	Kafka consumer (Streams forwarding)	<required>
+KafkaStreamsPropertiesConfig	sasl.jaas.config.module	org.apache.kafka.common.security.plain.PlainLoginModule	Framework	<framework-only>
+KafkaStreamsPropertiesConfig	sasl.jaas.config.password	<empty>	Framework	<framework-only>
+KafkaStreamsPropertiesConfig	sasl.jaas.config.username	<empty>	Framework	<framework-only>
+KafkaStreamsPropertiesConfig	sasl.mechanism	PLAIN	Kafka consumer (Streams forwarding)	GSSAPI
+KafkaStreamsPropertiesConfig	schema.registry.ssl.truststore.location	/config/client.truststore	Confluent	<null>
+KafkaStreamsPropertiesConfig	schema.registry.ssl.truststore.password	password	Confluent	<null>
+KafkaStreamsPropertiesConfig	schema.registry.url	http://localhost:8081	Confluent	<required>
+KafkaStreamsPropertiesConfig	security.protocol	SASL_SSL	Kafka	PLAINTEXT
+KafkaStreamsPropertiesConfig	ssl.endpoint.identification.algorithm	https	Kafka consumer (Streams forwarding)	https
+KafkaStreamsPropertiesConfig	ssl.truststore.location	/config/client.truststore	Kafka consumer (Streams forwarding)	<null>
+KafkaStreamsPropertiesConfig	ssl.truststore.password	password	Kafka consumer (Streams forwarding)	<null>
+KafkaStreamsPropertiesConfig	state.dir	/tmp	Kafka	/tmp/kafka-streams
+KafkaStreamsPropertiesConfig	value.deserializer	org.apache.kafka.common.serialization.ByteArrayDeserializer	Kafka consumer (Streams forwarding)	<required>
