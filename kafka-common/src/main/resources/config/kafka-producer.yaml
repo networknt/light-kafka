@@ -44,8 +44,8 @@ properties:
   ssl.truststore.location: ${kafka-producer.ssl.truststore.location:/config/client.truststore}
   # SSL truststore password for secure communication
   ssl.truststore.password: ${kafka-producer.ssl.truststore.password:password}
-  # SSL endpoint identification algorithm for secure communication. This is used to verify the hostname of the server against the certificate presented by the server.
-  ssl.endpoint.identification.algorithm: ${kafka-producer.ssl.endpoint.identification.algorithm:also-name}
+  # SSL endpoint identification algorithm. Defaults to https to verify the server hostname against its certificate. Set an empty string explicitly only to disable hostname verification.
+  ssl.endpoint.identification.algorithm: ${kafka-producer.ssl.endpoint.identification.algorithm:https}
   # Client rack identifier for Kafka producer. Default to rack1
   client.rack: ${kafka-producer.client.rack:rack1}
   basic.auth.user.info: ${kafka-producer.username:username}:${kafka-producer.password:password}

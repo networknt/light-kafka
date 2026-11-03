@@ -196,10 +196,9 @@ public class KafkaConsumerPropertiesConfig {
     @StringField(
             configFieldName = SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY,
             externalizedKeyName = SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY,
-            defaultValue = "also-name",
-            description = """
-                    SSL endpoint identification algorithm for secure communication.
-                    This is used to verify the hostname of the server against the certificate presented by the server."""
+            defaultValue = "https",
+            description = "SSL endpoint identification algorithm. Defaults to https to verify the server hostname " +
+                    "against its certificate. Set an empty string explicitly only to disable hostname verification."
     )
     @JsonProperty(SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_KEY)
     private String sslEndpointIdentificationAlgorithm;
