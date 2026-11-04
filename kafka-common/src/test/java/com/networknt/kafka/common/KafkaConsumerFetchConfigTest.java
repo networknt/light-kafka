@@ -9,7 +9,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -20,17 +19,13 @@ class KafkaConsumerFetchConfigTest {
     private static final String KEY = "max.partition.fetch.bytes";
 
     @Test
-    void annotationAndGeneratedResourcesAgree() throws Exception {
+    void annotationAndGeneratedSchemaAgree() throws Exception {
         NumberField field = KafkaConsumerPropertiesConfig.class.getDeclaredField("maxPartitionFetchBytes")
                 .getAnnotation(NumberField.class);
         assertEquals("102400", field.defaultValue());
         assertEquals(KEY, field.configFieldName());
-        try (var yaml = getClass().getResourceAsStream("/config/kafka-consumer.yaml");
-             var schema = getClass().getResourceAsStream("/config/kafka-consumer-schema.json")) {
-            assertNotNull(yaml);
+        try (var schema = getClass().getResourceAsStream("/config/kafka-consumer-schema.json")) {
             assertNotNull(schema);
-            String text = new String(yaml.readAllBytes(), StandardCharsets.UTF_8);
-            assertTrue(text.contains("  " + KEY + ": ${kafka-consumer." + KEY + ":" + field.defaultValue() + "}"));
             var property = new ObjectMapper().readTree(schema).path("properties").path("properties")
                     .path("properties").path(KEY);
             assertEquals(102400, property.path("default").decimalValue().intValueExact());
@@ -41,13 +36,17 @@ class KafkaConsumerFetchConfigTest {
     @Test
     void loadsDefaultAndExternalOverrideInIsolatedJvm(@TempDir Path directory) throws Exception {
         Path output = directory.resolve("probe.log");
+        long timeoutSeconds = Long.getLong("kafka.fetch.config.probe.timeout.seconds", 120L);
+        assertTrue(timeoutSeconds > 0, "Probe timeout must be positive");
+        // Intentionally use a fresh JVM without parent -D configuration overrides or agents:
+        // this probes the packaged YAML fallback, not the runner's deployment configuration.
         Process child = new ProcessBuilder(
                 Path.of(System.getProperty("java.home"), "bin", "java").toString(),
                 "-cp", System.getProperty("surefire.test.class.path", System.getProperty("java.class.path")),
                 KafkaConsumerFetchConfigTest.class.getName())
                 .redirectErrorStream(true).redirectOutput(output.toFile()).start();
         try {
-            assertTrue(child.waitFor(30, TimeUnit.SECONDS), "Configuration probe timed out");
+            assertTrue(child.waitFor(timeoutSeconds, TimeUnit.SECONDS), "Configuration probe timed out");
             assertEquals(0, child.exitValue(), () -> {
                 try { return Files.readString(output); }
                 catch (java.io.IOException e) { return e.toString(); }

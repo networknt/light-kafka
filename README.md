@@ -1,6 +1,10 @@
 # light-kafka
 common shared modules for Kafka producer, consumer and streams
 
+```
+./gradlew clean build install
+```
+
 ## Consumer partition fetch default upgrade
 
 The fallback for `max.partition.fetch.bytes` changes from 100 bytes to 102400
@@ -20,11 +24,6 @@ progress, and consumers can issue multiple fetches concurrently. This correction
 has configuration tests; throughput, latency and peak memory have not been
 benchmarked. Validate those metrics with representative record batches, partition
 counts and concurrency before rolling it out to a memory-constrained deployment.
-
-
-```
-./gradlew clean build install
-```
 
 ### Schema auto-registration
 
