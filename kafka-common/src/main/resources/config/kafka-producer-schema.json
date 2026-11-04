@@ -59,7 +59,7 @@
         },
         "enable.idempotence" : {
           "type" : "boolean",
-          "description" : "enable idempotence. Default to true",
+          "description" : "enable idempotence. Default to false",
           "default" : false
         },
         "schema.registry.url" : {
