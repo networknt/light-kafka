@@ -256,9 +256,10 @@ public class KafkaConsumerPropertiesConfig {
     @NumberField(
             configFieldName = MAX_PARTITION_FETCH_BYTES_KEY,
             externalizedKeyName = MAX_PARTITION_FETCH_BYTES_KEY,
-            defaultValue = "100",
+            defaultValue = "102400",
             description = """
                     The maximum amount of data per-partition the server will return. Records are fetched in batches by the consumer.
+                    Default to 102400 bytes (100 KiB), matching the sidecar fetch budget and existing consumer templates.
                     If the first record batch in the first non-empty partition of the fetch is larger than this limit, the batch will still be returned to ensure that the consumer can make progress."""
     )
     @JsonProperty(MAX_PARTITION_FETCH_BYTES_KEY)
