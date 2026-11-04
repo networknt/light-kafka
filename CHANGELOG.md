@@ -1,5 +1,19 @@
 # Change Log
 
+## [2.5.0](https://github.com/networknt/light-kafka/tree/2.5.0) (2026-11-04)
+
+**Commits:**
+
+- upgrade to version 2.5.0 before release in 2.x branch ([9532627](https://github.com/networknt/light-kafka/commit/9532627e31f44e5007d64d5d0b3a7ca39da35a5b)) (by Steve Hu)
+- Align consumer partition fetch default with 100 KiB sidecar budget (2.x) (#273) ([0566705](https://github.com/networknt/light-kafka/commit/0566705775cd8039fb4dd867256606c05950fc48)) (by Steve Hu)
+- Correct producer idempotence default description (#271) ([d1de89f](https://github.com/networknt/light-kafka/commit/d1de89f36e1f67984902495294788f27b2854b16)) (by Steve Hu)
+- upgrade to version 2.5.0-SNAPSHOT after release in 2.x branch ([3fd8d48](https://github.com/networknt/light-kafka/commit/3fd8d48a5d10317a2be5231e1bd0f27fd715817d)) (by Steve Hu)
+- upgrade jackson to 2.22.4 from 2.22.3 ([2a7275a](https://github.com/networknt/light-kafka/commit/2a7275a3011b3617cbdb2d51457830465e40dd17)) (by Steve Hu)
+- upgrade logback to 1.6.6 from 1.6.5 ([e0d86c8](https://github.com/networknt/light-kafka/commit/e0d86c85942b70936c70f019df6f1f439983221c)) (by Steve Hu)
+- fixes #261 normalize schema auto-registration configuration (2.x) (#263) ([e13b684](https://github.com/networknt/light-kafka/commit/e13b684281ce9e672b58b4cf6078503d9ca593c8)) (by Steve Hu)
+- upgrade maven-version to 2.23.0 from 2.22.0 ([7b25cfa](https://github.com/networknt/light-kafka/commit/7b25cfaf641ed46003bde59e9f8b6ec39f7bb24a)) (by Steve Hu)
+- upgrade to version 2.4.2-SNAPSHOT after release in master branch ([05a43e3](https://github.com/networknt/light-kafka/commit/05a43e34b7009be0d5dc3ee54487f380b78115ad)) (by Steve Hu)
+
 ## [2.4.1](https://github.com/networknt/light-kafka/tree/2.4.1) (2026-10-11)
 
 **Commits:**
