@@ -130,7 +130,7 @@ public class KafkaProducerPropertiesConfig {
             configFieldName = ENABLE_IDEMPOTENCE_KEY,
             externalizedKeyName = ENABLE_IDEMPOTENCE_KEY,
             defaultValue = "false",
-            description = "enable idempotence. Default to true"
+            description = "enable idempotence. Default to false"
     )
     @JsonProperty(ENABLE_IDEMPOTENCE_KEY)
     private Boolean enableIdempotence;
