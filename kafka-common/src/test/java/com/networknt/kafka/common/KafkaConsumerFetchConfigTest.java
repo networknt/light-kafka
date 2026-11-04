@@ -35,6 +35,12 @@ class KafkaConsumerFetchConfigTest {
         }
     }
 
+    /**
+     * Runs the configuration probe in a child JVM with a 120-second default timeout.
+     * For slower environments, pass {@code -Dkafka.fetch.config.probe.timeout.seconds=240}
+     * to Maven. The value must be a positive integer number of seconds; malformed or
+     * non-positive values fail the test instead of silently selecting the default.
+     */
     @Test
     void loadsDefaultAndExternalOverrideInIsolatedJvm(@TempDir Path directory) throws Exception {
         Path output = directory.resolve("probe.log");
