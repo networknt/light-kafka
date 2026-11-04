@@ -5,7 +5,27 @@ common shared modules for Kafka producer, consumer and streams
 ./gradlew clean build install
 ```
 
-### Schema auto-registration
+## Consumer partition fetch default upgrade
+
+The fallback for `max.partition.fetch.bytes` changes from 100 bytes to 102400
+bytes (100 KiB). This affects consumers loading the generated configuration
+without an explicit override. It matches existing light-codegen and kafka-sidecar
+consumer templates and the existing `fetch.max.bytes=102400` fetch budget.
+
+To preserve the previous setting, explicitly set
+`kafka-consumer.max.partition.fetch.bytes: 100` in your external values, or set
+`properties.max.partition.fetch.bytes: 100` in your consumer configuration.
+Existing explicit values remain effective.
+
+The larger per-partition allowance can increase the data returned in a fetch and
+consumer buffering. `fetch.max.bytes` remains unchanged, but neither fetch setting
+is a hard memory cap: Kafka can return the first oversized record batch to ensure
+progress, and consumers can issue multiple fetches concurrently. This correction
+has configuration tests; throughput, latency and peak memory have not been
+benchmarked. Validate those metrics with representative record batches, partition
+counts and concurrency before rolling it out to a memory-constrained deployment.
+
+## Schema auto-registration
 
 Use `properties.auto.register.schemas` in producer, consumer, or Streams configuration;
 this controls serialization, not consumer deserialization, and defaults to `true`.
