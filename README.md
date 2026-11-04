@@ -25,6 +25,12 @@ has configuration tests; throughput, latency and peak memory have not been
 benchmarked. Validate those metrics with representative record batches, partition
 counts and concurrency before rolling it out to a memory-constrained deployment.
 
+The configuration regression test runs a child JVM with a 120-second timeout.
+For slower test environments, set
+`-Dkafka.fetch.config.probe.timeout.seconds=240` on the Maven test command.
+The value must be a positive integer number of seconds; malformed or non-positive
+values fail the test rather than silently selecting a default.
+
 ## Jackson 3 migration
 
 The main development line uses Jackson 3.2.3 (`tools.jackson.*`), with Java 17+

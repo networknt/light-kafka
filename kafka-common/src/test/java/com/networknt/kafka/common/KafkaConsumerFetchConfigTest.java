@@ -28,16 +28,25 @@ class KafkaConsumerFetchConfigTest {
             assertNotNull(schema);
             var property = new ObjectMapper().readTree(schema).path("properties").path("properties")
                     .path("properties").path(KEY);
+            assertTrue(property.isObject(), "Schema property not found at /properties/properties/properties/" + KEY);
+            assertTrue(property.path("default").isNumber(), "Schema default must be numeric for " + KEY);
             assertEquals(102400, property.path("default").decimalValue().intValueExact());
-            assertEquals(field.description(), property.path("description").asText());
+            assertEquals(field.description(), property.path("description").asString());
         }
     }
 
     @Test
     void loadsDefaultAndExternalOverrideInIsolatedJvm(@TempDir Path directory) throws Exception {
         Path output = directory.resolve("probe.log");
-        long timeoutSeconds = Long.getLong("kafka.fetch.config.probe.timeout.seconds", 120L);
-        assertTrue(timeoutSeconds > 0, "Probe timeout must be positive");
+        String timeoutProperty = "kafka.fetch.config.probe.timeout.seconds";
+        String timeoutValue = System.getProperty(timeoutProperty, "120");
+        long timeoutSeconds;
+        try {
+            timeoutSeconds = Long.parseLong(timeoutValue);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(timeoutProperty + " must be a positive integer: " + timeoutValue, e);
+        }
+        assertTrue(timeoutSeconds > 0, timeoutProperty + " must be a positive integer: " + timeoutValue);
         // Intentionally use a fresh JVM without parent -D configuration overrides or agents:
         // this probes the packaged YAML fallback, not the runner's deployment configuration.
         Process child = new ProcessBuilder(
