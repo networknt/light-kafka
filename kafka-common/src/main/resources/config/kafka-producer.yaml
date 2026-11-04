@@ -18,7 +18,7 @@ properties:
   linger.ms: ${kafka-producer.linger.ms:1}
   # max in-flight requests per connection. Default to 5
   max.in.flight.requests.per.connection: ${kafka-producer.max.in.flight.requests.per.connection:5}
-  # enable idempotence. Default to true
+  # enable idempotence. Default to false
   enable.idempotence: ${kafka-producer.enable.idempotence:false}
   # Confluent schema registry url
   schema.registry.url: ${kafka-producer.schema.registry.url:http://localhost:8081}
