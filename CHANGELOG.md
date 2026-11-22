@@ -1,5 +1,16 @@
 # Change Log
 
+## [2.5.1](https://github.com/networknt/light-kafka/tree/2.5.1) (2026-11-21)
+
+**Commits:**
+
+- upgrade to version 2.5.1 before release in 2.x branch ([3d1dabd](https://github.com/networknt/light-kafka/commit/3d1dabd4da76cdb9f4a13ce42d221a1a192c3c48)) (by Steve Hu)
+- upgrade logback to 1.6.8 from 1.6.7 ([468c59d](https://github.com/networknt/light-kafka/commit/468c59dc999374587bdf663d92a9fcc93541eb08)) (by Steve Hu)
+- upgrade logback to 1.6.7 from 1.6.6 ([a33878c](https://github.com/networknt/light-kafka/commit/a33878c2b4280a43af6d0a0a6a2b38c2cdf5145d)) (by Steve Hu)
+- upgrade maven-version to 2.25.2 from 2.23.0 ([430d04f](https://github.com/networknt/light-kafka/commit/430d04f49d241ce55768bad9f1c0d5b0af96dd20)) (by Steve Hu)
+- upgrade maven-surefire to 3.6.1 from 3.6.0 ([054d8e1](https://github.com/networknt/light-kafka/commit/054d8e183e20e32a91e3153aed801787fbbffe81)) (by Steve Hu)
+- upgrade to version 2.5.1-SNAPSHOT after release in 2.x branch ([7127dc0](https://github.com/networknt/light-kafka/commit/7127dc041f36dbe3fdedbe5b0b87c77988264070)) (by Steve Hu)
+
 ## [2.5.0](https://github.com/networknt/light-kafka/tree/2.5.0) (2026-11-04)
 
 **Commits:**
